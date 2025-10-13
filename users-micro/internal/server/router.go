@@ -13,4 +13,5 @@ func RegisterRoutes(r *gin.Engine) {
 	controllers.NewUserController().RegisterRoutes(api)
 	controllers.NewOrderController().RegisterRoutes(api)
 	controllers.NewProfileController().RegisterRoutes(api)
+	controllers.NewTestController().RegisterRoutes(api, FirebaseAuthMiddleware())
 }

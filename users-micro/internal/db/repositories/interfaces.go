@@ -16,6 +16,6 @@ type UserRepository interface {
 // ProfileRepository define operaciones de persistencia para perfiles.
 type ProfileRepository interface {
 	Create(p *dto.ProfileRequest) error
-	FindByUserID(userID string) (*dto.ProfileResonse, error)
+	FindByUserID(userID string) (*dto.ProfileResponse, error)
 	Update(p *dto.ProfileRequest) error
 }

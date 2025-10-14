@@ -2,6 +2,14 @@ package domain
 
 import "time"
 
+type UserRole string
+
+const (
+	UserRoleAdmin    UserRole = "admin"
+	UserRoleProducer UserRole = "producer"
+	UserRoleClient   UserRole = "client"
+)
+
 type User struct {
 	ID          string
 	FirebaseUID string
@@ -20,4 +28,13 @@ type Profile struct {
 	AvatarURL string
 	CreatedAt time.Time
 	UpdatedAt time.Time
+}
+
+func IsValidUserRole(role string) bool {
+	switch UserRole(role) {
+	case UserRoleAdmin, UserRoleProducer, UserRoleClient:
+		return true
+	default:
+		return false
+	}
 }

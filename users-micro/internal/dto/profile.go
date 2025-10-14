@@ -9,7 +9,7 @@ type ProfileRequest struct {
 	AvatarURL string `json:"avatar_url" binding:"required"`
 }
 
-type ProfileResonse struct {
+type ProfileResponse struct {
 	ID        string    `json:"id"`
 	UserID    string    `json:"user_id"`
 	Address   string    `json:"address"`

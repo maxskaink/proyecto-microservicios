@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	db_mappers "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/mappers"
 	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"gorm.io/gorm"
@@ -20,11 +21,7 @@ func NewUserRepository(db *gorm.DB) UserRepository {
 func (r *userRepository) Create(u *dto.UserRequest) (*dto.UserResponse, error) {
 	var id string
 	err := r.db.Transaction(func(tx *gorm.DB) error {
-		user := &db_models.UserDB{
-			FirebaseUID: u.FirebaseUID,
-			Email:       u.Email,
-			Name:        u.Name,
-		}
+		user := db_mappers.UserDtoToModel(u)
 
 		if err := tx.Create(user).Error; err != nil {
 			return err
@@ -54,29 +51,21 @@ func (r *userRepository) Create(u *dto.UserRequest) (*dto.UserResponse, error) {
 func (r *userRepository) FindByID(id string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
-	if err := r.db.First(&user, "id = ?", id).Error; err != nil {
+	if err := r.db.Preload("Profile").First(&user, "id = ?", id).Error; err != nil {
 		return nil, err
 	}
 
-	return &dto.UserResponse{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
-	}, nil
+	return db_mappers.UserModelToDto(&user), nil
 }
 
 func (r *userRepository) FindByUUID(id string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
-	if err := r.db.First(&user, "firebase_uid = ?", id).Error; err != nil {
+	if err := r.db.Preload("Profile").First(&user, "firebase_uid = ?", id).Error; err != nil {
 		return nil, err
 	}
 
-	return &dto.UserResponse{
-		ID:    user.ID,
-		Email: user.Email,
-		Name:  user.Name,
-	}, nil
+	return db_mappers.UserModelToDto(&user), nil
 }
 
 // Update actualiza un usuario existente en la base de datos.

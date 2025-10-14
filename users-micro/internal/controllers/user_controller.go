@@ -25,6 +25,7 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFu
 	users := rg.Group("/users")
 	{
 		users.GET("/:id", auth, uc.GetUserByID)
+		users.GET("/uid/:id", auth, uc.GetUserByUUID)
 		users.PUT("/:id", auth, uc.UpdateUser)
 		users.DELETE("/:id", auth, uc.DeleteUser)
 	}
@@ -36,6 +37,16 @@ func (uc *UserController) GetUserByID(c *gin.Context) {
 	user, err := uc.UserService.GetUserByID(id)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
+		return
+	}
+	c.JSON(http.StatusOK, user)
+}
+
+func (uc *UserController) GetUserByUUID(c *gin.Context) {
+	id := c.Param("id")
+	user, err := uc.UserService.GetUserByUUID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado con uid " + id})
 		return
 	}
 	c.JSON(http.StatusOK, user)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 )
 
@@ -24,6 +25,7 @@ func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 		return dto.UserResponse{}, fmt.Errorf("el email y el nombre son obligatorios")
 	}
 
+	u.Rol = domain.UserRoleClient
 	// Llamar al repositorio para crear el usuario
 	userCreated, err := s.userRepo.Create(&u)
 	if err != nil {

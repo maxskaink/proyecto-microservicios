@@ -10,6 +10,7 @@ import (
 
 var FirebaseApp *firebase.App
 
+// Must initializate services first
 func InitFirebase() {
 	opt := option.WithCredentialsFile("secrets/serviceAccountKey.json")
 	app, err := firebase.NewApp(context.Background(), nil, opt)
@@ -17,4 +18,6 @@ func InitFirebase() {
 		log.Fatalf("Error initializing Firebase: %v", err)
 	}
 	FirebaseApp = app
+
+	AuthMiddleware = FirebaseAuthMiddleware(UserService)
 }

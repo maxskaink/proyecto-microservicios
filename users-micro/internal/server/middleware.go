@@ -9,6 +9,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -25,7 +27,7 @@ func CORSMiddleware() gin.HandlerFunc {
 	return cors.New(cfg)
 }
 
-func FirebaseAuthMiddleware() gin.HandlerFunc {
+func FirebaseAuthMiddleware(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
@@ -48,8 +50,32 @@ func FirebaseAuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		// Guardamos el UID del usuario en el contexto
+		email, _ := token.Claims["email"].(string)
+		name := strings.Split(email, "@")[0]
+
+		user, err := userService.GetUserByUUID(token.UID)
+
+		if err != nil {
+			// Si el usuario no existe, crearlo
+			newUser := dto.UserRequest{
+				FirebaseUID: token.UID,
+				Email:       email,
+				Name:        name,
+			}
+			fmt.Printf("Creando usuario con email %s, y nombre %s \n", email, name)
+			_, err := userService.CreateUser(newUser)
+			if err != nil {
+				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error al crear el usuario" + err.Error()})
+				return
+			}
+		} else {
+			name = user.Name
+		}
+
+		c.Set("name", name)
 		c.Set("uid", token.UID)
+		c.Set("email", email)
+
 		c.Next()
 	}
 }

@@ -8,10 +8,8 @@ import (
 // RegisterRoutes registra controladores en el router base.
 func RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/api/v1")
-	// TODO: agregar AuthMiddleware() cuando se integre Firebase
 
-	controllers.NewUserController().RegisterRoutes(api)
-	controllers.NewOrderController().RegisterRoutes(api)
+	controllers.NewUserController(UserService).RegisterRoutes(api, AuthMiddleware)
 	controllers.NewProfileController().RegisterRoutes(api)
-	controllers.NewTestController().RegisterRoutes(api, FirebaseAuthMiddleware())
+	controllers.NewTestController().RegisterRoutes(api, AuthMiddleware)
 }

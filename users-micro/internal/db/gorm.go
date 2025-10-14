@@ -3,8 +3,10 @@ package db
 import (
 	"context"
 	"fmt"
+	"log"
 	"os"
 
+	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -25,6 +27,13 @@ func NewGormDBProvider() (*GormDBProvider, error) {
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		return nil, fmt.Errorf("error al conectar a la base de datos: %w", err)
+	}
+
+	if err := db.AutoMigrate(
+		&db_models.UserDB{},
+		&db_models.ProfileDB{},
+	); err != nil {
+		log.Fatalf("Error al migrar las tablas: %v", err)
 	}
 
 	return &GormDBProvider{db: db}, nil

@@ -7,6 +7,7 @@ bin/
 *.dylib
 *.test
 *.out
+tmp
 
 # IDE/editor
 .vscode/

@@ -1,6 +1,8 @@
 package repositories
 
 import (
+	"time"
+
 	db_mappers "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/mappers"
 	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
@@ -69,14 +71,34 @@ func (r *userRepository) FindByUUID(id string) (*dto.UserResponse, error) {
 }
 
 // Update actualiza un usuario existente en la base de datos.
-func (r *userRepository) Update(id string, u *dto.UserRequest) error {
+func (r *userRepository) Update(id string, u *dto.UserRequest) (*dto.UserResponse, error) {
 	var user db_models.UserDB
-	if err := r.db.First(&user, "id = ?", id).Error; err != nil {
-		return err
+	if err := r.db.Preload("Profile").First(&user, "id = ?", id).Error; err != nil {
+		return nil, err
 	}
+
 	user.Name = u.Name
 	user.Email = u.Email
-	return r.db.Save(&user).Error
+
+	if u.Profile != nil {
+
+		if err := r.db.Model(&user.Profile).Updates(db_models.ProfileDB{
+			Address:   u.Profile.Address,
+			Phone:     u.Profile.Phone,
+			AvatarURL: u.Profile.AvatarURL,
+		}).Error; err != nil {
+			return nil, err
+		}
+
+	}
+
+	user.UpdatedAt = time.Now()
+
+	if err := r.db.Save(&user).Error; err != nil {
+		return nil, err
+	}
+
+	return db_mappers.UserModelToDto(&user), nil
 }
 
 // Delete elimina un usuario por su ID.

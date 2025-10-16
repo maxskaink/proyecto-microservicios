@@ -9,7 +9,7 @@ type UserRepository interface {
 	Create(u *dto.UserRequest) (*dto.UserResponse, error)
 	FindByID(id string) (*dto.UserResponse, error)
 	FindByUUID(uuid string) (*dto.UserResponse, error)
-	Update(id string, u *dto.UserRequest) error
+	Update(id string, u *dto.UserRequest) (*dto.UserResponse, error)
 	Delete(id string) error
 }
 

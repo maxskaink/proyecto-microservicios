@@ -24,29 +24,27 @@ func NewUserController(userService services.UserService) *UserController {
 func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFunc) {
 	users := rg.Group("/users")
 	{
-		users.GET("/:id", auth, uc.GetUserByID)
-		users.GET("/uid/:id", auth, uc.GetUserByUUID)
+		users.GET("/me", auth, uc.GetInfoUser)
 		users.PUT("/:id", auth, uc.UpdateUser)
-		users.DELETE("/:id", auth, uc.DeleteUser)
 	}
+
 }
 
 // GetUserByID maneja GET /users/:id.
-func (uc *UserController) GetUserByID(c *gin.Context) {
-	id := c.Param("id")
-	user, err := uc.UserService.GetUserByID(id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado"})
-		return
-	}
-	c.JSON(http.StatusOK, user)
-}
+func (uc *UserController) GetInfoUser(c *gin.Context) {
+	user_uid := c.GetString("uid") //Should have token because the middleware
 
-func (uc *UserController) GetUserByUUID(c *gin.Context) {
-	id := c.Param("id")
-	user, err := uc.UserService.GetUserByUUID(id)
+	if user_uid == "" {
+		c.JSON(
+			dto.NewErrorDTO(
+				http.StatusInternalServerError,
+				"uid vacio, no deberia de haber entrado sin uid",
+			))
+	}
+
+	user, err := uc.UserService.GetUserByUUID(user_uid)
 	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Usuario no encontrado con uid " + id})
+		c.JSON(dto.NewErrorDTO(http.StatusNotFound, "Usuario no encontrado"))
 		return
 	}
 	c.JSON(http.StatusOK, user)
@@ -57,24 +55,20 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	var userRequest dto.UserRequest
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Datos inválidos"})
+		c.JSON(dto.NewErrorDTO(http.StatusBadRequest, "Datos inválidos"))
 		return
 	}
 
-	userResponse, err := uc.UserService.UpdateUser(id, userRequest)
+	uid_requester := c.GetString("uid") // Should have it for the auth
+
+	if uid_requester == "" {
+		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, "uid vacio, no deberia de haber entrado sin uid"))
+	}
+
+	userResponse, err := uc.UserService.UpdateUser(id, userRequest, uid_requester)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al actualizar el usuario"})
+		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, "Error al actualizar el usuario"))
 		return
 	}
 	c.JSON(http.StatusOK, userResponse)
-}
-
-// DeleteUser maneja DELETE /users/:id.
-func (uc *UserController) DeleteUser(c *gin.Context) {
-	id := c.Param("id")
-	if err := uc.UserService.DeleteUser(id); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error al eliminar el usuario"})
-		return
-	}
-	c.JSON(http.StatusNoContent, nil)
 }

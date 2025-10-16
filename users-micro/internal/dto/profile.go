@@ -3,7 +3,7 @@ package dto
 import "time"
 
 type ProfileRequest struct {
-	UserID    string `json:"user_id" binding:"required"`
+	UserID    string `json:"user_id"`
 	Address   string `json:"address" binding:"required"`
 	Phone     string `json:"phone" binding:"required"`
 	AvatarURL string `json:"avatar_url" binding:"required"`

@@ -16,3 +16,13 @@ func ProfileModelToDto(model *db_models.ProfileDB) *dto.ProfileResponse {
 		UpdatedAt: model.UpdatedAt,
 	}
 }
+
+func ProfileDtoToModel(dto *dto.ProfileRequest) *db_models.ProfileDB {
+	return &db_models.ProfileDB{
+		ID:        dto.UserID,
+		UserID:    dto.UserID,
+		Address:   dto.Address,
+		Phone:     dto.Phone,
+		AvatarURL: dto.AvatarURL,
+	}
+}

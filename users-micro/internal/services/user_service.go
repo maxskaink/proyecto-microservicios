@@ -25,6 +25,10 @@ func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 		return dto.UserResponse{}, fmt.Errorf("el email y el nombre son obligatorios")
 	}
 
+	if u.FirebaseUID == "" {
+		return dto.UserResponse{}, fmt.Errorf("el uid de firebase no puede estar vacio")
+	}
+
 	u.Rol = domain.UserRoleClient
 	// Llamar al repositorio para crear el usuario
 	userCreated, err := s.userRepo.Create(&u)
@@ -61,10 +65,22 @@ func (s *userService) GetUserByUUID(id string) (dto.UserResponse, error) {
 	return *user, nil
 }
 
-// UpdateUser actualiza un usuario existente.
-func (s *userService) UpdateUser(id string, u dto.UserRequest) (dto.UserResponse, error) {
-	// TODO: Implementar la lógica de negocio para actualizar un usuario.
-	return dto.UserResponse{}, nil
+// UpdateUser actualiza un usuario existente. uid to know if has permission
+func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.UserResponse, error) {
+
+	user_to_update, err := s.userRepo.FindByID(id)
+
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+
+	if user_to_update.FirebaseUID != uid {
+		return dto.UserResponse{}, fmt.Errorf("el usuario con uid %s, no tiene permisos para editar al usuario con uid %s", uid, id)
+	}
+
+	response, err := s.userRepo.Update(id, &u)
+
+	return *response, err
 }
 
 // DeleteUser elimina un usuario por su ID.

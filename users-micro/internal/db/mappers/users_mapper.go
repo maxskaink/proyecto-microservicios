@@ -12,15 +12,17 @@ func UserDtoToModel(dto *dto.UserRequest) *db_models.UserDB {
 		Email:       dto.Email,
 		Name:        dto.Name,
 		Rol:         string(dto.Rol),
+		Profile:     *ProfileDtoToModel(dto.Profile),
 	}
 }
 
 func UserModelToDto(model *db_models.UserDB) *dto.UserResponse {
 	return &dto.UserResponse{
-		ID:      model.ID,
-		Email:   model.Email,
-		Name:    model.Name,
-		Rol:     domain.UserRole(model.Rol),
-		Profile: *ProfileModelToDto(&model.Profile),
+		ID:          model.ID,
+		FirebaseUID: model.FirebaseUID,
+		Email:       model.Email,
+		Name:        model.Name,
+		Rol:         domain.UserRole(model.Rol),
+		Profile:     *ProfileModelToDto(&model.Profile),
 	}
 }

@@ -7,13 +7,6 @@ type UserService interface {
 	CreateUser(u dto.UserRequest) (dto.UserResponse, error)
 	GetUserByID(id string) (dto.UserResponse, error)
 	GetUserByUUID(id string) (dto.UserResponse, error)
-	UpdateUser(id string, u dto.UserRequest) (dto.UserResponse, error)
+	UpdateUser(id string, u dto.UserRequest, uid string) (dto.UserResponse, error)
 	DeleteUser(id string) error
-}
-
-// ProfileService define la lógica de negocio para perfiles de usuario.
-type ProfileService interface {
-	CreateProfile(p dto.ProfileRequest) (dto.ProfileResponse, error)
-	GetProfileByUserID(userID string) (dto.ProfileResponse, error)
-	UpdateProfile(userID string, p dto.ProfileRequest) (dto.ProfileResponse, error)
 }

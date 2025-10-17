@@ -14,7 +14,11 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
-    "paths": {}
+    "paths": {
+      "micro_user/Routes": [
+        "apps/micro_user/src/app/remote-entry/entry.routes.ts"
+      ]
+    }
   },
   "exclude": ["node_modules", "tmp"]
 }

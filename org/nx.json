@@ -45,6 +45,17 @@
           "codeCoverage": true
         }
       }
+    },
+    "@nx/angular:webpack-browser": {
+      "cache": true,
+      "dependsOn": ["^build"],
+      "inputs": [
+        "production",
+        "^production",
+        {
+          "env": "NX_MF_DEV_REMOTES"
+        }
+      ]
     }
   },
   "plugins": [
@@ -61,6 +72,12 @@
       "plugin": "@nx/eslint/plugin",
       "options": {
         "targetName": "lint"
+      }
+    },
+    {
+      "plugin": "@nx/playwright/plugin",
+      "options": {
+        "targetName": "e2e"
       }
     }
   ],

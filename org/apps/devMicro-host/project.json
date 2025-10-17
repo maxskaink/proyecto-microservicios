@@ -8,12 +8,16 @@
   "targets": {
     "build": {
       "executor": "@angular-devkit/build-angular:browser",
-      "outputs": ["{options.outputPath}"],
+      "outputs": [
+        "{options.outputPath}"
+      ],
       "options": {
-        "outputPath": "dist/apps/devMicro-host",
+        "outputPath": "dist/devMicro-host/browser",
         "index": "apps/devMicro-host/src/index.html",
         "main": "apps/devMicro-host/src/main.ts",
-        "polyfills": ["zone.js"],
+        "polyfills": [
+          "zone.js"
+        ],
         "tsConfig": "apps/devMicro-host/tsconfig.app.json",
         "inlineStyleLanguage": "scss",
         "assets": [
@@ -22,7 +26,9 @@
             "input": "apps/devMicro-host/public"
           }
         ],
-        "styles": ["apps/devMicro-host/src/styles.scss"]
+        "styles": [
+          "apps/devMicro-host/src/styles.scss"
+        ]
       },
       "configurations": {
         "production": {
@@ -75,7 +81,9 @@
     },
     "test": {
       "executor": "@nx/jest:jest",
-      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "outputs": [
+        "{workspaceRoot}/coverage/{projectRoot}"
+      ],
       "options": {
         "jestConfig": "apps/devMicro-host/jest.config.ts",
         "tsConfig": "apps/devMicro-host/tsconfig.spec.json"
@@ -89,6 +97,28 @@
         "port": 4200,
         "spa": true
       }
+    },
+    "server": {
+      "executor": "@angular-devkit/build-angular:server",
+      "options": {
+        "outputPath": "dist/devMicro-host/server",
+        "main": "apps/devMicro-host/src/main.server.ts",
+        "tsConfig": "apps/devMicro-host/tsconfig.server.json",
+        "inlineStyleLanguage": "scss"
+      },
+      "configurations": {
+        "production": {
+          "outputHashing": "media"
+        },
+        "development": {
+          "buildOptimizer": false,
+          "optimization": false,
+          "sourceMap": true,
+          "extractLicenses": false,
+          "vendorChunk": true
+        }
+      },
+      "defaultConfiguration": "production"
     }
   }
 }

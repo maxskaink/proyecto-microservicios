@@ -67,7 +67,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 
 	userResponse, err := uc.UserService.UpdateUser(id, userRequest, uid_requester)
 	if err != nil {
-		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, "Error al actualizar el usuario"))
+		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, err.Error()))
 		return
 	}
 	c.JSON(http.StatusOK, userResponse)

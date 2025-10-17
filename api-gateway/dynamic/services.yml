@@ -1,0 +1,32 @@
+http:
+  routers:
+    # Router para el microservicio de usuarios
+    users:
+      rule: "PathPrefix(`/api/users`)"
+      service: "users-service"
+      entrypoints:
+        - web
+      middlewares:
+        - strip-prefix
+    dashboard:
+      rule: "PathPrefix(`/dashboard`)"
+      service: "api@internal"
+      entrypoints:
+        - dashboard
+      priority: 10
+
+  middlewares:
+    strip-prefix:
+      stripPrefix:
+        prefixes: ["/api"]
+
+  services:
+    # Definición del servicio de usuarios (respaldo)
+    users-service:
+      loadBalancer:
+        servers:
+          - url: "http://users_api:8080"
+        healthCheck:
+          path: /health
+          interval: "10s"
+          timeout: "3s"

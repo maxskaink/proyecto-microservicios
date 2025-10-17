@@ -7,9 +7,7 @@ import (
 
 // RegisterRoutes registra controladores en el router base.
 func RegisterRoutes(r *gin.Engine) {
-	api := r.Group("/api/v1")
+	api := r.Group("")
 
 	controllers.NewUserController(UserService).RegisterRoutes(api, AuthMiddleware)
-	controllers.NewProfileController().RegisterRoutes(api)
-	controllers.NewTestController().RegisterRoutes(api, AuthMiddleware)
 }

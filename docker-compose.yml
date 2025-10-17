@@ -1,6 +1,37 @@
 version: "3.9"
 
 services:
+  # API Gateway con Traefik
+  api-gateway:
+    build:
+      context: ./api-gateway
+    container_name: api_gateway
+    ports:
+      - "80:80"     # Puerto HTTP principal
+      - "8090:8090" # Dashboard de Traefik
+    volumes:
+      - ./api-gateway/dynamic:/etc/traefik/dynamic:ro,z
+    depends_on:
+      - consul
+    restart: unless-stopped
+    networks:
+      - micro-network
+
+  # Servicio de descubrimiento con Consul
+  consul:
+    build:
+      context: ./service-discovery
+    container_name: consul
+    ports:
+      - "8500:8500"  # UI y API HTTP
+      - "8600:8600/udp"  # DNS
+    volumes:
+      - consul_data:/consul/data
+    restart: unless-stopped
+    networks:
+      - micro-network
+
+  # Base de datos (ya existente)
   db:
     image: postgres:16-alpine
     container_name: users_db
@@ -18,7 +49,10 @@ services:
       timeout: 3s
       retries: 5
     restart: unless-stopped
+    networks:
+      - micro-network
 
+  # Microservicio de usuarios (ya existente)
   users_api:
     build:
       context: ./users-micro
@@ -27,16 +61,28 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      consul:
+        condition: service_started
     environment:
       PORT: "8080"
       DATABASE_URL: "postgres://users:userspass@db:5432/users_db?sslmode=disable"
       FIREBASE_PROJECT_ID: "local-project"
-    ports:
-      - "8080:8080"
+      # Etiquetas para identificación de servicio
+      SERVICE_NAME: "users-service"
+      SERVICE_TAGS: "users,api"
+      CONSUL_HTTP_ADDR: "consul:8500"
+      TRAEFIK_ENABLE: "true"
     volumes:
       - ./users-micro:/app:Z
     command: air -c .air.toml
     user: "${UID}:${GID}"
+    networks:
+      - micro-network
 
 volumes:
   db_data:
+  consul_data:
+
+networks:
+  micro-network:
+    driver: bridge

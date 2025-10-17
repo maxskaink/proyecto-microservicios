@@ -7,22 +7,36 @@ import (
 )
 
 func UserDtoToModel(dto *dto.UserRequest) *db_models.UserDB {
+	var profile db_models.ProfileDB
+	if dto != nil && dto.Profile != nil {
+		if p := ProfileDtoToModel(dto.Profile); p != nil {
+			profile = *p
+		}
+	}
+
 	return &db_models.UserDB{
 		FirebaseUID: dto.FirebaseUID,
 		Email:       dto.Email,
 		Name:        dto.Name,
 		Rol:         string(dto.Rol),
-		Profile:     *ProfileDtoToModel(dto.Profile),
+		Profile:     profile,
 	}
 }
 
 func UserModelToDto(model *db_models.UserDB) *dto.UserResponse {
+	var profile dto.ProfileResponse
+	if model != nil {
+		if p := ProfileModelToDto(&model.Profile); p != nil {
+			profile = *p
+		}
+	}
+
 	return &dto.UserResponse{
 		ID:          model.ID,
 		FirebaseUID: model.FirebaseUID,
 		Email:       model.Email,
 		Name:        model.Name,
 		Rol:         domain.UserRole(model.Rol),
-		Profile:     *ProfileModelToDto(&model.Profile),
+		Profile:     profile,
 	}
 }

@@ -71,7 +71,7 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 	user_to_update, err := s.userRepo.FindByID(id)
 
 	if err != nil {
-		return dto.UserResponse{}, err
+		return dto.UserResponse{}, fmt.Errorf("el usuario no existe")
 	}
 
 	if user_to_update.FirebaseUID != uid {

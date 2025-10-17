@@ -1,0 +1,211 @@
+{
+  "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
+  "version": 1,
+  "newProjectRoot": "projects",
+  "projects": {
+    "mf-shell": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/mf-shell",
+      "sourceRoot": "projects/mf-shell/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/mf-shell/src/main.ts",
+            "tsConfig": "projects/mf-shell/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/mf-shell/public"
+              }
+            ],
+            "styles": [
+              "projects/mf-shell/src/styles.scss"
+            ],
+            "server": "projects/mf-shell/src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "projects/mf-shell/src/server.ts"
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mf-shell:build:production"
+            },
+            "development": {
+              "buildTarget": "mf-shell:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/mf-shell/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/mf-shell/public"
+              }
+            ],
+            "styles": [
+              "projects/mf-shell/src/styles.scss"
+            ]
+          }
+        }
+      }
+    },
+    "mf-micro-user": {
+      "projectType": "application",
+      "schematics": {
+        "@schematics/angular:component": {
+          "style": "scss"
+        }
+      },
+      "root": "projects/mf-micro-user",
+      "sourceRoot": "projects/mf-micro-user/src",
+      "prefix": "app",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:application",
+          "options": {
+            "browser": "projects/mf-micro-user/src/main.ts",
+            "tsConfig": "projects/mf-micro-user/tsconfig.app.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/mf-micro-user/public"
+              }
+            ],
+            "styles": [
+              "projects/mf-micro-user/src/styles.scss"
+            ],
+            "server": "projects/mf-micro-user/src/main.server.ts",
+            "outputMode": "server",
+            "ssr": {
+              "entry": "projects/mf-micro-user/src/server.ts"
+            }
+          },
+          "configurations": {
+            "production": {
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "500kB",
+                  "maximumError": "1MB"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "4kB",
+                  "maximumError": "8kB"
+                }
+              ],
+              "outputHashing": "all"
+            },
+            "development": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "serve": {
+          "builder": "@angular/build:dev-server",
+          "configurations": {
+            "production": {
+              "buildTarget": "mf-micro-user:build:production"
+            },
+            "development": {
+              "buildTarget": "mf-micro-user:build:development"
+            }
+          },
+          "defaultConfiguration": "development"
+        },
+        "extract-i18n": {
+          "builder": "@angular/build:extract-i18n"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/mf-micro-user/tsconfig.spec.json",
+            "inlineStyleLanguage": "scss",
+            "assets": [
+              {
+                "glob": "**/*",
+                "input": "projects/mf-micro-user/public"
+              }
+            ],
+            "styles": [
+              "projects/mf-micro-user/src/styles.scss"
+            ]
+          }
+        }
+      }
+    },
+    "commons-lib": {
+      "projectType": "library",
+      "root": "projects/commons-lib",
+      "sourceRoot": "projects/commons-lib/src",
+      "prefix": "lib",
+      "architect": {
+        "build": {
+          "builder": "@angular/build:ng-packagr",
+          "configurations": {
+            "production": {
+              "tsConfig": "projects/commons-lib/tsconfig.lib.prod.json"
+            },
+            "development": {
+              "tsConfig": "projects/commons-lib/tsconfig.lib.json"
+            }
+          },
+          "defaultConfiguration": "production"
+        },
+        "test": {
+          "builder": "@angular/build:karma",
+          "options": {
+            "tsConfig": "projects/commons-lib/tsconfig.spec.json"
+          }
+        }
+      }
+    }
+  }
+}

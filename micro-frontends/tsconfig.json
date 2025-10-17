@@ -1,0 +1,51 @@
+/* To learn more about Typescript configuration file: https://www.typescriptlang.org/docs/handbook/tsconfig-json.html. */
+/* To learn more about Angular compiler options: https://angular.dev/reference/configs/angular-compiler-options. */
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "paths": {
+      "commons-lib": [
+        "projects/commons-lib/src/public-api.ts"
+      ]
+    },
+    "strict": true,
+    "noImplicitOverride": true,
+    "noPropertyAccessFromIndexSignature": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "experimentalDecorators": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "preserve"
+  },
+  "angularCompilerOptions": {
+    "enableI18nLegacyMessageIdFormat": false,
+    "strictInjectionParameters": true,
+    "strictInputAccessModifiers": true,
+    "typeCheckHostBindings": true,
+    "strictTemplates": true
+  },
+  "files": [],
+  "references": [
+    {
+      "path": "./projects/mf-shell/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/mf-shell/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/mf-micro-user/tsconfig.app.json"
+    },
+    {
+      "path": "./projects/mf-micro-user/tsconfig.spec.json"
+    },
+    {
+      "path": "./projects/commons-lib/tsconfig.lib.json"
+    },
+    {
+      "path": "./projects/commons-lib/tsconfig.spec.json"
+    }
+  ]
+}

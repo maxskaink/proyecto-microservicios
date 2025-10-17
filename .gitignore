@@ -1,1 +1,106 @@
 *.env.*
+# ======================================
+# 🔹 Node & Angular
+# ======================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+
+# Build outputs
+/dist/
+/out-tsc/
+/coverage/
+/tmp/
+/.cache/
+/.angular/
+/.bazel/
+
+# ======================================
+# 🔹 Monorepo (apps y libs)
+# ======================================
+# Ignorar builds dentro de projects/
+projects/**/dist/
+/projects/**/out-tsc/
+/projects/**/coverage/
+/projects/**/tmp/
+
+# Ignorar environments dentro de libs o apps
+projects/**/src/environments/environment*.ts
+
+# ======================================
+# 🔹 IDEs y editores
+# ======================================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ======================================
+# 🔹 Sistema Operativo
+# ======================================
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# ======================================
+# 🔹 Environments & Credenciales
+# ======================================
+src/environments/environment*.ts
+
+# Firebase o claves privadas
+.firebase/
+.firebaserc
+firebase-debug.log
+firebase-debug.*.log
+firebase.json
+storage-debug.log
+.serviceAccountKey.json
+*.secret.json
+*.credentials.json
+
+# ======================================
+# 🔹 Docker
+# ======================================
+# Ignorar archivos temporales de Docker builds
+**/docker-compose.override.yml
+**/Dockerfile.dev
+**/docker-cache/
+**/.docker/
+
+# ======================================
+# 🔹 Misceláneos
+# ======================================
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+
+# ======================================
+# 🔹 TypeScript / Compilación
+# ======================================
+*.js
+*.map
+*.d.ts
+
+# ======================================
+# 🔹 Testing
+# ======================================
+/test-results/
+/karma-results/
+/jest-results/
+.nyc_output/
+
+# ======================================
+# 🔹 Angular Schematics / Cache
+# ======================================
+.angular/cache/
+.angular/local/
+
+# ======================================
+# 🔹 Firebase Hosting (opcional)
+# ======================================
+

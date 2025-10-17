@@ -37,11 +37,7 @@ func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 	}
 
 	// Retornar el usuario creado como respuesta
-	return dto.UserResponse{
-		ID:    userCreated.ID, // Esto debería venir del repositorio
-		Email: u.Email,
-		Name:  u.Name,
-	}, nil
+	return *userCreated, nil
 }
 
 // GetUserByID obtiene un usuario por su ID.
@@ -85,6 +81,7 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 
 // DeleteUser elimina un usuario por su ID.
 func (s *userService) DeleteUser(id string) error {
-	// TODO: Implementar la lógica de negocio para eliminar un usuario.
+	//Is missing the validation of authorization
+	s.userRepo.Delete(id)
 	return nil
 }

@@ -25,7 +25,8 @@ func (r *userRepository) Create(u *dto.UserRequest) (*dto.UserResponse, error) {
 	err := r.db.Transaction(func(tx *gorm.DB) error {
 		user := db_mappers.UserDtoToModel(u)
 
-		if err := tx.Create(user).Error; err != nil {
+		// Evitar que GORM intente crear la relación Profile automáticamente
+		if err := tx.Omit("Profile").Create(user).Error; err != nil {
 			return err
 		}
 

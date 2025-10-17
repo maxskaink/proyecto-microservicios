@@ -8,10 +8,10 @@ type UserDB struct {
 	Email       string     `gorm:"uniqueIndex;size:255;not null"`                  // Email único
 	Name        string     `gorm:"size:255;not null"`                              // Nombre del usuario
 	Rol         string     `gorm:"size:50"`
-	CreatedAt   time.Time  `gorm:"autoCreateTime"`                                                                // Fecha de creación
-	UpdatedAt   time.Time  `gorm:"autoUpdateTime"`                                                                // Fecha de actualización
-	DeletedAt   *time.Time `gorm:"index"`                                                                         // Fecha de eliminación (soft delete)
-	Profile     ProfileDB  `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"` // Relación uno a uno con ProfileDB
+	CreatedAt   time.Time  `gorm:"autoCreateTime"`                                                               // Fecha de creación
+	UpdatedAt   time.Time  `gorm:"autoUpdateTime"`                                                               // Fecha de actualización
+	DeletedAt   *time.Time `gorm:"index"`                                                                        // Fecha de eliminación (soft delete)
+	Profile     ProfileDB  `gorm:"foreignKey:UserID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE"` // Relación uno a uno con ProfileDB
 }
 
 type ProfileDB struct {

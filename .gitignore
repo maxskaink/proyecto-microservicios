@@ -103,4 +103,5 @@ storage-debug.log
 # ======================================
 # 🔹 Firebase Hosting (opcional)
 # ======================================
-
+.nx/workspace-data
+.nx/results

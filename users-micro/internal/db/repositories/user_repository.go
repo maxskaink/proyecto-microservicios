@@ -103,6 +103,16 @@ func (r *userRepository) Update(id string, u *dto.UserRequest) (*dto.UserRespons
 	return db_mappers.UserModelToDto(&user), nil
 }
 
+// Update the rol of a user
+func (r *userRepository) UpdateRol(id string, rol string) (*dto.UserResponse, error) {
+
+	if err := r.db.Model(&db_models.UserDB{}).Where("id = ?", id).Update("rol", rol).Error; err != nil {
+		return nil, db.ParseDBError(err)
+	}
+
+	return r.FindByID(id)
+}
+
 // Delete elimina un usuario por su ID.
 func (r *userRepository) Delete(id string) error {
 	return db.ParseDBError(r.db.Delete(&db_models.UserDB{}, "id = ?", id).Error)

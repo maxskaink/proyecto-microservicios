@@ -1,6 +1,9 @@
 package domain
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 type UserRole string
 
@@ -9,6 +12,12 @@ const (
 	UserRoleProducer UserRole = "producer"
 	UserRoleClient   UserRole = "client"
 )
+
+var ValidRoles = []UserRole{
+	UserRoleAdmin,
+	UserRoleProducer,
+	UserRoleClient,
+}
 
 type User struct {
 	ID          string
@@ -37,4 +46,12 @@ func IsValidUserRole(role string) bool {
 	default:
 		return false
 	}
+}
+
+func StringValidRoles() string {
+	roles := make([]string, len(ValidRoles))
+	for i, role := range ValidRoles {
+		roles[i] = string(role)
+	}
+	return strings.Join(roles, ", ")
 }

@@ -27,6 +27,8 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFu
 	{
 		users.GET("/me", auth, uc.GetInfoUser)
 		users.PUT("/:id", auth, uc.UpdateUser)
+		users.PATCH("/:id/rol", auth, uc.UpdateRolUser)
+
 	}
 
 }
@@ -69,5 +71,37 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		handleUserError(c, err)
 		return
 	}
+	c.JSON(http.StatusOK, userResponse)
+}
+
+func (uc *UserController) UpdateRolUser(c *gin.Context) {
+	// Obtener ID del usuario a modificar
+	id := c.Param("id")
+
+	// Definir la estructura para recibir los datos
+	type RolUpdateRequest struct {
+		Rol string `json:"rol" binding:"required"`
+	}
+
+	// Verificar que el usuario que solicita el cambio esté autenticado
+	uid_requester := c.GetString("uid")
+	if uid_requester == "" {
+		handleUserError(c, domain.InternalServerError{Message: "uid vacío, no debería haber entrado sin uid"})
+		return
+	}
+
+	// Parsear la solicitud
+	var request RolUpdateRequest
+	if err := c.ShouldBindJSON(&request); err != nil {
+		handleUserError(c, domain.BadRequestError{Message: "Formato inválido: " + err.Error()})
+		return
+	}
+	// Actualizar el rol
+	userResponse, err := uc.UserService.UpdateRol(id, domain.UserRole(request.Rol), uid_requester)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+
 	c.JSON(http.StatusOK, userResponse)
 }

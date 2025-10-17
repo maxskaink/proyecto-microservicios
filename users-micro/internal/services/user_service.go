@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
@@ -55,7 +53,6 @@ func (s *userService) GetUserByID(id string) (dto.UserResponse, error) {
 
 func (s *userService) GetUserByUUID(id string) (dto.UserResponse, error) {
 	user, err := s.userRepo.FindByUUID(id)
-
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -68,11 +65,11 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 	user_to_update, err := s.userRepo.FindByID(id)
 
 	if err != nil {
-		return dto.UserResponse{}, fmt.Errorf("el usuario no existe")
+		return dto.UserResponse{}, domain.NotFoundError{Message: "El usuario con id " + id + " no existe"}
 	}
 
 	if user_to_update.FirebaseUID != uid {
-		return dto.UserResponse{}, fmt.Errorf("el usuario con uid %s, no tiene permisos para editar al usuario con uid %s", uid, id)
+		return dto.UserResponse{}, domain.NotFoundError{Message: "El usuario no tiene permisos para editar el usuario"}
 	}
 
 	response, err := s.userRepo.Update(id, &u)
@@ -83,16 +80,31 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 // DeleteUser elimina un usuario por su ID.
 func (s *userService) DeleteUser(id string) error {
 	//Is missing the validation of authorization
-	s.userRepo.Delete(id)
-	return nil
+	return s.userRepo.Delete(id)
 }
 
-// Update the rol of a user
-func (s *userService) UpdateRol(id string, rol domain.UserRole) (dto.UserResponse, error) {
+// Update the rol of a user - uid of how are tring to change the rol
+func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester string) (dto.UserResponse, error) {
 	//Validate the rol
 	if !domain.IsValidUserRole(string(rol)) {
-		return dto.UserResponse{}, fmt.Errorf("El rol no es valido")
+		return dto.UserResponse{}, domain.InvalidInputError{Message: "El rol debe ser: " + domain.StringValidRoles()}
+	}
+	//Validate athorization
+	// Validar el rol del usuario solicitante (solo administradores pueden cambiar roles)
+	requester, err := s.GetUserByUUID(uid_requester)
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+
+	// Verificar si el usuario es administrador
+	if string(requester.Rol) != string(domain.UserRoleAdmin) {
+		return dto.UserResponse{}, domain.UnauthorizedError{Message: "Solo administradores pueden cambiar roles de usuario"}
 	}
 	//Validate if the user exist
-	return dto.UserResponse{}, nil
+	updated_user, err := s.userRepo.UpdateRol(id, string(rol))
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+	return *updated_user, err
+
 }

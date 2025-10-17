@@ -10,12 +10,6 @@ type UserRepository interface {
 	FindByID(id string) (*dto.UserResponse, error)
 	FindByUUID(uuid string) (*dto.UserResponse, error)
 	Update(id string, u *dto.UserRequest) (*dto.UserResponse, error)
+	UpdateRol(id string, rol string) (*dto.UserResponse, error)
 	Delete(id string) error
-}
-
-// ProfileRepository define operaciones de persistencia para perfiles.
-type ProfileRepository interface {
-	Create(p *dto.ProfileRequest) error
-	FindByUserID(userID string) (*dto.ProfileResponse, error)
-	Update(p *dto.ProfileRequest) error
 }

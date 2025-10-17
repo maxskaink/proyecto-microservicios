@@ -19,6 +19,8 @@ func handleUserError(c *gin.Context, err error) {
 		c.JSON(dto.NewErrorDTO(http.StatusUnauthorized, err.Error()))
 	case domain.ConflictError:
 		c.JSON(dto.NewErrorDTO(http.StatusConflict, err.Error()))
+	case domain.InvalidInputError:
+		c.JSON(dto.NewErrorDTO(http.StatusBadRequest, err.Error()))
 	default:
 		logger.Error("Internal Server Error:" + err.Error())
 		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, "Internal Server Error"))

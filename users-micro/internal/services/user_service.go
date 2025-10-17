@@ -22,14 +22,15 @@ func NewUserService(userRepo repositories.UserRepository) UserService {
 func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 	// Validar los datos del usuario
 	if u.Email == "" || u.Name == "" {
-		return dto.UserResponse{}, fmt.Errorf("el email y el nombre son obligatorios")
+		return dto.UserResponse{}, domain.BadRequestError{Message: "El email y nombre no pueden estar vacios"}
 	}
 
 	if u.FirebaseUID == "" {
-		return dto.UserResponse{}, fmt.Errorf("el uid de firebase no puede estar vacio")
+		return dto.UserResponse{}, domain.BadRequestError{Message: "El id de firebase no puede estar vacio"}
 	}
 
-	u.Rol = domain.UserRoleClient
+	u.Rol = domain.UserRoleClient //Rol by default
+
 	// Llamar al repositorio para crear el usuario
 	userCreated, err := s.userRepo.Create(&u)
 	if err != nil {
@@ -84,4 +85,14 @@ func (s *userService) DeleteUser(id string) error {
 	//Is missing the validation of authorization
 	s.userRepo.Delete(id)
 	return nil
+}
+
+// Update the rol of a user
+func (s *userService) UpdateRol(id string, rol domain.UserRole) (dto.UserResponse, error) {
+	//Validate the rol
+	if !domain.IsValidUserRole(string(rol)) {
+		return dto.UserResponse{}, fmt.Errorf("El rol no es valido")
+	}
+	//Validate if the user exist
+	return dto.UserResponse{}, nil
 }

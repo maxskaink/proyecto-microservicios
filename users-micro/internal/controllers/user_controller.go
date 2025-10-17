@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 )
@@ -35,16 +36,13 @@ func (uc *UserController) GetInfoUser(c *gin.Context) {
 	user_uid := c.GetString("uid") //Should have token because the middleware
 
 	if user_uid == "" {
-		c.JSON(
-			dto.NewErrorDTO(
-				http.StatusInternalServerError,
-				"uid vacio, no deberia de haber entrado sin uid",
-			))
+		handleUserError(c, domain.InternalServerError{Message: "uid vacio, no deberia de haber entrado sin uid"})
+		return
 	}
 
 	user, err := uc.UserService.GetUserByUUID(user_uid)
 	if err != nil {
-		c.JSON(dto.NewErrorDTO(http.StatusNotFound, "Usuario no encontrado"))
+		handleUserError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, user)
@@ -55,19 +53,20 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 	id := c.Param("id")
 	var userRequest dto.UserRequest
 	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		c.JSON(dto.NewErrorDTO(http.StatusBadRequest, "Datos inválidos"))
+		handleUserError(c, domain.BadRequestError{Message: "Los datos son invalidos: " + err.Error()})
 		return
 	}
 
 	uid_requester := c.GetString("uid") // Should have it for the auth
 
 	if uid_requester == "" {
-		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, "uid vacio, no deberia de haber entrado sin uid"))
+		handleUserError(c, domain.InternalServerError{Message: "uid, vacio no deberia de haber entrado sin uid"})
+		return
 	}
 
 	userResponse, err := uc.UserService.UpdateUser(id, userRequest, uid_requester)
 	if err != nil {
-		c.JSON(dto.NewErrorDTO(http.StatusInternalServerError, err.Error()))
+		handleUserError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, userResponse)

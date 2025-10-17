@@ -3,6 +3,7 @@ package repositories
 import (
 	"time"
 
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
 	db_mappers "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/mappers"
 	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
@@ -43,7 +44,7 @@ func (r *userRepository) Create(u *dto.UserRequest) (*dto.UserResponse, error) {
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	userResp, err := r.FindByID(id)
@@ -55,7 +56,7 @@ func (r *userRepository) FindByID(id string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
 	if err := r.db.Preload("Profile").First(&user, "id = ?", id).Error; err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return db_mappers.UserModelToDto(&user), nil
@@ -65,7 +66,7 @@ func (r *userRepository) FindByUUID(id string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
 	if err := r.db.Preload("Profile").First(&user, "firebase_uid = ?", id).Error; err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return db_mappers.UserModelToDto(&user), nil
@@ -88,7 +89,7 @@ func (r *userRepository) Update(id string, u *dto.UserRequest) (*dto.UserRespons
 			Phone:     u.Profile.Phone,
 			AvatarURL: u.Profile.AvatarURL,
 		}).Error; err != nil {
-			return nil, err
+			return nil, db.ParseDBError(err)
 		}
 
 	}
@@ -96,7 +97,7 @@ func (r *userRepository) Update(id string, u *dto.UserRequest) (*dto.UserRespons
 	user.UpdatedAt = time.Now()
 
 	if err := r.db.Save(&user).Error; err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return db_mappers.UserModelToDto(&user), nil
@@ -104,5 +105,5 @@ func (r *userRepository) Update(id string, u *dto.UserRequest) (*dto.UserRespons
 
 // Delete elimina un usuario por su ID.
 func (r *userRepository) Delete(id string) error {
-	return r.db.Delete(&db_models.UserDB{}, "id = ?", id).Error
+	return db.ParseDBError(r.db.Delete(&db_models.UserDB{}, "id = ?", id).Error)
 }

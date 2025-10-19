@@ -1,0 +1,14 @@
+package domain
+
+import "time"
+
+// Order representa un pedido realizado por un usuario.
+type Order struct {
+	ID        string     `json:"id" gorm:"primaryKey;type:uuid"`
+	UserID    string     `json:"user_id" gorm:"index;type:uuid;not null"`
+	Status    string     `json:"status" gorm:"size:50;index"`
+	Total     float64    `json:"total"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at" gorm:"index"`
+}

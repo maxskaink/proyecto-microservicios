@@ -9,3 +9,6 @@ type IUserService interface {
 	GetUserByID(id string) (dto.UserResponse, error)
 	GetUserByUUID(id string) (dto.UserResponse, error)
 }
+
+type IProductService interface {
+}

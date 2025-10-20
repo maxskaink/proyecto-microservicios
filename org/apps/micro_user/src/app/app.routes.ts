@@ -1,9 +1,7 @@
 import { Route } from '@angular/router';
+import { Login } from './components/login_page/login';
 
 export const appRoutes: Route[] = [
-  {
-    path: '',
-    loadChildren: () =>
-      import('./remote-entry/entry.routes').then((m) => m.remoteRoutes),
-  },
+  { path: 'login', component: Login },
+  { path: '', redirectTo: 'login', pathMatch: 'full' },
 ];

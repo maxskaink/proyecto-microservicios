@@ -1,0 +1,22 @@
+basePath: /
+host: localhost:8080
+info:
+  contact: {}
+  description: Microservicio para la gestión de usuarios.
+  title: API Usuarios
+  version: "1.0"
+paths:
+  /api/v1/private:
+    get:
+      description: Say somethingc
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: ok
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: is a public controller
+swagger: "2.0"

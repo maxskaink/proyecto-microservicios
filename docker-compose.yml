@@ -32,17 +32,15 @@ services:
       - micro-network
 
   # Base de datos (ya existente)
-  db:
+  users_db:
     image: postgres:16-alpine
     container_name: users_db
     environment:
       POSTGRES_USER: users
       POSTGRES_PASSWORD: userspass
       POSTGRES_DB: users_db
-    ports:
-      - "5432:5432"
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - micro_db_data:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U users -d users_db"]
       interval: 3s
@@ -59,13 +57,13 @@ services:
       dockerfile: Dockerfile
     container_name: users_api
     depends_on:
-      db:
+      users_db:
         condition: service_healthy
       consul:
         condition: service_started
     environment:
       PORT: "8080"
-      DATABASE_URL: "postgres://users:userspass@db:5432/users_db?sslmode=disable"
+      DATABASE_URL: "postgres://users:userspass@users_db:5432/users_db?sslmode=disable"
       FIREBASE_PROJECT_ID: "local-project"
       # Etiquetas para identificación de servicio
       SERVICE_NAME: "users-service"
@@ -78,9 +76,26 @@ services:
     user: "${UID}:${GID}"
     networks:
       - micro-network
-
+  product_db:
+    image: postgres:16-alpine
+    container_name: product_db
+    environment:
+      POSTGRES_USER: product
+      POSTGRES_PASSWORD: productpass
+      POSTGRES_DB: product_db
+    volumes:
+      - product_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U product -d product_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - micro-network
 volumes:
-  db_data:
+  product_db_data:
+  micro_db_data:
   consul_data:
 
 networks:

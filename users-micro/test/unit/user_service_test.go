@@ -4,6 +4,7 @@ import (
 	"errors"
 	"testing"
 
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 	"github.com/stretchr/testify/assert"
@@ -57,7 +58,9 @@ func TestCreateUserValidationError(t *testing.T) {
 
 	// Assert
 	assert.Error(t, err)
-	assert.Contains(t, err.Error(), "email y el nombre son obligatorios")
+	var badRequestError domain.BadRequestError
+	isBadRequest := errors.As(err, &badRequestError)
+	assert.True(t, isBadRequest)
 	mockRepo.AssertNotCalled(t, "Create")
 }
 

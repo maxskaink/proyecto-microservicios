@@ -1,8 +1,8 @@
 package services
 
 import (
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 )
 
 // userService es la implementación de UserService.

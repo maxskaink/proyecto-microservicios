@@ -3,7 +3,7 @@ package dto
 import (
 	"time"
 
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
 )
 
 type ProductDTOResponse struct {

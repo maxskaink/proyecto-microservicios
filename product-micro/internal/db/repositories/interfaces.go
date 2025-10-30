@@ -1,6 +1,6 @@
 package repositories
 
-import "github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+import "github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 
 // UserRepository define operaciones de persistencia para usuarios.
 type IProductRepository interface {

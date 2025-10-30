@@ -7,8 +7,8 @@ import (
 	"log"
 	"os"
 
-	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
+	db_models "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/models"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )

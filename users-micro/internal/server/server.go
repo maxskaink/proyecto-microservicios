@@ -12,6 +12,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging/rabbitmq"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/server/discovery"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
@@ -22,6 +24,7 @@ import (
 // Services
 var UserService services.UserService
 var serviceRegistry *discovery.ServiceRegistration
+var msgPublisher messaging.Publisher
 
 // Repositories
 var UserRepository repositories.UserRepository
@@ -81,6 +84,26 @@ func Run() error {
 	return nil
 }
 
+func cleanup() {
+	logger.Info("Iniciando limpieza de recursos...")
+
+	// Cerrar publicador de mensajes
+	if msgPublisher != nil {
+		if err := msgPublisher.Close(); err != nil {
+			logger.Error(fmt.Sprintf("Error al cerrar publicador de mensajes: %v", err))
+		} else {
+			logger.Info("Publicador de mensajes cerrado correctamente")
+		}
+	}
+
+	// Desregistrar el servicio
+	if serviceRegistry != nil {
+		serviceRegistry.Deregister()
+	}
+
+	logger.Info("Limpieza finalizada")
+}
+
 func configDB() {
 	providerDB, err := db.NewGormDBProvider()
 
@@ -95,7 +118,19 @@ func configDB() {
 }
 
 func configServices() {
-	UserService = services.NewUserService(UserRepository)
+	// Inicializar el publicador de mensajes
+	factory := messaging.NewFactory(rabbitmq.DefaultConfig())
+	var err error
+	msgPublisher, err = factory.CreatePublisher()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error al crear publicador de mensajes: %v", err))
+		// Continuamos sin publicador si hay error
+		msgPublisher = nil
+	} else {
+		logger.Info("Publicador de mensajes inicializado correctamente")
+	}
+
+	UserService = services.NewUserService(UserRepository, msgPublisher)
 }
 
 func setupServiceDiscovery() {
@@ -141,16 +176,5 @@ func setupServiceDiscovery() {
 		logger.Error(fmt.Sprintf("Error al registrar el servicio en Consul: %v", err))
 	} else {
 		logger.Info("Servicio registrado correctamente en Consul")
-	}
-}
-
-func cleanup() {
-	// Desregistrar el servicio de Consul
-	if serviceRegistry != nil {
-		if err := serviceRegistry.Deregister(); err != nil {
-			logger.Error(fmt.Sprintf("Error al desregistrar el servicio: %v", err))
-		} else {
-			logger.Info("Servicio desregistrado correctamente")
-		}
 	}
 }

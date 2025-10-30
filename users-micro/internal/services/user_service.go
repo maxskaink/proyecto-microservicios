@@ -1,19 +1,33 @@
 package services
 
 import (
+	"context"
+
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 )
 
 // userService es la implementación de UserService.
 type userService struct {
-	userRepo repositories.UserRepository
+	userRepo  repositories.UserRepository
+	publisher messaging.Publisher
 }
 
 // NewUserService crea una nueva instancia de UserService.
-func NewUserService(userRepo repositories.UserRepository) UserService {
-	return &userService{userRepo: userRepo}
+func NewUserService(userRepo repositories.UserRepository, publisher messaging.Publisher) UserService {
+	return &userService{
+		userRepo:  userRepo,
+		publisher: publisher,
+	}
+}
+
+func NewUserServiceWithoutPublisher(userRepo repositories.UserRepository) UserService {
+	return &userService{
+		userRepo: userRepo,
+	}
 }
 
 // CreateUser crea un nuevo usuario.
@@ -33,6 +47,16 @@ func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 	userCreated, err := s.userRepo.Create(&u)
 	if err != nil {
 		return dto.UserResponse{}, err
+	}
+
+	// Publicar evento de usuario creado
+	if s.publisher != nil {
+		if err := s.publisher.PublishUserCreated(context.Background(), *userCreated); err != nil {
+			logger.Error("Error al publicar evento de usuario creado: " + err.Error())
+			// No retornamos error aquí para no afectar la operación principal
+		} else {
+			logger.Info("Evento de usuario creado publicado correctamente")
+		}
 	}
 
 	// Retornar el usuario creado como respuesta

@@ -14,7 +14,7 @@ import (
 func TestCreateUser(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	testUserRequest := dto.UserRequest{
 		Email:       "test@example.com",
@@ -44,7 +44,7 @@ func TestCreateUser(t *testing.T) {
 func TestCreateUserValidationError(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	// Caso de prueba: email vacío
 	testUserRequest := dto.UserRequest{
@@ -67,7 +67,7 @@ func TestCreateUserValidationError(t *testing.T) {
 func TestGetUserByID(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "1"
 	expectedUser := &dto.UserResponse{
@@ -91,7 +91,7 @@ func TestGetUserByID(t *testing.T) {
 func TestGetUserByIDNotFound(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "999"
 	mockRepo.On("FindByID", userID).Return(nil, errors.New("usuario no encontrado"))
@@ -107,7 +107,7 @@ func TestGetUserByIDNotFound(t *testing.T) {
 func TestUpdateUser(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "1"
 	firebaseUID := "firebase123"
@@ -152,7 +152,7 @@ func TestUpdateUser(t *testing.T) {
 func TestUpdateUserNoPermission(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "1"
 	userFirebaseUID := "firebase123"
@@ -184,7 +184,7 @@ func TestUpdateUserNoPermission(t *testing.T) {
 func TestDeleteUser(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
-	service := services.NewUserService(mockRepo)
+	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "1"
 	mockRepo.On("Delete", userID).Return(nil)

@@ -6,7 +6,7 @@ import (
 	"os"
 
 	"github.com/hashicorp/consul/api"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 )
 
 // ServiceRegistration maneja el registro del servicio en Consul

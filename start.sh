@@ -30,5 +30,6 @@ echo -e "- Dashboard Traefik: ${YELLOW}http://localhost:8090/dashboard/${NC}"
 echo -e "- UI de Consul: ${YELLOW}http://localhost:8500/ui/${NC}"
 echo -e "- API de usuarios: ${YELLOW}http://localhost/api/users${NC} (a través del Gateway)"
 echo -e "- API de usuarios (directo): ${YELLOW}http://localhost:8090${NC} (desarrollo)"
+echo -e "- rabbitmq Management: ${YELLOW}http://localhost:15672${NC} (usuario: guest, contraseña: guest)"
 
 echo -e "\n${GREEN}¡Infraestructura iniciada correctamente!${NC}"

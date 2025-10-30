@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/server"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server"
 )
 
 // @title           API Productos

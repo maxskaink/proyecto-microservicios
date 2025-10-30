@@ -17,7 +17,7 @@ func setupService(t *testing.T) (services.UserService, func()) {
 	require.NoError(t, err)
 
 	repo := repositories.NewUserRepository(db)
-	svc := services.NewUserService(repo)
+	svc := services.NewUserServiceWithoutPublisher(repo)
 
 	return svc, func() { _ = cleanup() }
 }

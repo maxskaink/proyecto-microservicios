@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,20 +11,24 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/server/discovery"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/events"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server/discovery"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
 // Services
+var ProductService services.IProductService
 var UserService services.IUserService
 var serviceRegistry *discovery.ServiceRegistration
+var userEventHandler *events.UserHandler
 
 // Repositories
+var ProductRepository repositories.IProductRepository
 var UserRepository repositories.IUserRepository
 
 // Midddlewares
@@ -91,11 +96,31 @@ func configDB() {
 
 	DB, _ := providerDB.DB(&gin.Context{})
 
+	ProductRepository = repositories.NewProductRepository(DB)
 	UserRepository = repositories.NewUserRepository(DB)
 }
 
 func configServices() {
+	ProductService = services.NewUserService(UserRepository)
 	UserService = services.NewUserService(UserRepository)
+
+	// Configurar el manejador de eventos de usuarios
+	var err error
+	userEventHandler, err = events.NewUserHandler()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error al crear manejador de eventos de usuarios: %v", err))
+		return
+	}
+
+	// Iniciar el consumo de eventos en una goroutine
+	go func() {
+		ctx := context.Background()
+		if err := userEventHandler.Start(ctx); err != nil {
+			logger.Error(fmt.Sprintf("Error al iniciar consumo de eventos: %v", err))
+		}
+	}()
+
+	logger.Info("Manejador de eventos de usuarios iniciado correctamente")
 }
 
 func setupServiceDiscovery() {
@@ -151,6 +176,15 @@ func cleanup() {
 			logger.Error(fmt.Sprintf("Error al desregistrar el servicio: %v", err))
 		} else {
 			logger.Info("Servicio desregistrado correctamente")
+		}
+	}
+
+	// Cerrar manejador de eventos de usuarios
+	if userEventHandler != nil {
+		if err := userEventHandler.Close(); err != nil {
+			logger.Error(fmt.Sprintf("Error al cerrar manejador de eventos de usuarios: %v", err))
+		} else {
+			logger.Info("Manejador de eventos de usuarios cerrado correctamente")
 		}
 	}
 }

@@ -9,8 +9,8 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 )
 
 func CORSMiddleware() gin.HandlerFunc {

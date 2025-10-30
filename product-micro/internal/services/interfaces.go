@@ -1,7 +1,7 @@
 package services
 
 import (
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 )
 
 // IUserService define la lógica de negocio para usuarios.

@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
 )
 
 // ProductController maneja endpoints de productos.

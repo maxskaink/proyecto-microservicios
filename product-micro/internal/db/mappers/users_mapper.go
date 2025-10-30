@@ -1,8 +1,8 @@
 package db_mappers
 
 import (
-	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	db_models "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/models"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 )
 
 func UserDtoToModel(dto *dto.UserRequest) *db_models.UserDB {

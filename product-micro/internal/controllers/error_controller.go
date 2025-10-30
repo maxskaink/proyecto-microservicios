@@ -4,9 +4,9 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 )
 
 func handleUserError(c *gin.Context, err error) {

@@ -2,7 +2,7 @@ package server
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/controllers"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/controllers"
 )
 
 // RegisterRoutes registra controladores en el router base.

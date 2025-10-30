@@ -7,31 +7,39 @@ services:
       context: ./api-gateway
     container_name: api_gateway
     ports:
-      - "80:80"     # Puerto HTTP principal
-      - "8090:8090" # Dashboard de Traefik
+      - "80:80"
+      - "8090:8090"
     volumes:
       - ./api-gateway/dynamic:/etc/traefik/dynamic:ro,z
     depends_on:
-      - consul
+      consul:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - micro-network
 
-  # Servicio de descubrimiento con Consul
+  # Consul service discovery
   consul:
     build:
       context: ./service-discovery
     container_name: consul
     ports:
-      - "8500:8500"  # UI y API HTTP
-      - "8600:8600/udp"  # DNS
+      - "8500:8500"
+      - "8600:8600/udp"
     volumes:
       - consul_data:/consul/data
     restart: unless-stopped
     networks:
       - micro-network
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
-  # Base de datos (ya existente)
+  # Base de datos Users
   users_db:
     image: postgres:16-alpine
     container_name: users_db
@@ -41,6 +49,8 @@ services:
       POSTGRES_DB: users_db
     volumes:
       - micro_db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U users -d users_db"]
       interval: 3s
@@ -50,7 +60,7 @@ services:
     networks:
       - micro-network
 
-  # Microservicio de usuarios (ya existente)
+  # Users Microservice
   users_api:
     build:
       context: ./users-micro
@@ -60,22 +70,26 @@ services:
       users_db:
         condition: service_healthy
       consul:
-        condition: service_started
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     environment:
       PORT: "8080"
       DATABASE_URL: "postgres://users:userspass@users_db:5432/users_db?sslmode=disable"
       FIREBASE_PROJECT_ID: "local-project"
-      # Etiquetas para identificación de servicio
       SERVICE_NAME: "users-service"
       SERVICE_TAGS: "users,api"
       CONSUL_HTTP_ADDR: "consul:8500"
       TRAEFIK_ENABLE: "true"
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
     volumes:
       - ./users-micro:/app:Z
     command: air -c .air.toml
     user: "${UID}:${GID}"
     networks:
       - micro-network
+
+  # Base de datos Product
   product_db:
     image: postgres:16-alpine
     container_name: product_db
@@ -93,10 +107,61 @@ services:
     restart: unless-stopped
     networks:
       - micro-network
+
+  # Product Microservice
+  product_api:
+    build:
+      context: ./product-micro
+      dockerfile: Dockerfile
+    container_name: product_api
+    depends_on:
+      product_db:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      PORT: "8081"
+      DATABASE_URL: "postgres://product:productpass@product_db:5432/product_db?sslmode=disable"
+      SERVICE_NAME: "products-service"
+      SERVICE_TAGS: "products,api"
+      CONSUL_HTTP_ADDR: "consul:8500"
+      TRAEFIK_ENABLE: "true"
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+    volumes:
+      - ./product-micro:/app:Z
+    command: air -c .air.toml
+    user: "${UID}:${GID}"
+    networks:
+      - micro-network
+
+  # RabbitMQ
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    volumes:
+      - rabbitmq_data:/var/lib/rabbitmq
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    networks:
+      - micro-network
+
 volumes:
   product_db_data:
   micro_db_data:
   consul_data:
+  rabbitmq_data:
 
 networks:
   micro-network:

@@ -1,10 +1,10 @@
 package repositories
 
 import (
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
-	db_mappers "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/mappers"
-	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db"
+	db_mappers "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/mappers"
+	db_models "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/models"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 	"gorm.io/gorm"
 )
 

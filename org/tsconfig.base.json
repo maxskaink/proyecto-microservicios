@@ -15,7 +15,7 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@org/firebase": ["libs/shared/src/index.ts"],
+      "@org/shared": ["libs/shared/src/index.ts"],
       "micro_user/Routes": [
         "apps/micro_user/src/app/remote-entry/entry.routes.ts"
       ]

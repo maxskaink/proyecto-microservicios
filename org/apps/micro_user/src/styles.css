@@ -1,1 +1,15 @@
 /* You can add global styles to this file, and also import other style files */
+@import 'bootstrap/dist/css/bootstrap.min.css';
+
+/* Variables CSS personalizadas */
+:root {
+  --color-primary: #4E342E;
+  --color-primary-dark: #4f46e5;
+  --color-secondary: #64748b;
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-warning: #f59e0b;
+  --color-info: #06b6d4;
+  --color-light: #F5F5DC;
+  --color-dark: #1e293b;
+}

@@ -8,7 +8,12 @@ export const appRoutes: Route[] = [
       import('micro_user/Routes').then((m) => m!.remoteRoutes),
   },
   {
-    path: '',
+    path: 'home',
     component: NxWelcome,
+  },
+  {
+    path: '',
+    redirectTo: '/micro_user',
+    pathMatch: 'full',
   },
 ];

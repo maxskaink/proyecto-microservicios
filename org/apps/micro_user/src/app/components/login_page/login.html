@@ -1,0 +1,69 @@
+<div class="background-login"></div>
+<div class="login-wrapper d-flex justify-content-center align-items-center min-vh-100">
+  <div class="form-login position-relative">
+    <div class="card p-4 d-flex flex-column" style="height: 100%;">
+      <form #loginForm="ngForm" (ngSubmit)="onLogin(loginForm)" class="w-100 flex-grow-1 d-flex flex-column justify-content-center">
+        <h2 class="mb-4 fw-bold text-center textTitle">Iniciar sesión</h2>
+        
+        <!-- Mensaje de error general -->
+        <div *ngIf="errorMessage" class="alert alert-danger mb-3" role="alert">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i>
+          {{ errorMessage }}
+        </div>
+        
+        <div class="mb-3">
+          <label for="correo" class="form-label">Correo</label>
+          <input
+            id="correo"
+            type="email"
+            name="correo"
+            class="form-control"
+            [class.is-invalid]="emailError"
+            placeholder="ejemplo@correo.com"
+            [(ngModel)]="correo"
+            required
+            email
+            #correoInput="ngModel"
+            (input)="onInputChange()"
+            [disabled]="isLoading"
+          />
+          <div *ngIf="(correoInput.invalid && (correoInput.dirty || correoInput.touched || loginForm.submitted)) && !emailError" class="text-danger small">
+            El correo es obligatorio y debe tener un formato válido.
+          </div>
+        </div>
+        <div class="mb-4">
+          <label for="password" class="form-label">Contraseña</label>
+          <input
+            id="password"
+            type="password"
+            name="password"
+            class="form-control"
+            [class.is-invalid]="passwordError"
+            placeholder="••••••"
+            [(ngModel)]="password"
+            required
+            minlength="6"
+            #passwordInput="ngModel"
+            (input)="onInputChange()"
+            [disabled]="isLoading"
+          />
+          <div *ngIf="(passwordInput.invalid && (passwordInput.dirty || passwordInput.touched || loginForm.submitted)) && !passwordError" class="text-danger small">
+            La contraseña es obligatoria y debe tener al menos 6 caracteres.
+          </div>
+        </div>
+        <button 
+          type="submit" 
+          class="btn button-pri w-100 position-relative" 
+          [disabled]="loginForm.invalid || isLoading"
+        >
+          <span *ngIf="!isLoading">Entrar</span>
+          <span *ngIf="isLoading">
+            <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+            Iniciando sesión...
+          </span>
+        </button>
+      </form>
+      
+    </div>
+  </div>
+</div>

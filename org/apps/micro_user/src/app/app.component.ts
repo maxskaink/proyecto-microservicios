@@ -2,8 +2,11 @@ import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 
 @Component({
+  selector: 'app-root',
   imports: [RouterOutlet],
-  selector: 'app-micro_user-entry',
   template: `<router-outlet></router-outlet>`,
+  styles: []
 })
-export class RemoteEntry {}
+export class AppComponent {
+  title = 'micro_user';
+}

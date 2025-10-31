@@ -98,6 +98,15 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 
 	response, err := s.userRepo.Update(id, &u)
 
+	//Notificar por evento
+	if err == nil && s.publisher != nil {
+		if err := s.publisher.PublishUserUpdated(context.Background(), *response); err != nil {
+			logger.Error("Error al publicar evento de usuario actualizado: " + err.Error())
+		} else {
+			logger.Info("Evento de usuario actualizado publicado correctamente")
+		}
+	}
+
 	return *response, err
 }
 
@@ -129,6 +138,15 @@ func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester st
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
+
+	if s.publisher != nil {
+		if err := s.publisher.PublishUserUpdated(context.Background(), *updated_user); err != nil {
+			logger.Error("Error al publicar evento de usuario actualizado: " + err.Error())
+		} else {
+			logger.Info("Evento de usuario actualizado publicado correctamente")
+		}
+	}
+
 	return *updated_user, err
 
 }

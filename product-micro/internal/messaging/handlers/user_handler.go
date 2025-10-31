@@ -45,10 +45,34 @@ func (h *UserEventHandler) HandleUserDeleted(data []byte) error {
 		return err
 	}
 
+	err := h.UserRepository.DeleteUser(event.ID)
+	if err != nil {
+		logger.Error("No se ha podido eliminar el usuario con id " + event.ID)
+		return err
+	}
+
 	logger.Info(fmt.Sprintf("Usuario eliminado: ID=%s", event.ID))
 
-	// Limpiar datos relacionados del microservicio de productos
-	// Por ejemplo: eliminar/desactivar productos del usuario
+	return nil
+}
+
+func (h *UserEventHandler) HandleUserUpdated(data []byte) error {
+	var user dto.UserRequest
+
+	if err := json.Unmarshal(data, &user); err != nil {
+		logger.Error(fmt.Sprintf("Error al deserializar evento de usuario actualizado: %v", err))
+		return err
+	}
+
+	updatedUser, err := h.UserRepository.UpdateUser(user)
+
+	if err != nil {
+		logger.Error("No se ha podido actualizar el usuario con id " + user.ID)
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("Usuario actualizado: ID=%s, Email=%s, Nombre=%s, Rol=%s",
+		updatedUser.ID, updatedUser.Email, updatedUser.Name, updatedUser.Rol))
 
 	return nil
 }

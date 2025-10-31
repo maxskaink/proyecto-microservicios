@@ -26,6 +26,7 @@ func NewEventDispatcher(userRepository repositories.IUserRepository) *EventDispa
 	productHandler := &ProductEventHandler{}
 
 	dispatcher.Register(events.UserCreated, userHandler.HandleUserCreated)
+	dispatcher.Register(events.UserUpdated, userHandler.HandleUserUpdated)
 	dispatcher.Register(events.UserDeleted, userHandler.HandleUserDeleted)
 	dispatcher.Register(events.ProductCreated, productHandler.HandleProductCreated)
 	dispatcher.Register(events.ProductUpdated, productHandler.HandleProductUpdated)

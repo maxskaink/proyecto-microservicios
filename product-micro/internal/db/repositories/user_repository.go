@@ -53,3 +53,24 @@ func (r *UserRepository) FindByUID(uid string) (*dto.UserResponse, error) {
 
 	return db_mappers.UserModelToDto(&user), nil
 }
+
+// DeleteUser implements IUserRepository.
+func (r *UserRepository) DeleteUser(id string) error {
+	if err := r.db.Delete(&db_models.UserDB{}, "id = ?", id).Error; err != nil {
+		return db.ParseDBError(err)
+	}
+	return nil
+}
+
+// UpdateUser implements IUserRepository.
+func (r *UserRepository) UpdateUser(userReq dto.UserRequest) (*dto.UserResponse, error) {
+	// Mapear DTO a modelo
+	userModel := db_mappers.UserDtoToModel(&userReq)
+	// Actualizar el usuario en la base de datos
+	if err := r.db.Save(&userModel).Error; err != nil {
+		return nil, db.ParseDBError(err)
+	}
+
+	// Mapear el modelo actualizado a DTO de respuesta
+	return db_mappers.UserModelToDto(userModel), nil
+}

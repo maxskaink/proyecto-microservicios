@@ -14,4 +14,6 @@ type IUserRepository interface {
 	CreateUser(dto.UserRequest) (*dto.UserResponse, error)
 	FindById(id string) (*dto.UserResponse, error)
 	FindByUID(uid string) (*dto.UserResponse, error)
+	UpdateUser(dto.UserRequest) (*dto.UserResponse, error)
+	DeleteUser(id string) error
 }

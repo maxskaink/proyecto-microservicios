@@ -6,6 +6,7 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
 	db_mappers "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/mappers"
 	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"gorm.io/gorm"
 )
@@ -25,6 +26,15 @@ func (r *userRepository) Create(u *dto.UserRequest) (*dto.UserResponse, error) {
 	var id string
 	err := r.db.Transaction(func(tx *gorm.DB) error {
 		user := db_mappers.UserDtoToModel(u)
+
+		var count int64
+		if err := tx.Model(&db_models.UserDB{}).Count(&count).Error; err != nil {
+			return err
+		}
+
+		if count == 0 {
+			user.Rol = string(domain.UserRoleAdmin)
+		}
 
 		// Evitar que GORM intente crear la relación Profile automáticamente
 		if err := tx.Omit("Profile").Create(user).Error; err != nil {

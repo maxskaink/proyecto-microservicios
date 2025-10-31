@@ -14,6 +14,13 @@ http:
       entrypoints:
         - dashboard
       priority: 10
+    products:
+      rule: "PathPrefix(`/api/products`)"
+      service: "products-service"
+      entrypoints:
+        - web
+      middlewares:
+        - strip-prefix
 
   middlewares:
     strip-prefix:

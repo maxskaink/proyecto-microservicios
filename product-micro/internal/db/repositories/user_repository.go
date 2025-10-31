@@ -18,6 +18,20 @@ func NewUserRepository(db *gorm.DB) IUserRepository {
 	return &UserRepository{db: db}
 }
 
+// CreateUser implements IUserRepository.
+func (r *UserRepository) CreateUser(userReq dto.UserRequest) (*dto.UserResponse, error) {
+	// Mapear DTO a modelo
+	userModel := db_mappers.UserDtoToModel(&userReq)
+
+	// Crear el usuario en la base de datos
+	if err := r.db.Create(&userModel).Error; err != nil {
+		return nil, db.ParseDBError(err)
+	}
+
+	// Mapear el modelo creado a DTO de respuesta
+	return db_mappers.UserModelToDto(userModel), nil
+}
+
 // FindById implements IUserRepository.
 func (r *UserRepository) FindById(id string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
@@ -33,7 +47,7 @@ func (r *UserRepository) FindById(id string) (*dto.UserResponse, error) {
 func (r *UserRepository) FindByUID(uid string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
-	if err := r.db.Preload("Profile").First(&user, "firebase_uid = ?", uid).Error; err != nil {
+	if err := r.db.First(&user, "firebase_uid = ?", uid).Error; err != nil {
 		return nil, db.ParseDBError(err)
 	}
 

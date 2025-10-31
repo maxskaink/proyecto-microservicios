@@ -9,7 +9,6 @@ import (
 )
 
 const (
-	// Constantes para la configuración de RabbitMQ
 	ExchangeName   = "user_events"
 	ExchangeType   = "topic"
 	UserCreatedKey = "user.created"
@@ -18,22 +17,25 @@ const (
 	QueueName      = "product_user_events"
 )
 
-// Consumer maneja el consumo de mensajes
 type Consumer struct {
-	cm             *ConnectionManager
-	messageHandler func([]byte) error
-	queueName      string
+	cm         *ConnectionManager
+	queueName  string
+	dispatcher Dispatcher
+}
+
+// Dispatcher define la interfaz para procesar mensajes
+type Dispatcher interface {
+	ProcessMessage(data []byte, routingKey string) error
 }
 
 // NewConsumer crea un nuevo consumidor
-func NewConsumer(cm *ConnectionManager, queueName string, messageHandler func([]byte) error) (*Consumer, error) {
+func NewConsumer(cm *ConnectionManager, queueName string, dispatcher Dispatcher) (*Consumer, error) {
 	c := &Consumer{
-		cm:             cm,
-		messageHandler: messageHandler,
-		queueName:      queueName,
+		cm:         cm,
+		queueName:  queueName,
+		dispatcher: dispatcher,
 	}
 
-	// Inicializar el exchange y la cola
 	if err := c.setupQueue(); err != nil {
 		return nil, err
 	}
@@ -49,40 +51,37 @@ func (c *Consumer) setupQueue() error {
 	}
 	defer ch.Close()
 
-	// Declarar el exchange
 	err = ch.ExchangeDeclare(
-		ExchangeName, // nombre
-		ExchangeType, // tipo
-		true,         // durable
-		false,        // auto-eliminado
-		false,        // interno
-		false,        // no-wait
-		nil,          // argumentos
+		ExchangeName,
+		ExchangeType,
+		true,  // durable
+		false, // auto-eliminated
+		false, // internal
+		false, // no-wait
+		nil,   // args
 	)
 	if err != nil {
 		return err
 	}
 
-	// Declarar la cola
 	q, err := ch.QueueDeclare(
-		c.queueName, // nombre
-		true,        // durable
-		false,       // auto-eliminado
-		false,       // exclusiva
-		false,       // no-wait
-		nil,         // argumentos
+		c.queueName,
+		true,  // durable
+		false, // auto-eliminated
+		false, // exclusive
+		false, // no-wait
+		nil,   // args
 	)
 	if err != nil {
 		return err
 	}
 
-	// Vincular la cola al exchange
 	err = ch.QueueBind(
-		q.Name,       // nombre de la cola
-		"user.#",     // routing key (todos los eventos de usuarios)
-		ExchangeName, // nombre del exchange
-		false,        // no-wait
-		nil,          // argumentos
+		q.Name,
+		"user.#",
+		ExchangeName,
+		false,
+		nil,
 	)
 
 	return err
@@ -96,25 +95,19 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 	}
 	defer ch.Close()
 
-	// Configurar QoS
-	err = ch.Qos(
-		1,     // prefetch count (procesar un mensaje a la vez)
-		0,     // prefetch size
-		false, // global
-	)
+	err = ch.Qos(1, 0, false)
 	if err != nil {
 		return err
 	}
 
-	// Consumir mensajes
 	msgs, err := ch.Consume(
-		c.queueName, // cola
-		"",          // consumer
-		false,       // auto-ack
-		false,       // exclusive
-		false,       // no-local
-		false,       // no-wait
-		nil,         // args
+		c.queueName,
+		"",    // consumer
+		false, // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
 	)
 	if err != nil {
 		return err
@@ -138,9 +131,11 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 					return
 				}
 
+				// Procesar mensaje con manejo de errores mejorado
 				if err := c.processMessage(msg); err != nil {
-					logger.Error(fmt.Sprintf("Error al procesar mensaje: %v", err))
-					msg.Nack(false, true)
+					logger.Error(fmt.Sprintf("Error al procesar mensaje (routing key: %s): %v", msg.RoutingKey, err))
+					// NO reintentar: descartar el mensaje (dead letter)
+					msg.Ack(false)
 				} else {
 					msg.Ack(false)
 				}
@@ -149,21 +144,19 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 	}()
 
 	<-done
-
 	return nil
 }
 
 // processMessage procesa un mensaje recibido
 func (c *Consumer) processMessage(msg amqp.Delivery) error {
-	fmt.Print("Mensaje recibido")
-	logger.Info(fmt.Sprintf("Mensaje recibido: routing key = %s, body = %s", msg.RoutingKey, string(msg.Body)))
+	logger.Info(fmt.Sprintf("Procesando mensaje - Routing key: %s, Body: %s",
+		msg.RoutingKey, string(msg.Body)))
 
-	// Llamar al manejador de mensajes
-	if c.messageHandler != nil {
-		return c.messageHandler(msg.Body)
+	if c.dispatcher == nil {
+		return fmt.Errorf("dispatcher no configurado")
 	}
 
-	return nil
+	return c.dispatcher.ProcessMessage(msg.Body, msg.RoutingKey)
 }
 
 // Close cierra el consumidor

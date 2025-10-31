@@ -7,6 +7,7 @@ import (
 
 func UserDtoToModel(dto *dto.UserRequest) *db_models.UserDB {
 	return &db_models.UserDB{
+		ID:          dto.ID,
 		FirebaseUID: dto.FirebaseUID,
 		Email:       dto.Email,
 		Name:        dto.Name,

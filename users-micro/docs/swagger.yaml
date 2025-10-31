@@ -1,22 +1,217 @@
-basePath: /
-host: localhost:8080
+swagger: "2.0"
 info:
-  contact: {}
-  description: Microservicio para la gestión de usuarios.
   title: API Usuarios
+  description: Microservicio para la gestión de usuarios.
   version: "1.0"
+host: localhost:8080
+basePath: /
+schemes:
+  - http
+tags:
+  - name: Users
+    description: Operaciones relacionadas con usuarios
+securityDefinitions:
+  BearerAuth:
+    type: apiKey
+    name: Authorization
+    in: header
 paths:
-  /api/v1/private:
+  /users/me:
     get:
-      description: Say somethingc
+      tags:
+        - Users
+      summary: Obtener información del usuario autenticado
+      description: Devuelve la información del usuario asociado al token de autenticación
       produces:
-      - application/json
+        - application/json
+      security:
+        - BearerAuth: []
       responses:
         "200":
-          description: ok
+          description: Usuario encontrado
           schema:
-            additionalProperties:
-              type: string
+            $ref: '#/definitions/UserResponse'
+        "401":
+          description: No autorizado
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+        "500":
+          description: Error interno
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+
+  /users/{id}:
+    put:
+      tags:
+        - Users
+      summary: Actualizar usuario
+      description: Actualiza los datos del usuario identificado por el parámetro id
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: user
+          required: true
+          schema:
+            $ref: '#/definitions/UserRequest'
+      responses:
+        "200":
+          description: Usuario actualizado
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Entrada inválida
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+        "401":
+          description: No autorizado
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+        "404":
+          description: Usuario no encontrado
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+
+  /users/{id}/rol:
+    patch:
+      tags:
+        - Users
+      summary: Actualizar rol de usuario
+      description: Actualiza el rol del usuario (solo administradores)
+      consumes:
+        - application/json
+      produces:
+        - application/json
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: string
+        - in: body
+          name: rol
+          required: true
+          schema:
             type: object
-      summary: is a public controller
-swagger: "2.0"
+            required:
+              - rol
+            properties:
+              rol:
+                type: string
+                description: "Rol a asignar. Valores permitidos: admin, producer, client"
+      responses:
+        "200":
+          description: Rol actualizado
+          schema:
+            $ref: '#/definitions/UserResponse'
+        "400":
+          description: Entrada inválida
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+        "401":
+          description: No autorizado
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+        "404":
+          description: Usuario no encontrado
+          schema:
+            $ref: '#/definitions/ErrorDTO'
+
+definitions:
+  UserRequest:
+    type: object
+    properties:
+      firabseUID:
+        type: string
+      email:
+        type: string
+        format: email
+      name:
+        type: string
+      rol:
+        type: string
+        enum:
+          - admin
+          - producer
+          - client
+      profile:
+        $ref: '#/definitions/ProfileRequest'
+    required:
+      - email
+      - name
+
+  UserResponse:
+    type: object
+    properties:
+      id:
+        type: string
+      firabseUID:
+        type: string
+      email:
+        type: string
+      name:
+        type: string
+      rol:
+        type: string
+        enum:
+          - admin
+          - producer
+          - client
+      profile:
+        $ref: '#/definitions/ProfileResponse'
+
+  ProfileRequest:
+    type: object
+    properties:
+      user_id:
+        type: string
+      address:
+        type: string
+      phone:
+        type: string
+      avatar_url:
+        type: string
+    required:
+      - address
+      - phone
+      - avatar_url
+
+  ProfileResponse:
+    type: object
+    properties:
+      id:
+        type: string
+      user_id:
+        type: string
+      address:
+        type: string
+      phone:
+        type: string
+      avatar_url:
+        type: string
+      created_at:
+        type: string
+        format: date-time
+      updated_at:
+        type: string
+        format: date-time
+
+  ErrorDTO:
+    type: object
+    properties:
+      timestamp:
+        type: string
+        format: date-time
+      status:
+        type: integer
+      error:
+        type: string

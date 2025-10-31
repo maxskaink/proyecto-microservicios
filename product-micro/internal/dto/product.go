@@ -19,10 +19,11 @@ type ProductDTOResponse struct {
 }
 
 type ProductDTORequest struct {
+	ProducerID  string                 `json:"-"`
 	Category    domain.ProductCategory `json:"category" binding:"required,category"`
 	Price       int                    `json:"price" binding:"required,min=1"`
 	Description string                 `json:"description" binding:"required,min=10,max=255"`
-	Stock       int                    `json:"stock" binding:"required,min=0"`
+	Stock       int                    `json:"stock" binding:"required,min=1"`
 	Unit        domain.ProductUnit     `json:"unit" binding:"required,unit"`
 	PhotoUrl    string                 `json:"photo_url" binding:"omitempty,url"`
 }

@@ -15,6 +15,7 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/events"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server/discovery"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server/validators"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
@@ -41,6 +42,7 @@ func Run() error {
 	configDB()
 	configServices()
 	InitFirebase()
+	validators.RegisterValidators()
 
 	//Configurar service discovery
 	setupServiceDiscovery()
@@ -101,12 +103,12 @@ func configDB() {
 }
 
 func configServices() {
-	ProductService = services.NewUserService(UserRepository)
 	UserService = services.NewUserService(UserRepository)
+	ProductService = services.NewProductService(ProductRepository, UserService)
 
 	// Configurar el manejador de eventos de usuarios
 	var err error
-	userEventHandler, err = events.NewUserHandler()
+	userEventHandler, err = events.NewUserHandler(UserRepository)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error al crear manejador de eventos de usuarios: %v", err))
 		return

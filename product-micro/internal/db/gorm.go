@@ -33,7 +33,7 @@ func NewGormDBProvider() (*GormDBProvider, error) {
 
 	if err := db.AutoMigrate(
 		&db_models.UserDB{},
-		//PUt the others to migrate
+		&db_models.ProductDB{},
 	); err != nil {
 		log.Fatalf("Error al migrar las tablas: %v", err)
 	}

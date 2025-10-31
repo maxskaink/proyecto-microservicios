@@ -52,7 +52,7 @@ func Run() error {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
 
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+	r.GET("/users/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	// Registrar rutas de controladores (usuarios, pedidos, perfiles)
 	RegisterRoutes(r)

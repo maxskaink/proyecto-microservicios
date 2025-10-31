@@ -9,5 +9,5 @@ import (
 func RegisterRoutes(r *gin.Engine) {
 	api := r.Group("")
 
-	controllers.NewUserController().RegisterRoutes(api, AuthMiddleware)
+	controllers.NewProductController(ProductService).RegisterRoutes(api, AuthMiddleware)
 }

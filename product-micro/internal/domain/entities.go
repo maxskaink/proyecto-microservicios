@@ -5,6 +5,14 @@ import (
 	"time"
 )
 
+// ==== User roles ====
+
+const (
+	UserRoleAdmin    string = "admin"
+	UserRoleProducer string = "producer"
+	UserRoleClient   string = "client"
+)
+
 // ==== Product Category ====
 type ProductCategory string
 

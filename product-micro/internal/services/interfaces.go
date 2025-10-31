@@ -11,4 +11,8 @@ type IUserService interface {
 }
 
 type IProductService interface {
+	ListProduct(page int, pageSize int) (*[]dto.ProductDTOResponse, error)
+	GetByIdProduct(id string) (*dto.ProductDTOResponse, error)
+	CreateProduct(product dto.ProductDTORequest, idProducer string) (*dto.ProductDTOResponse, error)
+	UpdateProduct(idProduct string, product dto.ProductDTORequest, idProducer string) (*dto.ProductDTOResponse, error)
 }

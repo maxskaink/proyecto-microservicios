@@ -5,7 +5,7 @@ api:
 entryPoints:
   web:
     address: ":80"
-  dashboard:        # Añadir esta sección
+  dashboard:
     address: ":8090"
 
 providers:
@@ -25,3 +25,14 @@ providers:
 accessLog: {}
 log:
   level: "INFO"
+
+# Middlewares globales
+http:
+  middlewares:
+    tenant-extractor:
+      replacePathRegex:
+        regex: "^/([a-zA-Z0-9_-]+)/api/(.*)"
+        replacement: "/api/$2"
+      headers:
+        customRequestHeaders:
+          X-Tenant-ID: "$1"

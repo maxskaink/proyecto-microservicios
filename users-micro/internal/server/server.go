@@ -1,6 +1,7 @@
 package server
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,9 +14,12 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging/handlers"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging/rabbitmq"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/server/discovery"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services/tenant"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
@@ -23,8 +27,10 @@ import (
 
 // Services
 var UserService services.UserService
+var TenantService *tenant.TenantService
 var serviceRegistry *discovery.ServiceRegistration
 var msgPublisher messaging.Publisher
+var eventManager *messaging.EventManager
 
 // Repositories
 var UserRepository repositories.UserRepository
@@ -47,10 +53,15 @@ func Run() error {
 	r.Use(gin.Logger())     //For logs request
 	r.Use(CORSMiddleware()) //For manage the cors
 
-	// Healthcheck básico
+	// Healthcheck básico (sin middleware de tenant, es público)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
+
+	// Registrar middleware de tenant para rutas protegidas
+	// Las rutas de administración (sin tenant) se registrarán después
+	protectedRoutes := r.Group("/api")
+	protectedRoutes.Use(middleware.TenantMiddleware())
 
 	r.GET("/users/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -87,6 +98,15 @@ func Run() error {
 func cleanup() {
 	logger.Info("Iniciando limpieza de recursos...")
 
+	// Cerrar gestor de eventos
+	if eventManager != nil {
+		if err := eventManager.Close(); err != nil {
+			logger.Error(fmt.Sprintf("Error al cerrar gestor de eventos: %v", err))
+		} else {
+			logger.Info("Gestor de eventos cerrado correctamente")
+		}
+	}
+
 	// Cerrar publicador de mensajes
 	if msgPublisher != nil {
 		if err := msgPublisher.Close(); err != nil {
@@ -118,19 +138,49 @@ func configDB() {
 }
 
 func configServices() {
+	// Obtener DB provider para TenantService
+	providerDB, err := db.NewGormDBProvider()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error al obtener DB provider para TenantService: %v", err))
+		return
+	}
+	dbConn, _ := providerDB.DB(&gin.Context{})
+
 	// Inicializar el publicador de mensajes
 	factory := messaging.NewFactory(rabbitmq.DefaultConfig())
-	var err error
 	msgPublisher, err = factory.CreatePublisher()
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error al crear publicador de mensajes: %v", err))
-		// Continuamos sin publicador si hay error
 		msgPublisher = nil
 	} else {
 		logger.Info("Publicador de mensajes inicializado correctamente")
 	}
 
+	// Crear TenantService
+	TenantService = tenant.NewTenantService(dbConn, msgPublisher)
+	logger.Info("TenantService inicializado correctamente")
+
 	UserService = services.NewUserService(UserRepository, msgPublisher)
+
+	// Inicializar el gestor de eventos (consumidor de RabbitMQ)
+	// Crear el dispatcher con handlers
+	dispatcher := buildEventDispatcher()
+
+	eventManager, err = messaging.NewEventManager(dispatcher)
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error al crear gestor de eventos: %v", err))
+		return
+	}
+
+	// Iniciar el consumo de eventos en una goroutine
+	go func() {
+		ctx := context.Background()
+		if err := eventManager.Start(ctx); err != nil {
+			logger.Error(fmt.Sprintf("Error al iniciar consumo de eventos: %v", err))
+		}
+	}()
+
+	logger.Info("Gestor de eventos iniciado correctamente")
 }
 
 func setupServiceDiscovery() {
@@ -177,4 +227,9 @@ func setupServiceDiscovery() {
 	} else {
 		logger.Info("Servicio registrado correctamente en Consul")
 	}
+}
+
+// buildEventDispatcher construye el dispatcher de eventos
+func buildEventDispatcher() messaging.Dispatcher {
+	return handlers.NewEventDispatcher(TenantService)
 }

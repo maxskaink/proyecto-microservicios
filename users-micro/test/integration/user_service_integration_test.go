@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+var tenantID = "tenantA"
+
 func setupService(t *testing.T) (services.UserService, func()) {
 	ctx := context.Background()
 	db, cleanup, err := SetupTestDB(ctx)
@@ -32,7 +34,7 @@ func TestService_CreateUser_Success(t *testing.T) {
 		Name:        "Service Create",
 	}
 
-	created, err := svc.CreateUser(req)
+	created, err := svc.CreateUser(req, tenantID)
 	require.NoError(t, err)
 	require.NotEmpty(t, created.ID)
 	require.Equal(t, req.FirebaseUID, created.FirebaseUID)
@@ -50,10 +52,10 @@ func TestService_GetUserByID_Success(t *testing.T) {
 		Name:        "Service Get",
 	}
 
-	created, err := svc.CreateUser(req)
+	created, err := svc.CreateUser(req, tenantID)
 	require.NoError(t, err)
 
-	got, err := svc.GetUserByID(created.ID)
+	got, err := svc.GetUserByID(created.ID, tenantID)
 	require.NoError(t, err)
 	require.Equal(t, created.ID, got.ID)
 	require.Equal(t, created.Email, got.Email)
@@ -64,7 +66,7 @@ func TestService_GetUserByID_NotFound(t *testing.T) {
 	defer cleanup()
 
 	nonexistent := uuid.NewString()
-	_, err := svc.GetUserByID(nonexistent)
+	_, err := svc.GetUserByID(nonexistent, tenantID)
 	require.Error(t, err)
 }
 
@@ -78,12 +80,12 @@ func TestService_UpdateUser_Success(t *testing.T) {
 		Name:        "Service ToUpdate",
 	}
 
-	created, err := svc.CreateUser(req)
+	created, err := svc.CreateUser(req, tenantID)
 	require.NoError(t, err)
 
 	// Update name
 	req.Name = "Service Updated"
-	updated, err := svc.UpdateUser(created.ID, req, req.FirebaseUID)
+	updated, err := svc.UpdateUser(created.ID, req, req.FirebaseUID, tenantID)
 	require.NoError(t, err)
 	require.Equal(t, "Service Updated", updated.Name)
 	require.Equal(t, created.ID, updated.ID)
@@ -99,11 +101,11 @@ func TestService_UpdateUser_Unauthorized(t *testing.T) {
 		Name:        "Service Auth",
 	}
 
-	created, err := svc.CreateUser(req)
+	created, err := svc.CreateUser(req, tenantID)
 	require.NoError(t, err)
 
 	// Attempt update with a different firebaseUID (should be unauthorized)
 	req.Name = "Service Hacked"
-	_, err = svc.UpdateUser(created.ID, req, "different-uid")
+	_, err = svc.UpdateUser(created.ID, req, "different-uid", tenantID)
 	require.Error(t, err)
 }

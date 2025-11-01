@@ -21,9 +21,14 @@ func NewProductService(productRepo repositories.IProductRepository, userService 
 }
 
 // CreateProduct implements IProductService.
-func (p *productService) CreateProduct(product dto.ProductDTORequest, idProducer string) (*dto.ProductDTOResponse, error) {
+func (p *productService) CreateProduct(product dto.ProductDTORequest, idProducer string, tenantID string) (*dto.ProductDTOResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
 	// Validar que el usuario existe
-	user, err := p.userService.GetUserByUUID(idProducer)
+	user, err := p.userService.GetUserByUUID(idProducer, tenantID)
 	if err != nil {
 		return nil, domain.NotFoundError{Message: "Usuario con id " + idProducer + " no encontrado"}
 	}
@@ -37,7 +42,7 @@ func (p *productService) CreateProduct(product dto.ProductDTORequest, idProducer
 	product.ProducerID = user.ID
 
 	// Crear el producto en la base de datos
-	result, err := p.productRepo.CreateProduct(&product)
+	result, err := p.productRepo.CreateProduct(&product, tenantID)
 	if err != nil {
 		return nil, err
 	}
@@ -46,8 +51,13 @@ func (p *productService) CreateProduct(product dto.ProductDTORequest, idProducer
 }
 
 // GetByIdProduct implements IProductService.
-func (p *productService) GetByIdProduct(id string) (*dto.ProductDTOResponse, error) {
-	product, err := p.productRepo.GetByIdProduct(id)
+func (p *productService) GetByIdProduct(id string, tenantID string) (*dto.ProductDTOResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
+	product, err := p.productRepo.GetByIdProduct(id, tenantID)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +70,11 @@ func (p *productService) GetByIdProduct(id string) (*dto.ProductDTOResponse, err
 }
 
 // ListProduct implements IProductService.
-func (p *productService) ListProduct(page int, pageSize int) (*[]dto.ProductDTOResponse, error) {
+func (p *productService) ListProduct(page int, pageSize int, tenantID string) (*[]dto.ProductDTOResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
 
 	//Validate the paramaters
 	if page < 1 {
@@ -71,7 +85,7 @@ func (p *productService) ListProduct(page int, pageSize int) (*[]dto.ProductDTOR
 		return nil, domain.BadRequestError{Message: "El tamanio de la pagina debe ser entre 2 y 100"}
 	}
 
-	products, err := p.productRepo.ListProducts(1, 10)
+	products, err := p.productRepo.ListProducts(1, 10, tenantID)
 	if err != nil {
 		return nil, err
 	}
@@ -84,15 +98,20 @@ func (p *productService) ListProduct(page int, pageSize int) (*[]dto.ProductDTOR
 }
 
 // UpdateProduct implements IProductService.
-func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest, idProducer string) (*dto.ProductDTOResponse, error) {
+func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest, idProducer string, tenantID string) (*dto.ProductDTOResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
 	// Validar que el usuario existe
-	user, err := p.userService.GetUserByUUID(idProducer)
+	user, err := p.userService.GetUserByUUID(idProducer, tenantID)
 	if err != nil {
 		return nil, domain.NotFoundError{Message: fmt.Sprintf("Usuario con id %s no se ha encontrado", idProducer)}
 	}
 
 	// Obtener el producto actual
-	currentProduct, err := p.productRepo.GetByIdProduct(id)
+	currentProduct, err := p.productRepo.GetByIdProduct(id, tenantID)
 	if err != nil || currentProduct == nil {
 		return nil, domain.NotFoundError{Message: fmt.Sprintf("Producto con id %s no fue encontrado", id)}
 	}
@@ -104,7 +123,7 @@ func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest,
 
 	product.ProducerID = user.ID
 
-	result, err := p.productRepo.UpdateProduct(id, &product)
+	result, err := p.productRepo.UpdateProduct(id, &product, tenantID)
 
 	if err != nil {
 		return nil, err

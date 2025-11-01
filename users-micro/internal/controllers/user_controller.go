@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 )
 
@@ -35,6 +36,13 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFu
 
 // GetUserByID maneja GET /users/:id.
 func (uc *UserController) GetInfoUser(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
 	user_uid := c.GetString("uid") //Should have token because the middleware
 
 	if user_uid == "" {
@@ -42,7 +50,7 @@ func (uc *UserController) GetInfoUser(c *gin.Context) {
 		return
 	}
 
-	user, err := uc.UserService.GetUserByUUID(user_uid)
+	user, err := uc.UserService.GetUserByUUID(user_uid, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return
@@ -50,31 +58,46 @@ func (uc *UserController) GetInfoUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
-// UpdateUser maneja PUT /users/:id.
+// UpdateUser maneja PATCH /users/:id.
 func (uc *UserController) UpdateUser(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
+	user_uid := c.GetString("uid") //Should have token because the middleware
+
+	if user_uid == "" {
+		handleUserError(c, domain.InternalServerError{Message: "uid vacio, no deberia de haber entrado sin uid"})
+		return
+	}
+
 	id := c.Param("id")
-	var userRequest dto.UserRequest
-	if err := c.ShouldBindJSON(&userRequest); err != nil {
-		handleUserError(c, domain.BadRequestError{Message: "Los datos son invalidos: " + err.Error()})
+	var ur dto.UserRequest
+
+	if err := c.BindJSON(&ur); err != nil {
+		handleUserError(c, domain.BadRequestError{Message: "Cuerpo inválido"})
 		return
 	}
 
-	uid_requester := c.GetString("uid") // Should have it for the auth
-
-	if uid_requester == "" {
-		handleUserError(c, domain.InternalServerError{Message: "uid, vacio no deberia de haber entrado sin uid"})
-		return
-	}
-
-	userResponse, err := uc.UserService.UpdateUser(id, userRequest, uid_requester)
+	userUpdated, err := uc.UserService.UpdateUser(id, ur, user_uid, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return
 	}
-	c.JSON(http.StatusOK, userResponse)
+	c.JSON(http.StatusOK, userUpdated)
 }
 
 func (uc *UserController) UpdateRolUser(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
 	// Obtener ID del usuario a modificar
 	id := c.Param("id")
 
@@ -97,7 +120,7 @@ func (uc *UserController) UpdateRolUser(c *gin.Context) {
 		return
 	}
 	// Actualizar el rol
-	userResponse, err := uc.UserService.UpdateRol(id, domain.UserRole(request.Rol), uid_requester)
+	userResponse, err := uc.UserService.UpdateRol(id, domain.UserRole(request.Rol), uid_requester, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return

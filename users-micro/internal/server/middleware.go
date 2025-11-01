@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 )
 
 func CORSMiddleware() gin.HandlerFunc {
@@ -29,6 +30,14 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func FirebaseAuthMiddleware(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		tenantId := c.GetHeader("X-Tenant-ID")
+
+		if tenantId == "" {
+			logger.Error("Missing X-Tenant-ID")
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Missing X-Tenant-ID"})
+			return
+		}
+
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing Authorization header"})
@@ -53,7 +62,7 @@ func FirebaseAuthMiddleware(userService services.UserService) gin.HandlerFunc {
 		email, _ := token.Claims["email"].(string)
 		name := strings.Split(email, "@")[0]
 
-		user, err := userService.GetUserByUUID(token.UID)
+		user, err := userService.GetUserByUUID(token.UID, tenantId)
 
 		if err != nil {
 			// Si el usuario no existe, crearlo
@@ -63,7 +72,7 @@ func FirebaseAuthMiddleware(userService services.UserService) gin.HandlerFunc {
 				Name:        name,
 			}
 			fmt.Printf("Creando usuario con email %s, y nombre %s \n", email, name)
-			_, err := userService.CreateUser(newUser)
+			_, err := userService.CreateUser(newUser, tenantId)
 			if err != nil {
 				c.AbortWithStatusJSON(http.StatusInternalServerError, gin.H{"error": "Error al crear el usuario" + err.Error()})
 				return

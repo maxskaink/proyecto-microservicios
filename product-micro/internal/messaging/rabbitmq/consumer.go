@@ -8,18 +8,27 @@ import (
 	amqp "github.com/rabbitmq/amqp091-go"
 )
 
+// User Events
 const (
-	ExchangeName   = "user_events"
-	ExchangeType   = "topic"
-	UserCreatedKey = "user.created"
-	UserUpdatedKey = "user.updated"
-	UserDeletedKey = "user.deleted"
-	QueueName      = "product_user_events"
+	UserExchangeName = "user_events"
+	UserExchangeType = "topic"
+	UserCreatedKey   = "user.created"
+	UserUpdatedKey   = "user.updated"
+	UserDeletedKey   = "user.deleted"
+	UserQueueName    = "product_user_events"
+)
+
+// Tenant Events
+const (
+	TenantExchangeName = "tenants_events"
+	TenantExchangeType = "topic"
+	TenantCreatedKey   = "tenant.created"
+	TenantDeletedKey   = "tenant.deleted"
+	TenantQueueName    = "product_tenant_events"
 )
 
 type Consumer struct {
 	cm         *ConnectionManager
-	queueName  string
 	dispatcher Dispatcher
 }
 
@@ -29,22 +38,26 @@ type Dispatcher interface {
 }
 
 // NewConsumer crea un nuevo consumidor
-func NewConsumer(cm *ConnectionManager, queueName string, dispatcher Dispatcher) (*Consumer, error) {
+func NewConsumer(cm *ConnectionManager, dispatcher Dispatcher) (*Consumer, error) {
 	c := &Consumer{
 		cm:         cm,
-		queueName:  queueName,
 		dispatcher: dispatcher,
 	}
 
-	if err := c.setupQueue(); err != nil {
+	// Configurar ambos exchanges y colas
+	if err := c.setupUserQueue(); err != nil {
+		return nil, err
+	}
+
+	if err := c.setupTenantQueue(); err != nil {
 		return nil, err
 	}
 
 	return c, nil
 }
 
-// setupQueue inicializa el exchange y la cola para consumir mensajes
-func (c *Consumer) setupQueue() error {
+// setupUserQueue inicializa el exchange y la cola para eventos de usuarios
+func (c *Consumer) setupUserQueue() error {
 	ch, err := c.cm.Channel()
 	if err != nil {
 		return err
@@ -52,8 +65,8 @@ func (c *Consumer) setupQueue() error {
 	defer ch.Close()
 
 	err = ch.ExchangeDeclare(
-		ExchangeName,
-		ExchangeType,
+		UserExchangeName,
+		UserExchangeType,
 		true,  // durable
 		false, // auto-eliminated
 		false, // internal
@@ -65,7 +78,7 @@ func (c *Consumer) setupQueue() error {
 	}
 
 	q, err := ch.QueueDeclare(
-		c.queueName,
+		UserQueueName,
 		true,  // durable
 		false, // auto-eliminated
 		false, // exclusive
@@ -79,16 +92,89 @@ func (c *Consumer) setupQueue() error {
 	err = ch.QueueBind(
 		q.Name,
 		"user.#",
-		ExchangeName,
+		UserExchangeName,
 		false,
 		nil,
 	)
 
-	return err
+	if err != nil {
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("Cola de usuarios configurada: %s", UserQueueName))
+	return nil
 }
 
-// StartConsuming comienza a consumir mensajes
+// setupTenantQueue inicializa el exchange y la cola para eventos de tenants
+func (c *Consumer) setupTenantQueue() error {
+	ch, err := c.cm.Channel()
+	if err != nil {
+		return err
+	}
+	defer ch.Close()
+
+	err = ch.ExchangeDeclare(
+		TenantExchangeName,
+		TenantExchangeType,
+		true,  // durable
+		false, // auto-eliminated
+		false, // internal
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		return err
+	}
+
+	q, err := ch.QueueDeclare(
+		TenantQueueName,
+		true,  // durable
+		false, // auto-eliminated
+		false, // exclusive
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		return err
+	}
+
+	err = ch.QueueBind(
+		q.Name,
+		"tenant.#",
+		TenantExchangeName,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("Cola de tenants configurada: %s", TenantQueueName))
+	return nil
+}
+
+// StartConsuming comienza a consumir mensajes de ambos exchanges
 func (c *Consumer) StartConsuming(ctx context.Context) error {
+	// Consumidor de eventos de usuario
+	go func() {
+		if err := c.startUserConsumer(ctx); err != nil {
+			logger.Error(fmt.Sprintf("Error en consumidor de usuarios: %v", err))
+		}
+	}()
+
+	// Consumidor de eventos de tenant
+	go func() {
+		if err := c.startTenantConsumer(ctx); err != nil {
+			logger.Error(fmt.Sprintf("Error en consumidor de tenants: %v", err))
+		}
+	}()
+
+	return nil
+}
+
+// startUserConsumer consume mensajes de user_events
+func (c *Consumer) startUserConsumer(ctx context.Context) error {
 	ch, err := c.cm.Channel()
 	if err != nil {
 		return err
@@ -101,7 +187,7 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 	}
 
 	msgs, err := ch.Consume(
-		c.queueName,
+		UserQueueName,
 		"",    // consumer
 		false, // auto-ack
 		false, // exclusive
@@ -113,38 +199,78 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 		return err
 	}
 
-	logger.Info(fmt.Sprintf("Comenzando a consumir mensajes de la cola %s", c.queueName))
-	done := make(chan struct{})
+	logger.Info(fmt.Sprintf("Comenzando a consumir mensajes de usuarios desde %s", UserQueueName))
 
-	go func() {
-		for {
-			select {
-			case <-ctx.Done():
-				logger.Info("Deteniendo consumo de mensajes")
-				close(done)
-				return
+	for {
+		select {
+		case <-ctx.Done():
+			logger.Info("Deteniendo consumo de mensajes de usuarios")
+			return nil
 
-			case msg, ok := <-msgs:
-				if !ok {
-					logger.Error("Canal de mensajes cerrado")
-					close(done)
-					return
-				}
+		case msg, ok := <-msgs:
+			if !ok {
+				logger.Error("Canal de mensajes de usuarios cerrado")
+				return nil
+			}
 
-				// Procesar mensaje con manejo de errores mejorado
-				if err := c.processMessage(msg); err != nil {
-					logger.Error(fmt.Sprintf("Error al procesar mensaje (routing key: %s): %v", msg.RoutingKey, err))
-					// NO reintentar: descartar el mensaje (dead letter)
-					msg.Ack(false)
-				} else {
-					msg.Ack(false)
-				}
+			if err := c.processMessage(msg); err != nil {
+				logger.Error(fmt.Sprintf("Error al procesar mensaje de usuario (routing key: %s): %v", msg.RoutingKey, err))
+				msg.Ack(false)
+			} else {
+				msg.Ack(false)
 			}
 		}
-	}()
+	}
+}
 
-	<-done
-	return nil
+// startTenantConsumer consume mensajes de tenants_events
+func (c *Consumer) startTenantConsumer(ctx context.Context) error {
+	ch, err := c.cm.Channel()
+	if err != nil {
+		return err
+	}
+	defer ch.Close()
+
+	err = ch.Qos(1, 0, false)
+	if err != nil {
+		return err
+	}
+
+	msgs, err := ch.Consume(
+		TenantQueueName,
+		"",    // consumer
+		false, // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("Comenzando a consumir mensajes de tenants desde %s", TenantQueueName))
+
+	for {
+		select {
+		case <-ctx.Done():
+			logger.Info("Deteniendo consumo de mensajes de tenants")
+			return nil
+
+		case msg, ok := <-msgs:
+			if !ok {
+				logger.Error("Canal de mensajes de tenants cerrado")
+				return nil
+			}
+
+			if err := c.processMessage(msg); err != nil {
+				logger.Error(fmt.Sprintf("Error al procesar mensaje de tenant (routing key: %s): %v", msg.RoutingKey, err))
+				msg.Ack(false)
+			} else {
+				msg.Ack(false)
+			}
+		}
+	}
 }
 
 // processMessage procesa un mensaje recibido

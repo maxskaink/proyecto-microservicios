@@ -29,6 +29,14 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func FirebaseAuthMiddleware(userService services.IUserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
+		tenantId := c.GetHeader("X-Tenant-ID")
+
+		if tenantId == "" {
+			logger.Error("Missing X-Tenant-ID")
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Missing X-Tenant-ID"})
+			return
+		}
+
 		authHeader := c.GetHeader("Authorization")
 		if authHeader == "" {
 			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing Authorization header"})
@@ -53,7 +61,7 @@ func FirebaseAuthMiddleware(userService services.IUserService) gin.HandlerFunc {
 		email, _ := token.Claims["email"].(string)
 		name := strings.Split(email, "@")[0]
 
-		_, err = userService.GetUserByUUID(token.UID)
+		_, err = userService.GetUserByUUID(token.UID, tenantId)
 
 		if err != nil {
 			logger.Error("User with uid " + token.UID + " no existe en la bd de productos")

@@ -1,0 +1,10 @@
+[build]
+  cmd = "go build -o ./tmp/main ./cmd"
+  bin = "tmp/main"
+  include_ext = ["go", "mod", "sum"]
+  exclude_dir = ["tmp", "vendor"]
+
+[log]
+  time = true
+  color = true
+  prefix = ">>"

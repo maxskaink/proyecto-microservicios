@@ -110,6 +110,62 @@ services:
     networks:
       - micro-network
 
+  # Base de datos Tenant
+  tenant_db:
+    image: postgres:16-alpine
+    container_name: tenant_db
+    environment:
+      POSTGRES_USER: tenant
+      POSTGRES_PASSWORD: tenantpass
+      POSTGRES_DB: tenant_db
+    volumes:
+      - tenant_db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tenant -d tenant_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    ports:
+      - "5434:5432"
+    networks:
+      - micro-network
+
+  # Tenant Microservice
+  tenant_api:
+    build:
+      context: ./tenant-micro
+      dockerfile: Dockerfile
+    container_name: tenant_api
+    depends_on:
+      tenant_db:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      PORT: "8082"
+      DB_HOST: "tenant_db"
+      DB_USER: "tenant"
+      DB_PASSWORD: "tenantpass"
+      DB_NAME: "tenant_db"
+      DB_PORT: "5432"
+      RABBITMQ_USER: "guest"
+      RABBITMQ_PASSWORD: "guest"
+      RABBITMQ_HOST: "rabbitmq"
+      RABBITMQ_PORT: "5672"
+      SERVICE_NAME: "tenant-service"
+      SERVICE_TAGS: "tenant,api"
+      CONSUL_HTTP_ADDR: "consul:8500"
+      TRAEFIK_ENABLE: "true"
+    volumes:
+      - ./tenant-micro:/app:Z
+    command: air -c .air.toml
+    user: "${UID}:${GID}"
+    networks:
+      - micro-network
+
   # Product Microservice
   product_api:
     build:
@@ -162,6 +218,7 @@ services:
 volumes:
   product_db_data:
   micro_db_data:
+  tenant_db_data:
   consul_data:
   rabbitmq_data:
 

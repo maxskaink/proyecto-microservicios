@@ -5,49 +5,39 @@ import { filter, map, switchMap } from 'rxjs/operators';
 import {Firestore, doc, getDoc, collection, getDocs, setDoc} from '@angular/fire/firestore';
 import { HttpClient } from '@angular/common/http';
 import { environment } from '../environment/environment';
+import { UserData } from '../Models/UserData';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
-  private userDataSubject = new BehaviorSubject<any | null>(null);
+  private userDataSubject = new BehaviorSubject<UserData | null>(null);
 
   constructor(private afAuth: Auth, private firestore: Firestore, private http: HttpClient, private injector: Injector) {
     authState(this.afAuth).subscribe(async (user) => {
       this.currentUserSubject.next(user);
       if (user) {
+        // Cargar datos del usuario desde el backend
         try {
-          const docSnap = await runInInjectionContext(this.injector, () => 
-            getDoc(doc(this.firestore, 'usuarios', user.uid))
-          );
-          if (docSnap.exists()) {
-            const firestoreData = docSnap.data();
-            // Combinar datos de Firebase Auth con Firestore
-            const combinedData = {
-              uid: user.uid,
-              email: user.email,
-              emailVerified: user.emailVerified,
-              displayName: user.displayName,
-              ...firestoreData
-            };
-            this.userDataSubject.next(combinedData);
-            console.log('Datos completos del usuario:', combinedData);
-          } else {
-            console.warn('Usuario autenticado pero sin documento en Firestore');
-            this.userDataSubject.next({
-              uid: user.uid,
-              email: user.email,
-              emailVerified: user.emailVerified,
-              displayName: user.displayName
-            });
-          }
+          await this.fetchCurrentUserFromBackend();
         } catch (error) {
-          console.error('Error al cargar datos de Firestore:', error);
-          this.userDataSubject.next({
-            uid: user.uid,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            displayName: user.displayName
-          });
+          console.error('Error al cargar datos del usuario desde backend:', error);
+          // Fallback: crear UserData básico con datos de Firebase Auth
+          const fallbackUserData: UserData = {
+            id: '', // Se llenará desde el backend
+            firebaseUID: user.uid,
+            email: user.email || '',
+            name: user.displayName || user.email?.split('@')[0] || '',
+            rol: 'cliente', // rol por defecto
+            profile: {
+              providerId: '',
+              uid: user.uid,
+              displayName: user.displayName,
+              email: user.email,
+              phoneNumber: user.phoneNumber,
+              photoURL: user.photoURL
+            }
+          };
+          this.userDataSubject.next(fallbackUserData);
         }
       } else {
         this.userDataSubject.next(null);
@@ -65,23 +55,38 @@ export class AuthService {
     });
   }
   /**
-   * Consulta al backend los datos del usuario actualmente autenticado.
+   * Consulta al backend los datos del usuario actualmente autenticado y los guarda en userData.
    * @returns Los datos del usuario actual obtenidos desde el backend
    */
   async fetchCurrentUserFromBackend() {
     const token = await this.getToken();
     console.log('Token obtenido de Firebase:', token); 
   
-    const url = `${environment.apiUrl}/auth/me`;
+    const url = `${environment.apiUrl}/users/me`;
     if (token) {
-      return firstValueFrom(
-        this.http.get(url, {
-          headers: { Authorization: `Bearer ${token}` },
-        })
-      );
+      const headers = { 
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      };
+      
+      try {
+        const backendUserData = await firstValueFrom(
+          this.http.get<UserData>(url, { headers })
+        );
+        
+        // Guardar los datos del backend en userDataSubject
+        this.userDataSubject.next(backendUserData);
+        console.log('Datos del usuario desde backend cargados y guardados:', backendUserData);
+        
+        return backendUserData;
+      } catch (error) {
+        console.error('Error al consultar el backend:', error);
+        throw error;
+      }
+    } else {
+      console.warn('No se obtuvo token, no se puede consultar el backend');
+      throw new Error('No se pudo obtener el token de autenticación');
     }
-    console.warn('No se obtuvo token, enviando sin Authorization header');
-    return firstValueFrom(this.http.get(url));
   }
   /**
    * Observable que emite true si el usuario está autenticado, false en caso contrario.
@@ -144,82 +149,25 @@ export class AuthService {
     return signOut(this.afAuth);
   }
 
-  /**
-   * Obtiene los datos completos del usuario desde Firestore
-   * @returns Los datos del usuario almacenados en Firestore
-   */
-  async getUserDataFromFirestore(): Promise<any | null> {
-    const user = await firstValueFrom(
-      this.currentUser.pipe(
-        filter((u): u is User => u !== null)
-      )
-    );
-    
-    if (!user) return null;
+ 
+  
 
+  /**
+   * Método para cargar datos del usuario desde el backend y actualizar userData
+   */
+  async loadUserDataFromBackend(): Promise<void> {
     try {
-      const docSnap = await runInInjectionContext(this.injector, () => 
-        getDoc(doc(this.firestore, 'usuarios', user.uid))
-      );
-      
-      if (docSnap.exists()) {
-        return docSnap.data();
-      } else {
-        console.warn('No se encontró documento del usuario en Firestore');
-        return null;
-      }
+      await this.fetchCurrentUserFromBackend();
+      console.log('Datos del usuario cargados y guardados exitosamente');
     } catch (error) {
-      console.error('Error al obtener datos de Firestore:', error);
-      return null;
+      console.error('Error al cargar datos del usuario desde backend:', error);
     }
   }
 
   /**
-   * Observable que combina datos de Firebase Auth con datos de Firestore
-   * @returns Observable con datos completos del usuario
+   * Observable que trae los datos completos del usuario desde el backend
    */
-  get fullUserData(): Observable<any | null> {
-    return this.currentUser.pipe(
-      switchMap(async (user) => {
-        if (!user) return null;
-        
-        try {
-          // Datos básicos de Firebase Auth
-          const authData = {
-            uid: user.uid,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            displayName: user.displayName
-          };
-
-          // Datos adicionales de Firestore
-          const firestoreData = await runInInjectionContext(this.injector, async () => {
-            const docSnap = await getDoc(doc(this.firestore, 'usuarios', user.uid));
-            return docSnap.exists() ? docSnap.data() : {};
-          });
-
-          // Combinar ambos
-          return {
-            ...authData,
-            ...firestoreData
-          };
-        } catch (error) {
-          console.error('Error al combinar datos del usuario:', error);
-          return {
-            uid: user.uid,
-            email: user.email,
-            emailVerified: user.emailVerified,
-            displayName: user.displayName
-          };
-        }
-      })
-    );
-  }
-
-  /**
-   * Observable que trae los datos completos del usuario (Firebase Auth + Firestore)
-   */
-  get userData(): Observable<any | null> {
+  get userData(): Observable<UserData | null> {
     return this.userDataSubject.asObservable();
   }
 }

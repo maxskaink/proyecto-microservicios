@@ -1,9 +1,9 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../service /Authser.vice';
-import { Subscription } from 'rxjs';
-
+import { combineLatest, finalize, Subscription } from 'rxjs';
+import { UserData } from '../../../Models/UserData';
 interface MenuOption {
   id: string;
   title: string;
@@ -13,22 +13,6 @@ interface MenuOption {
   category: 'shopping' | 'profile' | 'business';
 }
 
-interface UserData {
-  // Campos de Firebase Auth
-  uid?: string;
-  email?: string;
-  emailVerified?: boolean;
-  displayName?: string;
-  
-  // Campos personalizados de Firestore
-  nombre?: string;
-  apellido?: string;
-  telefono?: string;
-  direccion?: string;
-  rol?: string;
-  fechaRegistro?: string;
-  activo?: boolean;
-}
 
 @Component({
   selector: 'app-user',
@@ -108,7 +92,10 @@ export class User implements OnInit, OnDestroy {
     }
   ];
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(private router: Router, 
+    private authService: AuthService,
+    private cdr: ChangeDetectorRef,
+    private zone: NgZone) {}
 
   ngOnInit(): void {
     this.loadUserData();
@@ -118,69 +105,37 @@ export class User implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
-  // Cargar datos del usuario autenticado
-  private loadUserData(): void {
-    this.isLoading = true;
+private loadUserData(): void {
+  this.isLoading = true;
 
-    // Suscribirse al estado de autenticación
-    const authSub = this.authService.isLoggedIn$.subscribe(loggedIn => {
-      this.isLoggedIn = loggedIn;
-      if (!loggedIn) {
-        this.currentUser = null;
-        this.isLoading = false;
-      }
-    });
-    this.subscriptions.add(authSub);
-
-    // Obtener datos completos del usuario (Firebase Auth + Firestore)
-    const userDataSub = this.authService.userData.subscribe(userData => {
-      if (userData) {
-        this.currentUser = userData as UserData;
-        console.log('Datos del usuario cargados:', this.currentUser);
-        this.isLoading = false;
-      } else if (!this.isLoggedIn) {
-        this.currentUser = null;
-        this.isLoading = false;
-      }
-    });
-    this.subscriptions.add(userDataSub);
-
-    // Obtener claims para verificar roles (como fallback si no está en Firestore)
-    const claimsSub = this.authService.getUserClaims().subscribe(claims => {
-      if (claims && this.currentUser && !this.currentUser.rol) {
-        this.currentUser.rol = claims['admin'] ? 'admin' : 'usuario';
-      }
-    });
-    this.subscriptions.add(claimsSub);
-
-    // Si después de 5 segundos sigue cargando, detener el loading
-    setTimeout(() => {
-      if (this.isLoading) {
-        this.isLoading = false;
-      }
-    }, 5000);
-  }
-
-  // Recargar datos del usuario desde Firestore
-  async loadAdditionalUserData(): Promise<void> {
-    if (!this.isLoggedIn) return;
-    
-    try {
-      console.log('Recargando datos del usuario desde Firestore...');
-      const userData = await this.authService.getUserDataFromFirestore();
-      if (userData && this.currentUser) {
-        // Actualizar datos con la información más reciente de Firestore
-        this.currentUser = {
-          ...this.currentUser,
-          ...userData
-        };
-        console.log('Datos actualizados desde Firestore:', this.currentUser);
-      }
-    } catch (error) {
-      console.warn('No se pudieron recargar los datos desde Firestore:', error);
+  // Suscripción principal a los datos del usuario
+  const userDataSub = this.authService.userData.subscribe({
+    next: (userData) => {
+      console.log('Datos del usuario recibidos en componente:', userData);
+      this.currentUser = userData;
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    },
+    error: (error) => {
+      console.error('Error al cargar datos del usuario:', error);
+      this.isLoading = false;
+      this.cdr.detectChanges();
     }
-  }
+  });
 
+  // Suscripción al estado de login
+  const loginSub = this.authService.isLoggedIn$.subscribe(isLoggedIn => {
+    this.isLoggedIn = isLoggedIn;
+    if (!isLoggedIn) {
+      this.currentUser = null;
+      this.isLoading = false;
+    }
+    this.cdr.detectChanges();
+  });
+
+  this.subscriptions.add(userDataSub);
+  this.subscriptions.add(loginSub);
+}
   // Cerrar sesión
   async onLogout(): Promise<void> {
     try {
@@ -225,14 +180,8 @@ export class User implements OnInit, OnDestroy {
   getUserDisplayName(): string {
     if (!this.currentUser) return 'Usuario';
     
-    // Prioridad: nombre completo > nombre > displayName > email > 'Usuario'
-    const nombreCompleto = this.currentUser.nombre && this.currentUser.apellido 
-      ? `${this.currentUser.nombre} ${this.currentUser.apellido}`
-      : null;
-    
-    return nombreCompleto ||
-           this.currentUser.nombre || 
-           this.currentUser.displayName ||
+    // Usar directamente el campo name del backend
+    return this.currentUser.name || 
            this.currentUser.email?.split('@')[0] || 
            'Usuario';
   }
@@ -257,22 +206,13 @@ export class User implements OnInit, OnDestroy {
     return this.currentUser?.rol === 'admin';
   }
 
-  // Obtener información adicional del usuario
-  getUserPhone(): string {
-    return this.currentUser?.telefono || 'No disponible';
-  }
 
   getUserAddress(): string {
-    return this.currentUser?.direccion || 'No disponible';
+    // Aquí deberías usar el campo correcto para la dirección del usuario
+    // Por ahora retorno un placeholder
+    return 'Dirección no disponible';
   }
 
-  // Verificar si el usuario tiene email verificado
-  isEmailVerified(): boolean {
-    return this.currentUser?.emailVerified || false;
-  }
 
-  // Verificar si el usuario está activo
-  isUserActive(): boolean {
-    return this.currentUser?.activo !== false; // true por defecto
-  }
+
 }

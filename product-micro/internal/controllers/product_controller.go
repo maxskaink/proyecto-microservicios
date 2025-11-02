@@ -9,6 +9,7 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 )
 
 // ProductController maneja endpoints de productos.
@@ -27,6 +28,8 @@ func NewProductController(productService services.IProductService) *ProductContr
 func (pc *ProductController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFunc) {
 	products := rg.Group("/products")
 	{
+		logger.Info("Registrando rutas de categorias")
+		products.GET("/categories", auth, pc.GetCategories)
 		products.GET("", auth, pc.ListProducts)
 		products.GET("/:id", auth, pc.GetProductByID)
 		products.POST("", auth, pc.CreateProduct)
@@ -213,4 +216,17 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+// GetCategories maneja GET /products/categories
+// @Summary Obtener lista de categorías de productos
+// @Description Obtiene una lista de todas las categorías de productos disponibles.
+// @Tags products
+// @Produce json
+// @Success 200 {array} string
+// @Router /products/categories [get]
+// @Security Bearer
+func (pc *ProductController) GetCategories(c *gin.Context) {
+	categories := domain.GetCategoriesList()
+	c.JSON(http.StatusOK, categories)
 }

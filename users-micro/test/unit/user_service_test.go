@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/mock"
 )
 
+var tenantID = "tenantA"
+
 func TestCreateUser(t *testing.T) {
 	// Arrange
 	mockRepo := new(MockUserRepository)
@@ -31,7 +33,7 @@ func TestCreateUser(t *testing.T) {
 	mockRepo.On("Create", mock.Anything).Return(expectedResponse, nil)
 
 	// Act
-	response, err := service.CreateUser(testUserRequest)
+	response, err := service.CreateUser(testUserRequest, tenantID)
 
 	// Assert
 	assert.NoError(t, err)
@@ -54,7 +56,7 @@ func TestCreateUserValidationError(t *testing.T) {
 	}
 
 	// Act
-	_, err := service.CreateUser(testUserRequest)
+	_, err := service.CreateUser(testUserRequest, tenantID)
 
 	// Assert
 	assert.Error(t, err)
@@ -79,7 +81,7 @@ func TestGetUserByID(t *testing.T) {
 	mockRepo.On("FindByID", userID).Return(expectedUser, nil)
 
 	// Act
-	user, err := service.GetUserByID(userID)
+	user, err := service.GetUserByID(userID, tenantID)
 
 	// Assert
 	assert.NoError(t, err)
@@ -97,7 +99,7 @@ func TestGetUserByIDNotFound(t *testing.T) {
 	mockRepo.On("FindByID", userID).Return(nil, errors.New("usuario no encontrado"))
 
 	// Act
-	_, err := service.GetUserByID(userID)
+	_, err := service.GetUserByID(userID, tenantID)
 
 	// Assert
 	assert.Error(t, err)
@@ -140,7 +142,7 @@ func TestUpdateUser(t *testing.T) {
 	mockRepo.On("Update", userID, &updateRequest).Return(expectedResponse, nil)
 
 	// Act
-	response, err := service.UpdateUser(userID, updateRequest, firebaseUID)
+	response, err := service.UpdateUser(userID, updateRequest, firebaseUID, tenantID)
 
 	// Assert
 	assert.NoError(t, err)
@@ -173,7 +175,7 @@ func TestUpdateUserNoPermission(t *testing.T) {
 	mockRepo.On("FindByID", userID).Return(foundUser, nil)
 
 	// Act
-	_, err := service.UpdateUser(userID, updateRequest, differentFirebaseUID)
+	_, err := service.UpdateUser(userID, updateRequest, differentFirebaseUID, tenantID)
 
 	// Assert
 	assert.Error(t, err)
@@ -190,7 +192,7 @@ func TestDeleteUser(t *testing.T) {
 	mockRepo.On("Delete", userID).Return(nil)
 
 	// Act
-	err := service.DeleteUser(userID)
+	err := service.DeleteUser(userID, tenantID)
 
 	// Assert
 	assert.NoError(t, err)

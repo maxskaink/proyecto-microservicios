@@ -4,16 +4,16 @@ import "github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 
 // UserRepository define operaciones de persistencia para usuarios.
 type IProductRepository interface {
-	GetByIdProduct(id string) (*dto.ProductDTOResponse, error)
-	ListProducts(page int, pageSize int) (*[]dto.ProductDTOResponse, error)
-	CreateProduct(product *dto.ProductDTORequest) (*dto.ProductDTOResponse, error)
-	UpdateProduct(id string, product *dto.ProductDTORequest) (*dto.ProductDTOResponse, error)
+	GetByIdProduct(id string, tenantID string) (*dto.ProductDTOResponse, error)
+	ListProducts(page int, pageSize int, tenantID string) (*[]dto.ProductDTOResponse, error)
+	CreateProduct(product *dto.ProductDTORequest, tenantID string) (*dto.ProductDTOResponse, error)
+	UpdateProduct(id string, product *dto.ProductDTORequest, tenantID string) (*dto.ProductDTOResponse, error)
 }
 
 type IUserRepository interface {
-	CreateUser(dto.UserRequest) (*dto.UserResponse, error)
-	FindById(id string) (*dto.UserResponse, error)
-	FindByUID(uid string) (*dto.UserResponse, error)
-	UpdateUser(dto.UserRequest) (*dto.UserResponse, error)
-	DeleteUser(id string) error
+	CreateUser(dto.UserRequest, string) (*dto.UserResponse, error)
+	FindById(id string, tenantID string) (*dto.UserResponse, error)
+	FindByUID(uid string, tenantID string) (*dto.UserResponse, error)
+	UpdateUser(dto.UserRequest, string) (*dto.UserResponse, error)
+	DeleteUser(id string, tenantID string) error
 }

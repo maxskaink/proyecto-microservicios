@@ -1,35 +1,52 @@
 #!/bin/bash
 
-# Colores para mejorar la salida
 GREEN='\033[0;32m'
 YELLOW='\033[0;33m'
-NC='\033[0m' # No Color
+RED='\033[0;31m'
+NC='\033[0m'
 
-echo -e "${GREEN}Iniciando la infraestructura de microservicios...${NC}"
+PROJECT_NAME="proyecto-microservicios"
 
-# Definir variables de entorno para docker-compose
+echo -e "${GREEN}Preparando infraestructura de microservicios...${NC}"
+
+# Exportar UID/GID sin sobrescribir si existen
 export UID=$(id -u)
 export GID=$(id -g)
 
-# Iniciar los servicios
-echo -e "${YELLOW}Iniciando Docker Compose...${NC}"
-docker-compose up -d
+echo -e "${YELLOW}UID y GID configurados: UID=$UID GID=$GID${NC}"
 
-# Esperar a que los servicios estén disponibles
-echo -e "${YELLOW}Esperando a que los servicios estén disponibles...${NC}"
-sleep 10
+echo -e "${YELLOW}Deteniendo contenedores antiguos...${NC}"
+docker compose down --remove-orphans
 
-# Mostrar los contenedores en ejecución
-echo -e "${GREEN}Servicios en ejecución:${NC}"
-docker-compose ps
+echo -e "${YELLOW}Eliminando contenedores detenidos del proyecto...${NC}"
+docker ps -a --filter "network=${PROJECT_NAME}_micro-network" -q | xargs -r docker rm -f
 
-# Mostrar información de acceso
-echo -e "\n${GREEN}Acceso a los servicios:${NC}"
-echo -e "- API Gateway: ${YELLOW}http://localhost${NC}"
-echo -e "- Dashboard Traefik: ${YELLOW}http://localhost:8090/dashboard/${NC}"
-echo -e "- UI de Consul: ${YELLOW}http://localhost:8500/ui/${NC}"
-echo -e "- API de usuarios: ${YELLOW}http://localhost/api/users${NC} (a través del Gateway)"
-echo -e "- API de usuarios (directo): ${YELLOW}http://localhost:8090${NC} (desarrollo)"
-echo -e "- rabbitmq Management: ${YELLOW}http://localhost:15672${NC} (usuario: guest, contraseña: guest)"
+echo -e "${YELLOW}Eliminando imágenes dangling...${NC}"
+docker images -f "dangling=true" -q | xargs -r docker rmi
 
-echo -e "\n${GREEN}¡Infraestructura iniciada correctamente!${NC}"
+echo -e "${YELLOW}Eliminando red del proyecto si existe...${NC}"
+docker network rm ${PROJECT_NAME}_micro-network 2>/dev/null
+
+echo -e "${YELLOW}Limpiando redes huérfanas...${NC}"
+docker network prune -f >/dev/null 2>&1
+
+echo -e "${GREEN}Iniciando servicios...${NC}"
+
+if ! docker compose up --build -d; then
+  echo -e "${RED}⚠️ Error creando red. Intentando limpiar...${NC}"
+  docker network rm ${PROJECT_NAME}_micro-network 2>/dev/null
+  docker compose up --build -d
+fi
+
+echo -e "${YELLOW}Esperando inicio...${NC}"
+sleep 8
+
+echo -e "${GREEN}Servicios activos:${NC}"
+docker compose ps
+
+echo -e "\n${GREEN}✅ Infraestructura levantada${NC}"
+echo -e "- Consul: http://localhost:8500/ui/"
+echo -e "- Kong Admin: http://localhost:8090"
+echo -e "- RabbitMQ: http://localhost:15672 (guest/guest)"
+echo -e "- API Products: http://localhost/api/products"
+echo -e "- API Products (tenant): http://localhost/tenant1/api/products"

@@ -31,7 +31,12 @@ func NewUserServiceWithoutPublisher(userRepo repositories.UserRepository) UserSe
 }
 
 // CreateUser crea un nuevo usuario.
-func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
+func (s *userService) CreateUser(u dto.UserRequest, tenantID string) (dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
 	// Validar los datos del usuario
 	if u.Email == "" || u.Name == "" {
 		return dto.UserResponse{}, domain.BadRequestError{Message: "El email y nombre no pueden estar vacios"}
@@ -44,14 +49,14 @@ func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 	u.Rol = domain.UserRoleClient //Rol by default
 
 	// Llamar al repositorio para crear el usuario
-	userCreated, err := s.userRepo.Create(&u)
+	userCreated, err := s.userRepo.Create(&u, tenantID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
 
 	// Publicar evento de usuario creado
 	if s.publisher != nil {
-		if err := s.publisher.PublishUserCreated(context.Background(), *userCreated); err != nil {
+		if err := s.publisher.PublishUserCreated(context.Background(), *userCreated, tenantID); err != nil {
 			logger.Error("Error al publicar evento de usuario creado: " + err.Error())
 			// No retornamos error aquí para no afectar la operación principal
 		} else {
@@ -64,9 +69,14 @@ func (s *userService) CreateUser(u dto.UserRequest) (dto.UserResponse, error) {
 }
 
 // GetUserByID obtiene un usuario por su ID.
-func (s *userService) GetUserByID(id string) (dto.UserResponse, error) {
+func (s *userService) GetUserByID(id string, tenantID string) (dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
 	// Llamar al repositorio para obtener el usuario
-	user, err := s.userRepo.FindByID(id)
+	user, err := s.userRepo.FindByID(id, tenantID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -75,8 +85,13 @@ func (s *userService) GetUserByID(id string) (dto.UserResponse, error) {
 	return *user, nil
 }
 
-func (s *userService) GetUserByUUID(id string) (dto.UserResponse, error) {
-	user, err := s.userRepo.FindByUUID(id)
+func (s *userService) GetUserByUUID(id string, tenantID string) (dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
+	user, err := s.userRepo.FindByUUID(id, tenantID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -84,9 +99,13 @@ func (s *userService) GetUserByUUID(id string) (dto.UserResponse, error) {
 }
 
 // UpdateUser actualiza un usuario existente. uid to know if has permission
-func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.UserResponse, error) {
+func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string, tenantID string) (dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "Tenant requerido"}
+	}
 
-	user_to_update, err := s.userRepo.FindByID(id)
+	user_to_update, err := s.userRepo.FindByID(id, tenantID)
 
 	if err != nil {
 		return dto.UserResponse{}, domain.NotFoundError{Message: "El usuario con id " + id + " no existe"}
@@ -96,11 +115,11 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 		return dto.UserResponse{}, domain.NotFoundError{Message: "El usuario no tiene permisos para editar el usuario"}
 	}
 
-	response, err := s.userRepo.Update(id, &u)
+	response, err := s.userRepo.Update(id, &u, tenantID)
 
 	//Notificar por evento
 	if err == nil && s.publisher != nil {
-		if err := s.publisher.PublishUserUpdated(context.Background(), *response); err != nil {
+		if err := s.publisher.PublishUserUpdated(context.Background(), *response, tenantID); err != nil {
 			logger.Error("Error al publicar evento de usuario actualizado: " + err.Error())
 		} else {
 			logger.Info("Evento de usuario actualizado publicado correctamente")
@@ -111,20 +130,30 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string) (dto.
 }
 
 // DeleteUser elimina un usuario por su ID.
-func (s *userService) DeleteUser(id string) error {
+func (s *userService) DeleteUser(id string, tenantID string) error {
+	// Validar tenant
+	if tenantID == "" {
+		return domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
 	//Is missing the validation of authorization
-	return s.userRepo.Delete(id)
+	return s.userRepo.Delete(id, tenantID)
 }
 
 // Update the rol of a user - uid of how are tring to change the rol
-func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester string) (dto.UserResponse, error) {
+func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester string, tenantID string) (dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
 	//Validate the rol
 	if !domain.IsValidUserRole(string(rol)) {
 		return dto.UserResponse{}, domain.InvalidInputError{Message: "El rol debe ser: " + domain.StringValidRoles()}
 	}
 	//Validate athorization
 	// Validar el rol del usuario solicitante (solo administradores pueden cambiar roles)
-	requester, err := s.GetUserByUUID(uid_requester)
+	requester, err := s.GetUserByUUID(uid_requester, tenantID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -134,13 +163,13 @@ func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester st
 		return dto.UserResponse{}, domain.UnauthorizedError{Message: "Solo administradores pueden cambiar roles de usuario"}
 	}
 	//Validate if the user exist
-	updated_user, err := s.userRepo.UpdateRol(id, string(rol))
+	updated_user, err := s.userRepo.UpdateRol(id, string(rol), tenantID)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
 
 	if s.publisher != nil {
-		if err := s.publisher.PublishUserUpdated(context.Background(), *updated_user); err != nil {
+		if err := s.publisher.PublishUserUpdated(context.Background(), *updated_user, tenantID); err != nil {
 			logger.Error("Error al publicar evento de usuario actualizado: " + err.Error())
 		} else {
 			logger.Info("Evento de usuario actualizado publicado correctamente")

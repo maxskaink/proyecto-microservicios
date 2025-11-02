@@ -7,7 +7,9 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 )
 
 // ProductController maneja endpoints de productos.
@@ -26,6 +28,8 @@ func NewProductController(productService services.IProductService) *ProductContr
 func (pc *ProductController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFunc) {
 	products := rg.Group("/products")
 	{
+		logger.Info("Registrando rutas de categorias")
+		products.GET("/categories", auth, pc.GetCategories)
 		products.GET("", auth, pc.ListProducts)
 		products.GET("/:id", auth, pc.GetProductByID)
 		products.POST("", auth, pc.CreateProduct)
@@ -47,6 +51,13 @@ func (pc *ProductController) RegisterRoutes(rg *gin.RouterGroup, auth gin.Handle
 // @Router /products [post]
 // @Security Bearer
 func (pc *ProductController) CreateProduct(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
 	var productReq dto.ProductDTORequest
 
 	// Validar y parsear el request
@@ -63,7 +74,7 @@ func (pc *ProductController) CreateProduct(c *gin.Context) {
 	}
 
 	// Llamar al servicio
-	result, err := pc.productService.CreateProduct(productReq, userUID)
+	result, err := pc.productService.CreateProduct(productReq, userUID, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return
@@ -83,6 +94,13 @@ func (pc *ProductController) CreateProduct(c *gin.Context) {
 // @Router /products/{id} [get]
 // @Security Bearer
 func (pc *ProductController) GetProductByID(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
 	productID := c.Param("id")
 
 	if productID == "" {
@@ -91,7 +109,7 @@ func (pc *ProductController) GetProductByID(c *gin.Context) {
 	}
 
 	// Llamar al servicio
-	result, err := pc.productService.GetByIdProduct(productID)
+	result, err := pc.productService.GetByIdProduct(productID, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return
@@ -112,6 +130,13 @@ func (pc *ProductController) GetProductByID(c *gin.Context) {
 // @Router /products [get]
 // @Security Bearer
 func (pc *ProductController) ListProducts(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
 	// Obtener parámetros de query con valores por defecto
 	pageStr := c.DefaultQuery("page", "1")
 	pageSizeStr := c.DefaultQuery("page_size", "10")
@@ -130,7 +155,7 @@ func (pc *ProductController) ListProducts(c *gin.Context) {
 	}
 
 	// Llamar al servicio
-	results, err := pc.productService.ListProduct(page, pageSize)
+	results, err := pc.productService.ListProduct(page, pageSize, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return
@@ -154,6 +179,13 @@ func (pc *ProductController) ListProducts(c *gin.Context) {
 // @Router /products/{id} [put]
 // @Security Bearer
 func (pc *ProductController) UpdateProduct(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
 	productID := c.Param("id")
 
 	if productID == "" {
@@ -177,11 +209,24 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	}
 
 	// Llamar al servicio
-	result, err := pc.productService.UpdateProduct(productID, productReq, userUID)
+	result, err := pc.productService.UpdateProduct(productID, productReq, userUID, tenantID)
 	if err != nil {
 		handleUserError(c, err)
 		return
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+// GetCategories maneja GET /products/categories
+// @Summary Obtener lista de categorías de productos
+// @Description Obtiene una lista de todas las categorías de productos disponibles.
+// @Tags products
+// @Produce json
+// @Success 200 {array} string
+// @Router /products/categories [get]
+// @Security Bearer
+func (pc *ProductController) GetCategories(c *gin.Context) {
+	categories := domain.GetCategoriesList()
+	c.JSON(http.StatusOK, categories)
 }

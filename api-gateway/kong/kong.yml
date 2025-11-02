@@ -1,0 +1,78 @@
+_format_version: "3.0"
+
+# Configuración de servicios y rutas para Kong
+services:
+  # Servicio de usuarios - Resuelto desde Consul
+  - name: users-service
+    host: users-service.service.consul
+    port: 8080
+    protocol: http
+    routes:
+      # Ruta con tenant (debe ir primero para tener prioridad)
+      - name: users-with-tenant
+        paths:
+          - ~/([a-zA-Z0-9_-]+)/api/users(/.*)?$
+        strip_path: false
+        regex_priority: 100
+        plugins:
+          - name: tenant-extractor
+            config:
+              header_name: X-Tenant-ID
+      
+      # Ruta sin tenant
+      - name: users-no-tenant
+        paths:
+          - ~/api/users(/.*)?$
+        strip_path: false
+        regex_priority: 50
+
+  # Servicio de productos - Resuelto desde Consul
+  - name: products-service
+    host: products-service.service.consul
+    port: 8081
+    protocol: http
+    routes:
+      # Ruta con tenant (debe ir primero)
+      - name: products-with-tenant
+        paths:
+          - ~/([a-zA-Z0-9_-]+)/api/products(/.*)?$
+        strip_path: false
+        regex_priority: 100
+        plugins:
+          - name: tenant-extractor
+            config:
+              header_name: X-Tenant-ID
+      
+      # Ruta sin tenant
+      - name: products-no-tenant
+        paths:
+          - ~/api/products(/.*)?$
+        strip_path: false
+        regex_priority: 50
+
+  # Servicio de tenants - Resuelto desde Consul
+  - name: tenant-service
+    host: tenant-service.service.consul
+    port: 8082
+    protocol: http
+    routes:
+      # Ruta con tenant (debe ir primero)
+      - name: tenants-with-tenant
+        paths:
+          - ~/([a-zA-Z0-9_-]+)/api/tenants(/.*)?$
+        strip_path: false
+        regex_priority: 100
+        plugins:
+          - name: tenant-extractor
+            config:
+              header_name: X-Tenant-ID
+      
+      # Ruta sin tenant
+      - name: tenants-no-tenant
+        paths:
+          - ~/api/tenants(/.*)?$
+        strip_path: false
+        regex_priority: 50
+
+# Plugins globales (opcional)
+plugins: []

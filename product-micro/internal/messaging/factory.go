@@ -28,7 +28,7 @@ func (f *Factory) CreateConsumer(queueName string, messageHandler func([]byte) e
 	// Adaptar la función a Dispatcher
 	dispatcher := &messageHandlerAdapter{handler: messageHandler}
 
-	consumer, err := rabbitmq.NewConsumer(cm, queueName, dispatcher)
+	consumer, err := rabbitmq.NewConsumer(cm, dispatcher)
 	if err != nil {
 		cm.Close()
 		return nil, err

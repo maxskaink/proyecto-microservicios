@@ -16,9 +16,9 @@ func NewUserService(userRepo repositories.IUserRepository) IUserService {
 }
 
 // GetUserByID obtiene un usuario por su ID.
-func (s *userService) GetUserByID(id string) (dto.UserResponse, error) {
+func (s *userService) GetUserByID(id string, tenantId string) (dto.UserResponse, error) {
 	// Llamar al repositorio para obtener el usuario
-	user, err := s.userRepo.FindById(id)
+	user, err := s.userRepo.FindById(id, tenantId)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}
@@ -27,8 +27,8 @@ func (s *userService) GetUserByID(id string) (dto.UserResponse, error) {
 	return *user, nil
 }
 
-func (s *userService) GetUserByUUID(id string) (dto.UserResponse, error) {
-	user, err := s.userRepo.FindByUID(id)
+func (s *userService) GetUserByUUID(id string, tenantId string) (dto.UserResponse, error) {
+	user, err := s.userRepo.FindByUID(id, tenantId)
 	if err != nil {
 		return dto.UserResponse{}, err
 	}

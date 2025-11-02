@@ -90,3 +90,11 @@ func StringValidProductUnits() string {
 	}
 	return strings.Join(units, ", ")
 }
+
+func GetCategoriesList() []string {
+	categories := make([]string, 0, len(productsCategories))
+	for category := range productsCategories {
+		categories = append(categories, string(category))
+	}
+	return categories
+}

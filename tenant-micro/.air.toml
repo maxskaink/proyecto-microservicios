@@ -1,0 +1,10 @@
+[build]
+  cmd = "GOCACHE=/tmp/go-build GOMODCACHE=/tmp/go-mod go build -o ./tmp/main ./cmd"
+  bin = "tmp/main"
+  include_ext = ["go", "mod", "sum"]
+  exclude_dir = ["tmp", "vendor"]
+
+[log]
+  time = true
+  color = true
+  prefix = ">>"

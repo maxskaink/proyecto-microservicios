@@ -1,5 +1,5 @@
 [build]
-  cmd = "go build -o ./tmp/main ./cmd/server"
+  cmd = "GOCACHE=/tmp/go-build GOMODCACHE=/tmp/go-mod go build -o ./tmp/main ./cmd/server"
   bin = "tmp/main"
   include_ext = ["go", "mod", "sum"]
   exclude_dir = ["tmp", "vendor"]

@@ -13,20 +13,24 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
-	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/events"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/tenant"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/messaging"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server/discovery"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server/validators"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
+	tenant_services "github.com/maxskaink/proyecto-microservicios/product-micro/internal/services/tenant"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
 // Services
 var ProductService services.IProductService
 var UserService services.IUserService
 var serviceRegistry *discovery.ServiceRegistration
-var userEventHandler *events.UserHandler
+var eventManager *messaging.EventManager
+var tenantService *tenant_services.TenantService
 
 // Repositories
 var ProductRepository repositories.IProductRepository
@@ -34,6 +38,9 @@ var UserRepository repositories.IUserRepository
 
 // Midddlewares
 var AuthMiddleware gin.HandlerFunc
+
+// Database
+var DB *gorm.DB
 
 // Run arranca el servidor HTTP con Gin.
 // Solo registra una ruta de salud para validar que el contenedor responde.
@@ -96,33 +103,35 @@ func configDB() {
 		return
 	}
 
-	DB, _ := providerDB.DB(&gin.Context{})
+	DB, _ = providerDB.DB(&gin.Context{})
+	tenantDB := tenant.NewTenantDB(DB)
+	tenantService = tenant_services.NewTenantService(DB)
 
-	ProductRepository = repositories.NewProductRepository(DB)
-	UserRepository = repositories.NewUserRepository(DB)
+	ProductRepository = repositories.NewProductRepository(DB, tenantDB)
+	UserRepository = repositories.NewUserRepository(DB, tenantDB)
 }
 
 func configServices() {
 	UserService = services.NewUserService(UserRepository)
 	ProductService = services.NewProductService(ProductRepository, UserService)
 
-	// Configurar el manejador de eventos de usuarios
+	// Configurar el gestor de eventos (consumidor de RabbitMQ)
 	var err error
-	userEventHandler, err = events.NewUserHandler(UserRepository)
+	eventManager, err = messaging.NewEventManager(UserRepository, tenantService)
 	if err != nil {
-		logger.Error(fmt.Sprintf("Error al crear manejador de eventos de usuarios: %v", err))
+		logger.Error(fmt.Sprintf("Error al crear gestor de eventos: %v", err))
 		return
 	}
 
 	// Iniciar el consumo de eventos en una goroutine
 	go func() {
 		ctx := context.Background()
-		if err := userEventHandler.Start(ctx); err != nil {
+		if err := eventManager.Start(ctx); err != nil {
 			logger.Error(fmt.Sprintf("Error al iniciar consumo de eventos: %v", err))
 		}
 	}()
 
-	logger.Info("Manejador de eventos de usuarios iniciado correctamente")
+	logger.Info("Gestor de eventos iniciado correctamente")
 }
 
 func setupServiceDiscovery() {
@@ -181,12 +190,12 @@ func cleanup() {
 		}
 	}
 
-	// Cerrar manejador de eventos de usuarios
-	if userEventHandler != nil {
-		if err := userEventHandler.Close(); err != nil {
-			logger.Error(fmt.Sprintf("Error al cerrar manejador de eventos de usuarios: %v", err))
+	// Cerrar gestor de eventos
+	if eventManager != nil {
+		if err := eventManager.Close(); err != nil {
+			logger.Error(fmt.Sprintf("Error al cerrar gestor de eventos: %v", err))
 		} else {
-			logger.Info("Manejador de eventos de usuarios cerrado correctamente")
+			logger.Info("Gestor de eventos cerrado correctamente")
 		}
 	}
 }

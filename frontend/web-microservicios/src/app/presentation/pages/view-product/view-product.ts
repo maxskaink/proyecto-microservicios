@@ -5,10 +5,11 @@ import { Product } from '../../../Models/Product';
 import { ProductService } from '../../../service /ProductService';
 import { finalize } from 'rxjs';
 import { Header } from '../../templates/header/header';
+import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 
 @Component({
   selector: 'app-view-product',
-  imports: [CommonModule, Header],
+  imports: [CommonModule, Header, ArrowLeft],
   templateUrl: './view-product.html',
   styleUrl: './view-product.css',
 })

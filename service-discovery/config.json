@@ -5,6 +5,16 @@
   "server": true,
   "bootstrap_expect": 1,
   "client_addr": "0.0.0.0",
+  "ports": {
+    "dns": 8600,
+    "http": 8500,
+    "grpc": 8502
+  },
+  "recursors": ["8.8.8.8", "8.8.4.4"],
+  "dns_config": {
+    "enable_truncate": true,
+    "only_passing": true
+  },
   "ui_config": {
     "enabled": true
   }

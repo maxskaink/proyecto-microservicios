@@ -23,7 +23,7 @@ func GetTenantSchema(tenantID string) string {
 	if tenantID == "" {
 		return "public"
 	}
-	return fmt.Sprintf("tenant_%s", tenantID)
+	return tenantID
 }
 
 // SetSchema cambia el schema activo para la conexión actual

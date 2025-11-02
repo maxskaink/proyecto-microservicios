@@ -11,7 +11,7 @@ func RegisterRoutes(r *gin.Engine) {
 	// Rutas de API protegidas (con middleware de tenant)
 	api := r.Group("/api")
 	{
-		api.Use(middleware.TenantMiddleware())
+		api.Use(middleware.TenantMiddleware(DB))
 		controllers.NewProductController(ProductService).RegisterRoutes(api, AuthMiddleware)
 	}
 }

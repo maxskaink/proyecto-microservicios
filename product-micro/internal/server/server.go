@@ -22,6 +22,7 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
 // Services
@@ -37,6 +38,9 @@ var UserRepository repositories.IUserRepository
 
 // Midddlewares
 var AuthMiddleware gin.HandlerFunc
+
+// Database
+var DB *gorm.DB
 
 // Run arranca el servidor HTTP con Gin.
 // Solo registra una ruta de salud para validar que el contenedor responde.
@@ -99,7 +103,7 @@ func configDB() {
 		return
 	}
 
-	DB, _ := providerDB.DB(&gin.Context{})
+	DB, _ = providerDB.DB(&gin.Context{})
 	tenantDB := tenant.NewTenantDB(DB)
 	tenantService = tenant_services.NewTenantService(DB)
 

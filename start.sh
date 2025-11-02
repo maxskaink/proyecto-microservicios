@@ -26,10 +26,12 @@ docker-compose ps
 # Mostrar información de acceso
 echo -e "\n${GREEN}Acceso a los servicios:${NC}"
 echo -e "- API Gateway: ${YELLOW}http://localhost${NC}"
-echo -e "- Dashboard Traefik: ${YELLOW}http://localhost:8090/dashboard/${NC}"
+echo -e "- Kong Admin API: ${YELLOW}http://localhost:8090${NC}"
 echo -e "- UI de Consul: ${YELLOW}http://localhost:8500/ui/${NC}"
 echo -e "- API de usuarios: ${YELLOW}http://localhost/api/users${NC} (a través del Gateway)"
-echo -e "- API de usuarios (directo): ${YELLOW}http://localhost:8090${NC} (desarrollo)"
-echo -e "- rabbitmq Management: ${YELLOW}http://localhost:15672${NC} (usuario: guest, contraseña: guest)"
+echo -e "- API de usuarios con tenant: ${YELLOW}http://localhost/tenant1/api/users${NC} (a través del Gateway)"
+echo -e "- API de productos: ${YELLOW}http://localhost/api/products${NC} (a través del Gateway)"
+echo -e "- API de productos con tenant: ${YELLOW}http://localhost/tenant1/api/products${NC} (a través del Gateway)"
+echo -e "- RabbitMQ Management: ${YELLOW}http://localhost:15672${NC} (usuario: guest, contraseña: guest)"
 
 echo -e "\n${GREEN}¡Infraestructura iniciada correctamente!${NC}"

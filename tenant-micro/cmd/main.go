@@ -58,10 +58,10 @@ func main() {
 	r.Use(gin.Logger())
 
 	// Rutas
-	r.POST("/tenants", controller.CreateTenant)
-	r.GET("/tenants", controller.GetAllTenants)
-	r.GET("/tenants/:id", controller.GetTenant)
-	r.DELETE("/tenants/:id", controller.DeleteTenant)
+	r.POST("/api/tenants", controller.CreateTenant)
+	r.GET("/api/tenants", controller.GetAllTenants)
+	r.GET("/api/tenants/:id", controller.GetTenant)
+	r.DELETE("/api/tenants/:id", controller.DeleteTenant)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})

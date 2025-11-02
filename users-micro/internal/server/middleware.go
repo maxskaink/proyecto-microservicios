@@ -10,6 +10,7 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 )
@@ -30,11 +31,11 @@ func CORSMiddleware() gin.HandlerFunc {
 
 func FirebaseAuthMiddleware(userService services.UserService) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantId := c.GetHeader("X-Tenant-ID")
+		tenantId := middleware.GetTenantFromContext(c)
 
 		if tenantId == "" {
-			logger.Error("Missing X-Tenant-ID")
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Missing X-Tenant-ID"})
+			logger.Error("Missing X-Tenant-Id")
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": "Missing X-Tenant-Id"})
 			return
 		}
 

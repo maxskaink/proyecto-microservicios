@@ -3,6 +3,7 @@ package tenant
 import (
 	"fmt"
 
+	db_models "github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -23,7 +24,7 @@ func GetTenantSchema(tenantID string) string {
 	if tenantID == "" {
 		return "public"
 	}
-	return fmt.Sprintf("tenant_%s", tenantID)
+	return tenantID
 }
 
 // SetSchema cambia el schema activo para la conexión actual
@@ -33,13 +34,33 @@ func (tdb *TenantDB) SetSchema(tenantID string) *gorm.DB {
 	return tdb.db.Session(&gorm.Session{}).Exec(fmt.Sprintf("SET search_path TO %s,public", schema))
 }
 
-// CreateTenantSchema crea un nuevo schema para un tenant
+// CreateTenantSchema crea un nuevo schema para un tenant y ejecuta las migraciones
 func (tdb *TenantDB) CreateTenantSchema(tenantID string) error {
 	schema := GetTenantSchema(tenantID)
 
-	// Crear el schema
+	// 1. Crear el schema
 	if err := tdb.db.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)).Error; err != nil {
 		return fmt.Errorf("error al crear schema para tenant %s: %w", tenantID, err)
+	}
+
+	// 2. Cambiar al schema del tenant para ejecutar las migraciones
+	if err := tdb.db.Exec(fmt.Sprintf("SET search_path TO %s", schema)).Error; err != nil {
+		return fmt.Errorf("error al cambiar al schema %s: %w", schema, err)
+	}
+
+	// 3. Ejecutar las migraciones en el schema del tenant
+	if err := tdb.db.AutoMigrate(
+		&db_models.UserDB{},
+		&db_models.ProfileDB{},
+	); err != nil {
+		// Restaurar al schema public antes de retornar el error
+		_ = tdb.db.Exec("SET search_path TO public").Error
+		return fmt.Errorf("error al ejecutar migraciones para tenant %s: %w", tenantID, err)
+	}
+
+	// 4. Restaurar al schema public
+	if err := tdb.db.Exec("SET search_path TO public").Error; err != nil {
+		return fmt.Errorf("error al restaurar search_path: %w", err)
 	}
 
 	return nil

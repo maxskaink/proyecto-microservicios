@@ -13,21 +13,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/tenant"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging/handlers"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/messaging/rabbitmq"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/server/discovery"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services/tenant"
+	tenant_services "github.com/maxskaink/proyecto-microservicios/users-micro/internal/services/tenant"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
+	"gorm.io/gorm"
 )
 
 // Services
 var UserService services.UserService
-var TenantService *tenant.TenantService
+var TenantService *tenant_services.TenantService
 var serviceRegistry *discovery.ServiceRegistration
 var msgPublisher messaging.Publisher
 var eventManager *messaging.EventManager
@@ -37,6 +39,9 @@ var UserRepository repositories.UserRepository
 
 // Midddlewares
 var AuthMiddleware gin.HandlerFunc
+
+// Database
+var DB *gorm.DB
 
 // Run arranca el servidor HTTP con Gin.
 // Solo registra una ruta de salud para validar que el contenedor responde.
@@ -61,7 +66,7 @@ func Run() error {
 	// Registrar middleware de tenant para rutas protegidas
 	// Las rutas de administración (sin tenant) se registrarán después
 	protectedRoutes := r.Group("/api")
-	protectedRoutes.Use(middleware.TenantMiddleware())
+	protectedRoutes.Use(middleware.TenantMiddleware(DB))
 
 	r.GET("/users/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
@@ -132,9 +137,10 @@ func configDB() {
 		return
 	}
 
-	DB, _ := providerDB.DB(&gin.Context{})
+	DB, _ = providerDB.DB(&gin.Context{})
+	tenantDB := tenant.NewTenantDB(DB)
 
-	UserRepository = repositories.NewUserRepository(DB)
+	UserRepository = repositories.NewUserRepository(DB, *tenantDB)
 }
 
 func configServices() {
@@ -157,7 +163,7 @@ func configServices() {
 	}
 
 	// Crear TenantService
-	TenantService = tenant.NewTenantService(dbConn, msgPublisher)
+	TenantService = tenant_services.NewTenantService(dbConn, msgPublisher)
 	logger.Info("TenantService inicializado correctamente")
 
 	UserService = services.NewUserService(UserRepository, msgPublisher)

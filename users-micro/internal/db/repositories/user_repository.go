@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
@@ -14,21 +15,22 @@ import (
 
 // userRepository es la implementación de UserRepository.
 type userRepository struct {
-	db *gorm.DB
+	db     *gorm.DB
+	tenant tenant.TenantDB
 }
 
 // NewUserRepository crea una nueva instancia de userRepository.
-func NewUserRepository(db *gorm.DB) UserRepository {
-	return &userRepository{db: db}
+func NewUserRepository(db *gorm.DB, tenant tenant.TenantDB) UserRepository {
+	return &userRepository{db: db, tenant: tenant}
 }
 
 // Create guarda un nuevo usuario en la base de datos.
 func (r *userRepository) Create(u *dto.UserRequest, tenantID string) (*dto.UserResponse, error) {
 	var id string
 
-	tenantDB := tenant.NewTenantDB(r.db)
+	fmt.Printf("Creating user in tenant schema: %s\n", tenantID)
 
-	err := tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Transaction(func(txn *gorm.DB) error {
 			user := db_mappers.UserDtoToModel(u)
 
@@ -71,9 +73,7 @@ func (r *userRepository) Create(u *dto.UserRequest, tenantID string) (*dto.UserR
 func (r *userRepository) FindByID(id string, tenantID string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
-	tenantDB := tenant.NewTenantDB(r.db)
-
-	err := tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Preload("Profile").First(&user, "id = ?", id).Error
 	})
 
@@ -87,9 +87,7 @@ func (r *userRepository) FindByID(id string, tenantID string) (*dto.UserResponse
 func (r *userRepository) FindByUUID(id string, tenantID string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
-	tenantDB := tenant.NewTenantDB(r.db)
-
-	err := tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Preload("Profile").First(&user, "firebase_uid = ?", id).Error
 	})
 
@@ -104,9 +102,7 @@ func (r *userRepository) FindByUUID(id string, tenantID string) (*dto.UserRespon
 func (r *userRepository) Update(id string, u *dto.UserRequest, tenantID string) (*dto.UserResponse, error) {
 	var user db_models.UserDB
 
-	tenantDB := tenant.NewTenantDB(r.db)
-
-	err := tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		if err := tx.Preload("Profile").First(&user, "id = ?", id).Error; err != nil {
 			return err
 		}
@@ -145,9 +141,7 @@ func (r *userRepository) Update(id string, u *dto.UserRequest, tenantID string) 
 // Update the rol of a user
 func (r *userRepository) UpdateRol(id string, rol string, tenantID string) (*dto.UserResponse, error) {
 
-	tenantDB := tenant.NewTenantDB(r.db)
-
-	err := tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Model(&db_models.UserDB{}).Where("id = ?", id).Update("rol", rol).Error
 	})
 
@@ -160,9 +154,7 @@ func (r *userRepository) UpdateRol(id string, rol string, tenantID string) (*dto
 
 // Delete elimina un usuario por su ID.
 func (r *userRepository) Delete(id string, tenantID string) error {
-	tenantDB := tenant.NewTenantDB(r.db)
-
-	return db.ParseDBError(tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	return db.ParseDBError(r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Delete(&db_models.UserDB{}, "id = ?", id).Error
 	}))
 }

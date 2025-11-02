@@ -6,6 +6,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/tenant"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 	"github.com/stretchr/testify/require"
@@ -18,7 +19,9 @@ func setupService(t *testing.T) (services.UserService, func()) {
 	db, cleanup, err := SetupTestDB(ctx)
 	require.NoError(t, err)
 
-	repo := repositories.NewUserRepository(db)
+	tenantDB := tenant.NewTenantDB(db)
+
+	repo := repositories.NewUserRepository(db, *tenantDB)
 	svc := services.NewUserServiceWithoutPublisher(repo)
 
 	return svc, func() { _ = cleanup() }

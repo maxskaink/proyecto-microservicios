@@ -6,6 +6,7 @@ import (
 
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/messaging/events"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 )
 
@@ -25,18 +26,17 @@ func NewUserCreatedHandler(userRepo repositories.IUserRepository) *UserCreatedHa
 
 // Handle procesa el evento de creación de usuario
 func (h *UserCreatedHandler) Handle(data []byte) error {
-	var event map[string]interface{}
-	if err := h.UnmarshalEvent(data, &event); err != nil {
+	var event events.Event
+	if err := json.Unmarshal(data, &event); err != nil {
+		logger.Error(fmt.Sprintf("Error al deserializar evento: %v", err))
 		return err
 	}
 
-	// Extraer payload
-	payload, ok := event["payload"]
+	// Extraer payload desde data
+	payload, ok := event.Data["payload"]
 	if !ok {
-		// Si no hay payload, podría ser un evento de tenant que llegó por error
-		// Loguear advertencia pero no fallar
 		logger.Error(fmt.Sprintf("No se encontró 'payload' en evento user.created. Event: %v", event))
-		return fmt.Errorf("payload not found in user.created event - possible routing issue")
+		return fmt.Errorf("payload not found in user.created event")
 	}
 
 	// Serializar y deserializar payload a UserRequest
@@ -52,15 +52,8 @@ func (h *UserCreatedHandler) Handle(data []byte) error {
 		return err
 	}
 
-	// Extraer tenant_id del evento
-	tenantID, ok := event["tenant_id"].(string)
-	if !ok {
-		logger.Error("tenant_id no encontrado o no es string")
-		return fmt.Errorf("tenant_id not found")
-	}
-
 	// Crear usuario
-	userCreated, err := h.userRepo.CreateUser(user, tenantID)
+	userCreated, err := h.userRepo.CreateUser(user, event.TenantID)
 	if err != nil {
 		logger.Error(fmt.Sprintf("No se pudo crear el usuario con id %s: %v", user.ID, err))
 		return err
@@ -86,31 +79,19 @@ func NewUserDeletedHandler(userRepo repositories.IUserRepository) *UserDeletedHa
 
 // Handle procesa el evento de eliminación de usuario
 func (h *UserDeletedHandler) Handle(data []byte) error {
-	var event map[string]interface{}
-	if err := h.UnmarshalEvent(data, &event); err != nil {
+	var event events.UserDeletedEvent
+	if err := json.Unmarshal(data, &event); err != nil {
+		logger.Error(fmt.Sprintf("Error al deserializar evento: %v", err))
 		return err
-	}
-
-	// Extraer campos del evento
-	userID, ok := event["user_id"].(string)
-	if !ok {
-		logger.Error("user_id no encontrado o no es string")
-		return fmt.Errorf("user_id not found")
-	}
-
-	tenantID, ok := event["tenant_id"].(string)
-	if !ok {
-		logger.Error("tenant_id no encontrado o no es string")
-		return fmt.Errorf("tenant_id not found")
 	}
 
 	// Eliminar usuario
-	if err := h.userRepo.DeleteUser(userID, tenantID); err != nil {
-		logger.Error(fmt.Sprintf("No se pudo eliminar el usuario con id %s: %v", userID, err))
+	if err := h.userRepo.DeleteUser(event.ID, event.TenantID); err != nil {
+		logger.Error(fmt.Sprintf("No se pudo eliminar el usuario con id %s: %v", event.ID, err))
 		return err
 	}
 
-	h.LogEvent(fmt.Sprintf("Usuario eliminado: ID=%s", userID))
+	h.LogEvent(fmt.Sprintf("Usuario eliminado: ID=%s", event.ID))
 	return nil
 }
 
@@ -130,15 +111,16 @@ func NewUserUpdatedHandler(userRepo repositories.IUserRepository) *UserUpdatedHa
 
 // Handle procesa el evento de actualización de usuario
 func (h *UserUpdatedHandler) Handle(data []byte) error {
-	var event map[string]interface{}
-	if err := h.UnmarshalEvent(data, &event); err != nil {
+	var event events.Event
+	if err := json.Unmarshal(data, &event); err != nil {
+		logger.Error(fmt.Sprintf("Error al deserializar evento: %v", err))
 		return err
 	}
 
-	// Extraer payload
-	payload, ok := event["payload"]
+	// Extraer payload desde data
+	payload, ok := event.Data["payload"]
 	if !ok {
-		logger.Error("No se encontró 'payload' en el evento")
+		logger.Error("No se encontró 'payload' en data")
 		return fmt.Errorf("payload not found")
 	}
 
@@ -155,16 +137,12 @@ func (h *UserUpdatedHandler) Handle(data []byte) error {
 		return err
 	}
 
-	// Extraer tenant_id del evento
-	tenantID, ok := event["tenant_id"].(string)
-	if !ok {
-		logger.Error("tenant_id no encontrado o no es string")
-		return fmt.Errorf("tenant_id not found")
+	// Actualizar el usuario
+	_, err = h.userRepo.UpdateUser(user, event.TenantID)
+	if err != nil {
+		logger.Error(fmt.Sprintf("No se pudo actualizar el usuario con id %s: %v", user.ID, err))
+		return err
 	}
-
-	// Aquí iría la lógica de actualización del usuario
-	// TODO: Implementar actualización en repositorio
-	_ = tenantID // usar tenantID cuando se implemente
 
 	h.LogEvent(fmt.Sprintf("Usuario actualizado: ID=%s", user.ID))
 	return nil

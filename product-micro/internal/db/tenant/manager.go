@@ -3,6 +3,7 @@ package tenant
 import (
 	"fmt"
 
+	db_models "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/models"
 	"gorm.io/gorm"
 )
 
@@ -40,6 +41,17 @@ func (tdb *TenantDB) CreateTenantSchema(tenantID string) error {
 	// Crear el schema
 	if err := tdb.db.Exec(fmt.Sprintf("CREATE SCHEMA IF NOT EXISTS %s", schema)).Error; err != nil {
 		return fmt.Errorf("error al crear schema para tenant %s: %w", tenantID, err)
+	}
+
+	err := tdb.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+		return tx.AutoMigrate(
+			&db_models.UserDB{},
+			&db_models.ProductDB{},
+		)
+	})
+
+	if err != nil {
+		return fmt.Errorf("error al migrar tablas para tenant %s: %w", tenantID, err)
 	}
 
 	return nil

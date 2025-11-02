@@ -25,7 +25,7 @@ services:
       KONG_DNS_ORDER: "LAST,A,CNAME"
       CONSUL_HTTP_ADDR: "consul:8500"
     dns:
-      - 172.29.0.2  # IP de Consul en la red Docker
+      - 172.29.0.2 # IP de Consul en la red Docker
     volumes:
       - ./api-gateway/kong:/kong:ro,z
       - ./api-gateway/plugins:/usr/local/share/lua/5.1/kong/plugins:ro,z
@@ -34,7 +34,6 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-    restart: unless-stopped
     networks:
       micro-network:
         ipv4_address: 172.29.0.10
@@ -49,7 +48,6 @@ services:
       - "8600:8600/udp"
     volumes:
       - consul_data:/consul/data
-    restart: unless-stopped
     networks:
       micro-network:
         ipv4_address: 172.29.0.2
@@ -76,7 +74,6 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-    restart: unless-stopped
     networks:
       - micro-network
 
@@ -124,7 +121,6 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-    restart: unless-stopped
     ports:
       - "5433:5432"
     networks:
@@ -145,7 +141,6 @@ services:
       interval: 3s
       timeout: 3s
       retries: 5
-    restart: unless-stopped
     ports:
       - "5434:5432"
     networks:
@@ -226,7 +221,6 @@ services:
       RABBITMQ_DEFAULT_PASS: guest
     volumes:
       - rabbitmq_data:/var/lib/rabbitmq
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "rabbitmq-diagnostics", "check_running"]
       interval: 5s
@@ -246,7 +240,5 @@ networks:
   micro-network:
     driver: bridge
     ipam:
-      driver: default
       config:
         - subnet: 172.29.0.0/16
-          gateway: 172.29.0.1

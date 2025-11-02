@@ -1,0 +1,102 @@
+<app-header></app-header>
+<div>
+    <div class="publish-product-container py-5">
+        <div class="container">
+        <h2 class="mb-4">Publicar Nuevo Producto</h2>
+    
+        <form (ngSubmit)="onSubmit(productForm)" #productForm="ngForm" novalidate>
+        <div class="mb-3">  
+            <label for="productImage" class="form-label">Imagen del Producto</label>
+            <input 
+                type="text" 
+                id="productImage"   
+                class="form-control"
+                required 
+                [(ngModel)]="product.photo_url" 
+                name="photo_url" 
+                #image="ngModel">
+            <div *ngIf="image.invalid && image.touched" class="text-danger">
+                La imagen es obligatoria.
+            </div>
+        </div> 
+            <div class="mb-3">
+                <label for="productCategory" class="form-label">Categoría del Producto</label>
+                <input 
+                    type="text" 
+                    id="productCategory" 
+                    class="form-control" 
+                    required 
+                    [(ngModel)]="product.category" 
+                    name="category" 
+                    #category="ngModel">
+                <div *ngIf="category.invalid && category.touched" class="text-danger">
+                    La categoría del producto es obligatoria.
+                </div>
+            </div>
+    
+            <div class="mb-3">
+            <label for="productDescription" class="form-label">Descripción</label>
+            <textarea 
+                id="productDescription" 
+                class="form-control" 
+                required 
+                [(ngModel)]="product.description" 
+                name="description" 
+                #description="ngModel"></textarea>
+            <div *ngIf="description.invalid && description.touched" class="text-danger">
+                La descripción es obligatoria.
+            </div>
+            </div>
+    
+            <div class="mb-3">
+            <label for="productPrice" class="form-label">Precio</label>
+            <input 
+                type="number" 
+                id="productPrice" 
+                class="form-control" 
+                required 
+                [(ngModel)]="product.price" 
+                name="price" 
+                #price="ngModel">
+            <div *ngIf="price.invalid && price.touched" class="text-danger">
+                El precio es obligatorio.
+            </div>
+            </div>
+            <div class="mb-3">
+                <label for="productStock" class="form-label">Stock:</label>
+                <input 
+                    type="number" 
+                    id="productStock" 
+                    class="form-control" 
+                    required 
+                    [(ngModel)]="product.stock" 
+                    name="stock" 
+                    #stock="ngModel">
+                <div *ngIf="stock.invalid && stock.touched" class="text-danger">
+                    El stock es obligatorio.
+                </div>
+            </div>
+            
+            <div class="mb-3">
+                <label for="productUnit" class="form-label">Unidad:</label>
+                <input 
+                    type="text" 
+                    id="productUnit" 
+                    class="form-control" 
+                    required 
+                    [(ngModel)]="product.unit" 
+                    name="unit" 
+                    #unit="ngModel">
+                <div *ngIf="unit.invalid && unit.touched" class="text-danger">
+                    La unidad es obligatoria.
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary" [disabled]="productForm.invalid || isSubmitting">
+                <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                {{ isSubmitting ? 'Publicando...' : 'Publicar Producto' }}
+            </button>
+        </form>
+        </div>
+    </div>
+</div>

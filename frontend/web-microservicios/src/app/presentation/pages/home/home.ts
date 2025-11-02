@@ -4,6 +4,7 @@ import { Header } from '../../templates/header/header';
 import { ProductBox } from '../../components/product-box/product-box';
 import { ProductService } from '../../../service /ProductService';
 import { finalize } from 'rxjs';
+import { Product } from '../../../Models/Product';
 
 @Component({
   selector: 'app-home',
@@ -12,7 +13,7 @@ import { finalize } from 'rxjs';
   styleUrl: './home.css',
 })
 export class Home implements OnInit {
-  allProducts: any[] = [];
+  allProducts: Product[] = [];
   isLoading: boolean = true; // Iniciar en true
 
   constructor(

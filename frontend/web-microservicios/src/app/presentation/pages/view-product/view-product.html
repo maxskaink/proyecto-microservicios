@@ -1,0 +1,49 @@
+<app-header></app-header>
+<app-header></app-header>
+
+<div class="view-product-container">
+  
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="text-center py-5">
+    <div class="spinner-border text-primary mb-3" role="status">
+      <span class="visually-hidden">Cargando producto...</span>
+    </div>
+    <p class="text-muted">Cargando producto...</p>
+  </div>
+
+  <!-- Product details -->
+  <div *ngIf="!isLoading && product" class="container py-4">
+    <div class="row">
+      <div class="col-md-6">
+        <img [src]="product.photo_url" 
+             [alt]="product.description" 
+             class="img-fluid rounded">
+      </div>
+      <div class="col-md-6">
+        <h1 class="mb-3">{{ product.description }}</h1>
+        <p class="text-muted mb-2">
+          <strong>Categoría:</strong> {{ product.category }}
+        </p>
+        <h3 class="text-success mb-3">
+          {{ product.price | currency:'COP':'symbol':'1.0-0' }}
+        </h3>
+        <p class="mb-3">
+          <strong>Stock disponible:</strong> 
+          {{ product.stock }} {{ product.unit }}
+        </p>
+        <button class="btn btn-primary" 
+                [disabled]="product.stock === 0">
+          <i class="bi bi-cart-plus me-2"></i>
+          {{ product.stock === 0 ? 'Agotado' : 'Agregar al carrito' }}
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!isLoading && !product" class="text-center py-5">
+    <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+    <h4 class="text-muted">Producto no encontrado</h4>
+    <p class="text-muted">El producto que buscas no existe o no está disponible.</p>
+  </div>
+
+</div>

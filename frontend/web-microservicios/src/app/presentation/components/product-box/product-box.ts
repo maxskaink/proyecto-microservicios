@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Product } from '../../../Models/Product';
 
@@ -9,5 +9,10 @@ import { Product } from '../../../Models/Product';
   styleUrl: './product-box.css',
 })
 export class ProductBox {
- @Input() product!: Product; 
+  @Input() product!: Product;
+  @Output() productClick = new EventEmitter<Product>();
+
+  onProductClick(): void {
+    this.productClick.emit(this.product);
+  }
 }

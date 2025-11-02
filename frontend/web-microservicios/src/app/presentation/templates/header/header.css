@@ -2,7 +2,7 @@
 .navbar {
   z-index: 1050;
   backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  
 }
 
 .navbar-brand {
@@ -25,14 +25,12 @@
 /* FORZAR HAMBURGUESA SIEMPRE VISIBLE */
 .navbar-toggler {
   display: block !important; /* Siempre mostrar hamburguesa */
-  border: 2px solid rgba(255, 255, 255, 0.3);
   border-radius: 8px;
   padding: 0.5rem;
   transition: all 0.3s ease;
 }
 
 .navbar-toggler:hover {
-  border-color: rgba(255, 255, 255, 0.6);
   background-color: rgba(255, 255, 255, 0.1);
 }
 
@@ -51,7 +49,6 @@
   border-radius: 12px;
   margin-top: 1rem;
   padding: 1rem;
-  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* Estilos del carrito */
@@ -169,4 +166,7 @@
   .header-spacer {
     height: 65px;
   }
+}
+.container-help{
+  background-color: var(--color-secondary);
 }

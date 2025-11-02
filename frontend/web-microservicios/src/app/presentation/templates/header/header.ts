@@ -1,23 +1,28 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../service /Authser.vice';
 import { Subscription } from 'rxjs';
+import { UserData } from '../../../Models/UserData';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })
 export class Header implements OnInit, OnDestroy {
   
-  // Estado del menú móvil
+  isLoggedIn: boolean = false;
+  currentUser: UserData | null = null;
+  
+  // Menú móvil
   isMenuOpen: boolean = false;
   
-  // Estado de autenticación
-  isLoggedIn: boolean = false;
-  currentUser: any = null;
+  // Búsqueda
+  searchTerm: string = '';
+  
   
   // Contador de carrito (simulado por ahora)
   cartItemCount: number = 0;
@@ -29,6 +34,7 @@ export class Header implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.initializeAuth();
+    this.getUserName();
   }
 
   ngOnDestroy(): void {
@@ -38,13 +44,13 @@ export class Header implements OnInit, OnDestroy {
   // Inicializar autenticación
   private initializeAuth(): void {
     // Suscribirse al estado de autenticación
-    const authSub = this.authService.isLoggedIn$.subscribe(loggedIn => {
+    const authSub = this.authService.isLoggedIn$.subscribe((loggedIn: boolean) => {
       this.isLoggedIn = loggedIn;
     });
     this.subscriptions.add(authSub);
 
     // Suscribirse a los datos del usuario
-    const userSub = this.authService.userData.subscribe(userData => {
+    const userSub = this.authService.userData.subscribe((userData: UserData | null) => {
       this.currentUser = userData;
     });
     this.subscriptions.add(userSub);
@@ -52,18 +58,14 @@ export class Header implements OnInit, OnDestroy {
 
   // Toggle del menú móvil
   toggleMenu(): void {
-    this.navigateTo('/user')
-  }
-
-  // Cerrar menú móvil
-  closeMenu(): void {
-    this.isMenuOpen = false;
+    this.isMenuOpen = !this.isMenuOpen;
+    // También navegar al perfil de usuario
+    this.navigateTo('/user');
   }
 
   // Navegación
   navigateTo(route: string): void {
     this.router.navigate([route]);
-    this.closeMenu();
   }
 
   // Ir al perfil de usuario
@@ -80,14 +82,14 @@ export class Header implements OnInit, OnDestroy {
     this.navigateTo('/cart');
   }
 
-  // Cerrar sesión
-  async logout(): Promise<void> {
-    try {
-      await this.authService.logout();
-      this.navigateTo('/login');
-      this.closeMenu();
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
+  // Función de búsqueda
+  onSearch(): void {
+    if (this.searchTerm.trim()) {
+      console.log('Buscando:', this.searchTerm);
+      // Navegar a home con parámetro de búsqueda
+      this.router.navigate(['/home'], { 
+        queryParams: { search: this.searchTerm.trim() } 
+      });
     }
   }
 
@@ -95,8 +97,7 @@ export class Header implements OnInit, OnDestroy {
   getUserName(): string {
     if (!this.currentUser) return 'Usuario';
     
-    return this.currentUser.nombre || 
-           this.currentUser.displayName ||
+    return this.currentUser.name || 
            this.currentUser.email?.split('@')[0] || 
            'Usuario';
   }

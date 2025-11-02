@@ -33,7 +33,7 @@ export class ProductService {
       })
     );
   }
-postProduct(product: ProductPeticion): Observable<Product> {
+  postProduct(product: ProductPeticion): Observable<Product> {
   return authState(this.auth).pipe(
     filter(user => user !== null), 
     take(1), 
@@ -58,6 +58,31 @@ postProduct(product: ProductPeticion): Observable<Product> {
       )
     )
   );
-}
+  
+  }
+  getProductById(ProductId: string): Observable<Product>{
+    return authState(this.auth).pipe(
+      filter(user => user !== null), 
+      take(1), 
+      switchMap(user => 
+        from(user!.getIdToken()).pipe( 
+          switchMap(idToken => {
+            if (!idToken) {
+              throw new Error('No se pudo obtener el token de autenticación');
+            }
 
+            const headers = new HttpHeaders({
+              'Authorization': `Bearer ${idToken}`,
+              'Content-Type': 'application/json'
+            });
+
+            return this.http.get<Product>(
+              this.apiUrl + 'products/' + ProductId,     
+              { headers }
+            );
+          })
+        )
+      )
+    );
+  }
 }

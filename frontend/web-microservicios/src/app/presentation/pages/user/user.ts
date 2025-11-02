@@ -79,7 +79,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Publicar Producto',
       description: 'Añade un nuevo producto a la venta',
       icon: 'bi-plus-circle',
-      route: '/publish-product',
+      route: '/publishProduct',
       category: 'business'
     },
     {

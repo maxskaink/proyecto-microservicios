@@ -1,4 +1,6 @@
-<div class="card mb-3 shadow-sm" style="width: 18rem;">
+<div class="card mb-3 shadow-sm product-card" 
+     style="width: 18rem; cursor: pointer;" 
+     (click)="onProductClick()">
   <img [src]="product.photo_url" class="card-img-top" [alt]="product.description">
   <div class="card-body">
     <h5 class="card-title text-capitalize">{{ product.category }}</h5>

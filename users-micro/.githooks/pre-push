@@ -1,11 +1,26 @@
 #!/usr/bin/env bash
 set -e
 
-# Ensure we run tests from the repository root (modules and paths resolve correctly)
-repo_root="$(git rev-parse --show-toplevel)"
-cd "$repo_root"
+# Ensure we run tests from the module directory that contains go.mod
+# Resolve the directory of this script, then walk up to find go.mod
+script_dir="$(cd "$(dirname "$0")" && pwd)"
+module_dir=""
+dir="$script_dir"
+while [ "$dir" != "/" ]; do
+  if [ -f "$dir/go.mod" ]; then
+    module_dir="$dir"
+    break
+  fi
+  dir="$(dirname "$dir")"
+done
 
-echo "Running unit tests before push... (from $repo_root)"
+if [ -z "$module_dir" ]; then
+  # fallback to repo top-level
+  module_dir="$(git rev-parse --show-toplevel)"
+fi
+
+cd "$module_dir"
+echo "Running unit tests before push... (from $module_dir)"
 if ! go test ./test/unit -v; then
   echo "Unit tests failed. Push aborted."
   exit 1

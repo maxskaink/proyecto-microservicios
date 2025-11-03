@@ -20,11 +20,11 @@ services:
       KONG_ADMIN_LISTEN: "0.0.0.0:8001, 0.0.0.0:8444 ssl"
       KONG_PLUGINS: "tenant-extractor"
       KONG_LUA_PACKAGE_PATH: "/usr/local/share/lua/5.1/?.lua;;"
-      KONG_DNS_RESOLVER: "172.29.0.2:8600"
+      KONG_DNS_RESOLVER: "10.200.0.2:8600"
       KONG_DNS_ORDER: "LAST,A,CNAME"
       CONSUL_HTTP_ADDR: "consul:8500"
     dns:
-      - 172.29.0.2
+      - 10.200.0.2
     volumes:
       - ./api-gateway/kong:/kong:ro,z
       - ./api-gateway/plugins:/usr/local/share/lua/5.1/kong/plugins:ro,z
@@ -35,7 +35,7 @@ services:
         condition: service_healthy
     networks:
       micro-network:
-        ipv4_address: 172.29.0.10
+        ipv4_address: 10.200.0.10
 
   consul:
     build:
@@ -48,7 +48,7 @@ services:
       - consul_data:/consul/data
     networks:
       micro-network:
-        ipv4_address: 172.29.0.2
+        ipv4_address: 10.200.0.2
     healthcheck:
       test: ["CMD", "consul", "members"]
       interval: 5s
@@ -72,7 +72,8 @@ services:
       timeout: 3s
       retries: 5
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.5
 
   users_api:
     build:
@@ -118,7 +119,8 @@ services:
     ports:
       - "5433:5432"
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.3
 
   tenant_db:
     image: postgres:16-alpine
@@ -137,7 +139,8 @@ services:
     ports:
       - "5434:5432"
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.4
 
   tenant_api:
     build:
@@ -215,12 +218,60 @@ services:
       timeout: 5s
       retries: 10
     networks:
+      micro-network:
+        ipv4_address: 10.200.0.9
+
+  shipping_db:
+    image: postgres:16-alpine
+    container_name: shipping_db
+    environment:
+      POSTGRES_USER: shipping
+      POSTGRES_PASSWORD: shippingpass
+      POSTGRES_DB: shipping_db
+    volumes:
+      - shipping_db_data:/var/lib/postgresql/data:z
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U shipping -d shipping_db"]
+      interval: 3s
+      timeout: 3s
+      retries: 5
+    ports:
+      - "5435:5432"
+    networks:
+      micro-network:
+        ipv4_address: 10.200.0.6
+
+  shipping_api:
+    build:
+      context: ./shipping-micro
+      dockerfile: Dockerfile
+    container_name: shipping_api
+    depends_on:
+      shipping_db:
+        condition: service_healthy
+      consul:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    environment:
+      PORT: "8083"
+      DATABASE_URL: "postgres://shipping:shippingpass@shipping_db:5432/shipping_db?sslmode=disable"
+      SERVICE_NAME: "shipping-service"
+      SERVICE_TAGS: "shipping,api"
+      CONSUL_HTTP_ADDR: "consul:8500"
+      TRAEFIK_ENABLE: "true"
+      RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
+    volumes:
+      - ./shipping-micro:/app:z
+    command: air -c .air.toml
+    networks:
       - micro-network
 
 volumes:
   product_db_data:
   micro_db_data:
   tenant_db_data:
+  shipping_db_data:
   consul_data:
   rabbitmq_data:
 
@@ -229,4 +280,4 @@ networks:
     driver: bridge
     ipam:
       config:
-        - subnet: 172.29.0.0/16
+        - subnet: 10.200.0.0/24

@@ -74,5 +74,51 @@ services:
         strip_path: false
         regex_priority: 50
 
+  # Servicio de shipping - Resuelto desde Consul
+  - name: shipping-service
+    host: shipping-service.service.consul
+    port: 8083
+    protocol: http
+    routes:
+      # Ruta con tenant para cart
+      - name: shipping-cart-with-tenant
+        paths:
+          - ~/([a-zA-Z0-9_-]+)/api/cart(/.*)?$
+        strip_path: false
+        regex_priority: 100
+        plugins:
+          - name: tenant-extractor
+            config:
+              header_name: X-Tenant-ID
+      
+      # Ruta con tenant para orders
+      - name: shipping-orders-with-tenant
+        paths:
+          - ~/([a-zA-Z0-9_-]+)/api/orders(/.*)?$
+        strip_path: false
+        regex_priority: 100
+        plugins:
+          - name: tenant-extractor
+            config:
+              header_name: X-Tenant-ID
+      
+      # Ruta con tenant para shippings
+      - name: shipping-shippings-with-tenant
+        paths:
+          - ~/([a-zA-Z0-9_-]+)/api/shippings(/.*)?$
+        strip_path: false
+        regex_priority: 100
+        plugins:
+          - name: tenant-extractor
+            config:
+              header_name: X-Tenant-ID
+      
+      # Rutas sin tenant
+      - name: shipping-no-tenant
+        paths:
+          - ~/api/v1/(cart|orders|shippings)(/.*)?$
+        strip_path: false
+        regex_priority: 50
+
 # Plugins globales (opcional)
 plugins: []

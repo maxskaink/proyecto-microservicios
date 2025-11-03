@@ -113,10 +113,14 @@ func configDB() {
 
 func configServices() {
 	UserService = services.NewUserService(UserRepository)
-	ProductService = services.NewProductService(ProductRepository, UserService)
+	// Crear publisher de eventos de productos
+	productPublisher, err := messaging.NewProductEventPublisher()
+	if err != nil {
+		logger.Error(fmt.Sprintf("Error al crear publisher de productos: %v", err))
+	}
+	ProductService = services.NewProductService(ProductRepository, UserService, productPublisher)
 
 	// Configurar el gestor de eventos (consumidor de RabbitMQ)
-	var err error
 	eventManager, err = messaging.NewEventManager(UserRepository, tenantService)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error al crear gestor de eventos: %v", err))

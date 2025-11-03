@@ -9,6 +9,7 @@ func ProductDtoToModel(dto *dto.ProductDTORequest) *db_models.ProductDB {
 	return &db_models.ProductDB{
 		ProducerID:  dto.ProducerID,
 		Category:    dto.Category,
+		Name:        dto.Name,
 		Price:       dto.Price,
 		Description: dto.Description,
 		Stock:       dto.Stock,
@@ -24,6 +25,7 @@ func ProductModelToDto(model *db_models.ProductDB) *dto.ProductDTOResponse {
 		Category:    model.Category,
 		Price:       model.Price,
 		Description: model.Description,
+		Name:        model.Name,
 		Stock:       model.Stock,
 		Unit:        model.Unit,
 		PhotoUrl:    model.PhotoUrl,

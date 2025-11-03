@@ -130,7 +130,7 @@ definitions:
   UserRequest:
     type: object
     properties:
-      firabseUID:
+      firebaseUID:
         type: string
       email:
         type: string
@@ -154,7 +154,7 @@ definitions:
     properties:
       id:
         type: string
-      firabseUID:
+      firebaseUID:
         type: string
       email:
         type: string

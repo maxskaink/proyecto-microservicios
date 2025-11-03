@@ -12,6 +12,7 @@ type ProductDB struct {
 	Producer    *UserDB                `gorm:"foreignKey:ProducerID;references:ID"`
 	Category    domain.ProductCategory `gorm:"type:varchar(100);not null" json:"category"`
 	Price       int                    `gorm:"not null;check:price > 0" json:"price"`
+	Name        string                 `gorm:"type:varchar(255);not null" json:"name"`
 	Description string                 `gorm:"type:text" json:"description"`
 	Stock       int                    `gorm:"not null;default:0;check:stock >= 0" json:"stock"`
 	Unit        domain.ProductUnit     `gorm:"type:varchar(50)" json:"unit"`

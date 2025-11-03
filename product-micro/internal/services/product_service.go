@@ -6,17 +6,20 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/messaging"
 )
 
 type productService struct {
 	productRepo repositories.IProductRepository
 	userService IUserService
+	publisher   messaging.Publisher
 }
 
-func NewProductService(productRepo repositories.IProductRepository, userService IUserService) IProductService {
+func NewProductService(productRepo repositories.IProductRepository, userService IUserService, publisher messaging.Publisher) IProductService {
 	return &productService{
 		productRepo: productRepo,
 		userService: userService,
+		publisher:   publisher,
 	}
 }
 
@@ -45,6 +48,12 @@ func (p *productService) CreateProduct(product dto.ProductDTORequest, idProducer
 	result, err := p.productRepo.CreateProduct(&product, tenantID)
 	if err != nil {
 		return nil, err
+	}
+
+	// Publicar evento de producto creado
+	if p.publisher != nil && result != nil {
+		// Ignoramos el error de publicación para no bloquear el flujo principal
+		_ = p.publisher.PublishProductCreated(*result, tenantID)
 	}
 
 	return result, nil
@@ -127,6 +136,11 @@ func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest,
 
 	if err != nil {
 		return nil, err
+	}
+
+	// Publicar evento de producto actualizado
+	if p.publisher != nil && result != nil {
+		_ = p.publisher.PublishProductUpdated(*result, tenantID)
 	}
 
 	return result, nil

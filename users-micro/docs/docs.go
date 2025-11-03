@@ -73,7 +73,7 @@ const docTemplate = `{
         "UserRequest": {
             "type": "object",
             "properties": {
-                "firabseUID": {"type": "string"},
+                "firebaseUID": {"type": "string"},
                 "email": {"type": "string", "format": "email"},
                 "name": {"type": "string"},
                 "rol": {"type": "string", "enum": ["admin", "producer", "client"]},
@@ -85,7 +85,7 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "id": {"type": "string"},
-                "firabseUID": {"type": "string"},
+                "firebaseUID": {"type": "string"},
                 "email": {"type": "string"},
                 "name": {"type": "string"},
                 "rol": {"type": "string", "enum": ["admin","producer","client"]},

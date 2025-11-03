@@ -199,7 +199,7 @@
         "UserRequest": {
             "type": "object",
             "properties": {
-                "firabseUID": {
+                "firebaseUID": {
                     "type": "string"
                 },
                 "email": {
@@ -232,7 +232,7 @@
                 "id": {
                     "type": "string"
                 },
-                "firabseUID": {
+                "firebaseUID": {
                     "type": "string"
                 },
                 "email": {

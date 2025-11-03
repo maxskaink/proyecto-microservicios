@@ -53,6 +53,7 @@ type Product struct {
 	ProducerID  string
 	Category    ProductCategory
 	Price       int //in COP for the moment
+	Name        string
 	Description string
 	Stock       int //cuantity of the product in the units
 	Unit        ProductUnit

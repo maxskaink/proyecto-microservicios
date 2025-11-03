@@ -30,7 +30,7 @@ func TestCreateUser(t *testing.T) {
 		Name:  "Test User",
 	}
 
-	mockRepo.On("Create", mock.Anything).Return(expectedResponse, nil)
+	mockRepo.On("Create", mock.Anything, tenantID).Return(expectedResponse, nil)
 
 	// Act 
 	response, err := service.CreateUser(testUserRequest, tenantID)
@@ -78,7 +78,7 @@ func TestGetUserByID(t *testing.T) {
 		Name:  "Test User",
 	}
 
-	mockRepo.On("FindByID", userID).Return(expectedUser, nil)
+	mockRepo.On("FindByID", userID, tenantID).Return(expectedUser, nil)
 
 	// Act
 	user, err := service.GetUserByID(userID, tenantID)
@@ -96,7 +96,7 @@ func TestGetUserByIDNotFound(t *testing.T) {
 	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "999"
-	mockRepo.On("FindByID", userID).Return(nil, errors.New("usuario no encontrado"))
+	mockRepo.On("FindByID", userID, tenantID).Return(nil, errors.New("usuario no encontrado"))
 
 	// Act
 	_, err := service.GetUserByID(userID, tenantID)
@@ -138,8 +138,8 @@ func TestUpdateUser(t *testing.T) {
 	}
 
 	// Configurar el comportamiento del mock
-	mockRepo.On("FindByID", userID).Return(foundUser, nil)
-	mockRepo.On("Update", userID, &updateRequest).Return(expectedResponse, nil)
+	mockRepo.On("FindByID", userID, tenantID).Return(foundUser, nil)
+	mockRepo.On("Update", userID, &updateRequest, tenantID).Return(expectedResponse, nil)
 
 	// Act
 	response, err := service.UpdateUser(userID, updateRequest, firebaseUID, tenantID)
@@ -172,7 +172,7 @@ func TestUpdateUserNoPermission(t *testing.T) {
 		Name:  "New Name",
 	}
 
-	mockRepo.On("FindByID", userID).Return(foundUser, nil)
+	mockRepo.On("FindByID", userID, tenantID).Return(foundUser, nil)
 
 	// Act
 	_, err := service.UpdateUser(userID, updateRequest, differentFirebaseUID, tenantID)
@@ -189,7 +189,7 @@ func TestDeleteUser(t *testing.T) {
 	service := services.NewUserServiceWithoutPublisher(mockRepo)
 
 	userID := "1"
-	mockRepo.On("Delete", userID).Return(nil)
+	mockRepo.On("Delete", userID, tenantID).Return(nil)
 
 	// Act
 	err := service.DeleteUser(userID, tenantID)

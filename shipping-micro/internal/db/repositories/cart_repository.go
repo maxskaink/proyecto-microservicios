@@ -53,7 +53,7 @@ func (r *CartRepository) GetUserCart(userID string, tenantID string) ([]dto.Cart
 	var items []models.CartItemDB
 
 	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
-		return tx.Where("user_id = ?", userID).Find(&items).Error
+		return tx.Preload("Product").Where("user_id = ?", userID).Find(&items).Error
 	})
 
 	if err != nil {

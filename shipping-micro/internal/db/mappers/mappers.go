@@ -1,8 +1,8 @@
 package mappers
 
 import (
-"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
-"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/dto"
 )
 
 // ProductDBToDTO convierte ProductDB a ProductDTO
@@ -47,6 +47,7 @@ func CartItemDBToDTO(c *models.CartItemDB) *dto.CartItemDTO {
 		Quantity:  c.Quantity,
 		CreatedAt: c.CreatedAt,
 		UpdatedAt: c.UpdatedAt,
+		Product:   ProductDBToDTO(&c.Product),
 	}
 }
 
@@ -55,12 +56,12 @@ func OrderDBToDTO(o *models.OrderDB) *dto.OrderDTO {
 	if o == nil {
 		return nil
 	}
-	
+
 	var items []dto.OrderItemDTO
 	for _, item := range o.Items {
 		items = append(items, *OrderItemDBToDTO(&item))
 	}
-	
+
 	return &dto.OrderDTO{
 		ID:         o.ID,
 		UserID:     o.UserID,

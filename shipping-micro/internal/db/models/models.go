@@ -44,10 +44,11 @@ func (p *ProductDB) BeforeCreate(tx *gorm.DB) error {
 
 // CartItemDB representa un artículo en el carrito
 type CartItemDB struct {
-	ID        string `gorm:"type:uuid;primaryKey"`
-	UserID    string `gorm:"type:uuid;not null;index"`
-	ProductID string `gorm:"type:uuid;not null;index"`
-	Quantity  int    `gorm:"not null;default:1"`
+	ID        string    `gorm:"type:uuid;primaryKey"`
+	UserID    string    `gorm:"type:uuid;not null;index"`
+	ProductID string    `gorm:"type:uuid;not null;index"`
+	Product   ProductDB `gorm:"foreignKey:ProductID;references:ID"`
+	Quantity  int       `gorm:"not null;default:1"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

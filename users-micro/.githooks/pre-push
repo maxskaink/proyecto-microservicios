@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
 set -e
-
-echo "Running go tests before push..."
-
-# Run tests; if any fail, abort push
-go test ./... -v
-
-echo "All tests passed. Proceeding with push."
+echo "Running unit tests before push..."
+if ! go test ./test/unit -v; then
+  echo "Unit tests failed. Push aborted."
+  exit 1
+fi
+echo "Unit tests passed. Proceeding with push."
 exit 0

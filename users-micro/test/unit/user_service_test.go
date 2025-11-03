@@ -73,7 +73,7 @@ func TestGetUserByID(t *testing.T) {
 
 	userID := "1"
 	expectedUser := &dto.UserResponse{
-		ID:    userID,
+		ID:    userID, 
 		Email: "test@example.com",
 		Name:  "Test User",
 	}

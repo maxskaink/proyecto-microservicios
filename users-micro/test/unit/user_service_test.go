@@ -21,7 +21,7 @@ func TestCreateUser(t *testing.T) {
 	testUserRequest := dto.UserRequest{
 		Email:       "test@example.com",
 		Name:        "Test User",
-		FirebaseUID: "firebase123",
+		FirebaseUID: "firebase123", 
 	}
 
 	expectedResponse := &dto.UserResponse{

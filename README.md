@@ -14,8 +14,8 @@ El proyecto utiliza:
 - **product-micro**: Gestión de productos (Puerto 8081)
 - **tenant-micro**: Gestión de tenants/inquilinos (Puerto 8082)
 
-### API Gateway - Kong
-Kong Gateway actúa como punto de entrada único para todos los microservicios, proporcionando:
+### API Gateway - Kong 
+Kong Gateway actúa como punto de entrada único para todos los microservicios, proporcionando: 
 - Enrutamiento de requests a los servicios apropiados
 - Plugin de multitenencia que extrae el tenant de la URL y lo agrega como header
 - Integración con Consul para descubrimiento de servicios

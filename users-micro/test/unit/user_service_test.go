@@ -21,7 +21,7 @@ func TestCreateUser(t *testing.T) {
 	testUserRequest := dto.UserRequest{
 		Email:       "test@example.com",
 		Name:        "Test User",
-		FirebaseUID: "firebase123", 
+		FirebaseUID: "firebase123",
 	}
 
 	expectedResponse := &dto.UserResponse{
@@ -32,7 +32,7 @@ func TestCreateUser(t *testing.T) {
 
 	mockRepo.On("Create", mock.Anything, tenantID).Return(expectedResponse, nil)
 
-	// Act 
+	// Act
 	response, err := service.CreateUser(testUserRequest, tenantID)
 
 	// Assert
@@ -73,7 +73,7 @@ func TestGetUserByID(t *testing.T) {
 
 	userID := "1"
 	expectedUser := &dto.UserResponse{
-		ID:    userID, 
+		ID:    userID,
 		Email: "test@example.com",
 		Name:  "Test User",
 	}

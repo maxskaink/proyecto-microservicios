@@ -13,10 +13,23 @@ import (
 	"gorm.io/gorm"
 )
 
-// SetupTestDB arranca un contenedor de Postgres para pruebas, ejecuta migraciones y
-// devuelve la instancia *gorm.DB junto con una función de limpieza.
 func SetupTestDB(ctx context.Context) (*gorm.DB, func() error, error) {
-	// Opciones del contenedor (API genérica)
+	// Si se proporciona DATABASE_URL (p. ej. desde GitHub Actions), úsala directamente
+	if dbURL := os.Getenv("DATABASE_URL"); dbURL != "" {
+		db, err := gorm.Open(postgres.Open(dbURL), &gorm.Config{})
+		if err != nil {
+			return nil, nil, fmt.Errorf("error al conectar con la base de datos externa: %w", err)
+		}
+		// Ejecutar migraciones necesarias para las pruebas
+		if err := db.AutoMigrate(&db_models.UserDB{}, &db_models.ProfileDB{}); err != nil {
+			return nil, nil, fmt.Errorf("error al ejecutar migraciones: %w", err)
+		}
+		// cleanup no hace nada para una DB externa proporcionada por el job
+		cleanup := func() error { return nil }
+		return db, cleanup, nil
+	}
+
+	// Fallback: arrancar contenedor Postgres con testcontainers (comportamiento actual)
 	req := tc.ContainerRequest{
 		Image:        "postgres:15-alpine",
 		Env:          map[string]string{"POSTGRES_DB": "testdb", "POSTGRES_USER": "test", "POSTGRES_PASSWORD": "secret"},

@@ -1,0 +1,75 @@
+name: CI - Microservices tests
+
+on:
+  push:
+    branches: ["dev", "main"]
+    paths:
+      - 'users-micro/**'
+  pull_request:
+    branches: ["dev", "main"]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        ports:
+          - 5432:5432
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: users_micro_test
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    strategy:
+      matrix:
+        service:
+          - users-micro
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21"
+
+      - name: Cache Go modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/go-build
+            ~/go/pkg/mod
+          key: ${{ runner.os }}-go-${{ hashFiles('**/go.sum') }}
+          restore-keys: |
+            ${{ runner.os }}-go-
+
+      - name: Wait for Postgres
+        run: |
+          echo "Waiting for Postgres to be ready..."
+          for i in {1..30}; do
+            if nc -z localhost 5432 2>/dev/null; then
+              echo "Postgres is listening on localhost:5432"
+              break
+            fi
+            sleep 1
+          done
+          for i in {1..15}; do
+            if pg_isready -h localhost -p 5432 -U postgres >/dev/null 2>&1; then
+              echo "pg_isready ok"
+              break
+            fi
+            sleep 1
+          done
+
+      - name: Run tests for service
+        working-directory: ${{ github.workspace }}/${{ matrix.service }}
+        env:
+          # usar localhost para compatibilidad con act/local; en GH Actions funciona también
+          DATABASE_URL: postgres://postgres:postgres@localhost:5432/users_micro_test?sslmode=disable
+        run: |
+          go test ./test/... -v -count=1

@@ -123,7 +123,7 @@ func configServices() {
 	// Inicializar servicios
 	cartService = cart.NewService(cartRepo, productRepo)
 	shippingService = shipping.NewService(shipRepo)
-	orderService = order.NewService(cartRepo, productRepo, orderRepo, shipRepo, publisher)
+	orderService = order.NewService(cartRepo, productRepo, orderRepo, shipRepo, publisher, userRepo)
 
 	// Inicializar consumidor de eventos RabbitMQ
 	var emErr error

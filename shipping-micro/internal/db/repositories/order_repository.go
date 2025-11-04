@@ -83,3 +83,19 @@ func (r *OrderRepository) UpdateStatus(id string, status string, tenantID string
 		return tx.Model(&models.OrderDB{}).Where("id = ?", id).Update("status", status).Error
 	})
 }
+
+// GetByStatus implements IOrderRepository.
+func (r *OrderRepository) GetByStatus(status string, tenantID string) ([]dto.OrderDTO, error) {
+	var orders []models.OrderDB
+	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+		return tx.Preload("Items").Where("status = ?", status).Order("created_at DESC").Find(&orders).Error
+	})
+	if err != nil {
+		return nil, err
+	}
+	res := make([]dto.OrderDTO, len(orders))
+	for i := range orders {
+		res[i] = *mappers.OrderDBToDTO(&orders[i])
+	}
+	return res, nil
+}

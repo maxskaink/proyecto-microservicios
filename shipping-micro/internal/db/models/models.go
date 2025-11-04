@@ -11,6 +11,7 @@ import (
 type UserDB struct {
 	ID        string `gorm:"type:string;primaryKey"`
 	UUID      string `gorm:"type:string;uniqueIndex;not null"`
+	Rol       string `gorm:"not null;default:'user'"`
 	Email     string `gorm:"uniqueIndex;not null"`
 	Name      string `gorm:"not null"`
 	CreatedAt time.Time
@@ -35,20 +36,13 @@ type ProductDB struct {
 	UpdatedAt   time.Time
 }
 
-func (p *ProductDB) BeforeCreate(tx *gorm.DB) error {
-	if p.ID == "" {
-		p.ID = uuid.New().String()
-	}
-	return nil
-}
-
 // CartItemDB representa un artículo en el carrito
 type CartItemDB struct {
-	ID        string    `gorm:"type:uuid;primaryKey"`
-	UserID    string    `gorm:"type:uuid;not null;index"`
-	ProductID string    `gorm:"type:uuid;not null;index"`
-	Product   ProductDB `gorm:"foreignKey:ProductID;references:ID"`
-	Quantity  int       `gorm:"not null;default:1"`
+	ID        string     `gorm:"type:uuid;primaryKey"`
+	UserID    string     `gorm:"type:string;not null;index"`
+	ProductID string     `gorm:"type:string;not null;index"`
+	Product   *ProductDB `gorm:"foreignKey:ProductID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Quantity  int        `gorm:"not null;default:1"`
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }
@@ -63,7 +57,7 @@ func (c *CartItemDB) BeforeCreate(tx *gorm.DB) error {
 // OrderDB representa una orden
 type OrderDB struct {
 	ID         string  `gorm:"type:uuid;primaryKey"`
-	UserID     string  `gorm:"type:uuid;not null;index"`
+	UserID     string  `gorm:"type:string;not null;index"`
 	TotalPrice float64 `gorm:"not null"`
 	Status     string  `gorm:"not null;default:'pending'"`
 	CreatedAt  time.Time
@@ -80,11 +74,12 @@ func (o *OrderDB) BeforeCreate(tx *gorm.DB) error {
 
 // OrderItemDB representa un producto dentro de una orden
 type OrderItemDB struct {
-	ID        string  `gorm:"type:uuid;primaryKey"`
-	OrderID   string  `gorm:"type:uuid;not null;index"`
-	ProductID string  `gorm:"type:uuid;not null"`
-	Quantity  int     `gorm:"not null"`
-	Price     float64 `gorm:"not null"`
+	ID        string     `gorm:"type:uuid;primaryKey"`
+	OrderID   string     `gorm:"type:uuid;not null;index"`
+	ProductID string     `gorm:"type:string;not null;index"`
+	Product   *ProductDB `gorm:"foreignKey:ProductID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:RESTRICT"`
+	Quantity  int        `gorm:"not null"`
+	Price     float64    `gorm:"not null"`
 	CreatedAt time.Time
 }
 

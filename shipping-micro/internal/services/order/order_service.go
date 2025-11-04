@@ -2,11 +2,11 @@ package order
 
 import (
 	"context"
-	"errors"
 	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/repositories"
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/messaging"
 )
@@ -18,10 +18,11 @@ type Service struct {
 	orderRepo    repositories.IOrderRepository
 	shippingRepo repositories.IShippingRepository
 	publisher    messaging.Publisher
+	userRepo     repositories.IUserRepository
 }
 
-func NewService(cart repositories.ICartRepository, prod repositories.IProductRepository, ord repositories.IOrderRepository, ship repositories.IShippingRepository, pub messaging.Publisher) *Service {
-	return &Service{cartRepo: cart, productRepo: prod, orderRepo: ord, shippingRepo: ship, publisher: pub}
+func NewService(cart repositories.ICartRepository, prod repositories.IProductRepository, ord repositories.IOrderRepository, ship repositories.IShippingRepository, pub messaging.Publisher, user repositories.IUserRepository) *Service {
+	return &Service{cartRepo: cart, productRepo: prod, orderRepo: ord, shippingRepo: ship, publisher: pub, userRepo: user}
 }
 
 // CreateFromCart crea una orden desde el carrito del usuario y limpia el carrito.
@@ -31,7 +32,7 @@ func (s *Service) CreateFromCart(userID string, shippingAddress string, tenantID
 		return nil, nil, err
 	}
 	if len(items) == 0 {
-		return nil, nil, errors.New("cart is empty")
+		return nil, nil, domain.ConflictError{Message: "cart is empty"}
 	}
 
 	// Calcular total y mapear items
@@ -50,7 +51,7 @@ func (s *Service) CreateFromCart(userID string, shippingAddress string, tenantID
 		})
 	}
 
-	order := &dto.OrderDTO{UserID: userID, TotalPrice: total, Status: "pending"}
+	order := &dto.OrderDTO{UserID: userID, TotalPrice: total, Status: string(domain.OrderStatusPending)}
 	createdOrder, err := s.orderRepo.Create(order, orderItems, tenantID)
 	if err != nil {
 		return nil, nil, err
@@ -61,7 +62,7 @@ func (s *Service) CreateFromCart(userID string, shippingAddress string, tenantID
 		OrderID:         createdOrder.ID,
 		TrackingNumber:  generateTracking(),
 		ShippingAddress: shippingAddress,
-		Status:          "pending",
+		Status:          string(domain.OrderStatusPending),
 	}
 	createdShipping, err := s.shippingRepo.Create(shipping, tenantID)
 	if err != nil {
@@ -97,8 +98,37 @@ func (s *Service) GetByID(orderID string, tenantID string) (*dto.OrderDTO, error
 	return s.orderRepo.GetByID(orderID, tenantID)
 }
 
-func (s *Service) GetByUserID(userID string, tenantID string) ([]dto.OrderDTO, error) {
-	return s.orderRepo.GetByUserID(userID, tenantID)
+func (s *Service) GetByUserID(userID string, status domain.OrderStatus, tenantID string) ([]dto.OrderDTO, error) {
+
+	user, err := s.userRepo.GetByID(userID, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	if user.Rol == "user" {
+		response_raw, err := s.orderRepo.GetByUserID(userID, tenantID)
+		if err != nil {
+			return nil, err
+		}
+
+		//Filtrar por estado
+		var response []dto.OrderDTO
+		for _, order := range response_raw {
+			if order.Status == string(status) {
+				response = append(response, order)
+			}
+		}
+
+		return response, nil
+	}
+
+	//TODO falta validar si es productor
+
+	response, err := s.orderRepo.GetByStatus(string(status), tenantID)
+	if err != nil {
+		return nil, err
+	}
+	return response, nil
+
 }
 
 func (s *Service) UpdateStatus(orderID string, status string, tenantID string) error {

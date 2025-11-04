@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/middleware"
 	ordersvc "github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/services/order"
@@ -26,18 +27,18 @@ func (oc *OrderController) createOrder(c *gin.Context) {
 	tenantID := middleware.GetTenantFromContext(c)
 	userID, err := middleware.GetUserIDFromContext(c)
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "unauthorized"})
+		handleUserError(c, err)
 		return
 	}
 
 	var req dto.CreateOrderRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid body"})
+		handleUserError(c, err)
 		return
 	}
 	order, shipping, err := oc.svc.CreateFromCart(userID, req.ShippingAddress, tenantID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
+		handleUserError(c, err)
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"order": order, "shipping": shipping})
@@ -46,14 +47,26 @@ func (oc *OrderController) createOrder(c *gin.Context) {
 func (oc *OrderController) listUserOrders(c *gin.Context) {
 	tenantID := middleware.GetTenantFromContext(c)
 	userID, err := middleware.GetUserIDFromContext(c)
+
 	if err != nil {
-		c.JSON(http.StatusUnauthorized, dto.ErrorResponse{Error: "unauthorized"})
+		handleUserError(c, err)
 		return
 	}
 
-	res, err := oc.svc.GetByUserID(userID, tenantID)
+	statusStr := c.Param("status")
+
+	if statusStr == "" {
+		statusStr = string(domain.OrderStatusPending)
+	}
+
+	if !domain.IsValidOrderStatus(statusStr) {
+		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid status"})
+		return
+	}
+
+	res, err := oc.svc.GetByUserID(userID, domain.OrderStatus(statusStr), tenantID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Error: err.Error()})
+		handleUserError(c, err)
 		return
 	}
 	c.JSON(http.StatusOK, res)

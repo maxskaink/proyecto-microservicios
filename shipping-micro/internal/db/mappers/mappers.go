@@ -29,6 +29,7 @@ func UserDBToDTO(u *models.UserDB) *dto.UserDTO {
 	return &dto.UserDTO{
 		ID:        u.ID,
 		Email:     u.Email,
+		Rol:       u.Rol,
 		Name:      u.Name,
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
@@ -47,7 +48,7 @@ func CartItemDBToDTO(c *models.CartItemDB) *dto.CartItemDTO {
 		Quantity:  c.Quantity,
 		CreatedAt: c.CreatedAt,
 		UpdatedAt: c.UpdatedAt,
-		Product:   ProductDBToDTO(&c.Product),
+		Product:   ProductDBToDTO(c.Product),
 	}
 }
 

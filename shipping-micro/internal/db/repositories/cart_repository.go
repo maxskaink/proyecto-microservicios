@@ -18,35 +18,54 @@ func NewCartRepository(db *gorm.DB, tenantDB *tenant.TenantDB) ICartRepository {
 }
 
 func (r *CartRepository) AddItem(userID, productID string, quantity int, tenantID string) (*dto.CartItemDTO, error) {
-	var cartItem models.CartItemDB
+	var itemID string
 
-	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
-		// Verificar si el item ya existe en el carrito
-		err := tx.Where("user_id = ? AND product_id = ?", userID, productID).First(&cartItem).Error
-		if err == nil {
-			// El item ya existe, actualizar cantidad
-			cartItem.Quantity += quantity
-			return tx.Save(&cartItem).Error
-		}
+	// Crear/actualizar dentro de la transacción y conservar el ID
+	if err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+		var dbItem models.CartItemDB
 
-		// El item no existe, crear uno nuevo
-		if err != gorm.ErrRecordNotFound {
+		// ¿Ya existe el item?
+		if err := tx.Where("user_id = ? AND product_id = ?", userID, productID).First(&dbItem).Error; err == nil {
+			dbItem.Quantity += quantity
+			if err := tx.Save(&dbItem).Error; err != nil {
+				return err
+			}
+			itemID = dbItem.ID
+			return nil
+		} else if err != gorm.ErrRecordNotFound {
 			return err
 		}
 
-		cartItem = models.CartItemDB{
+		// Validar que el producto exista (evita huérfanos)
+		var product models.ProductDB
+		if err := tx.Where("id = ?", productID).First(&product).Error; err != nil {
+			return err
+		}
+
+		// Crear nuevo item
+		newItem := models.CartItemDB{
 			UserID:    userID,
 			ProductID: productID,
 			Quantity:  quantity,
 		}
-		return tx.Create(&cartItem).Error
-	})
-
-	if err != nil {
+		if err := tx.Create(&newItem).Error; err != nil {
+			return err
+		}
+		itemID = newItem.ID
+		return nil
+	}); err != nil {
 		return nil, err
 	}
 
-	return mappers.CartItemDBToDTO(&cartItem), nil
+	// Fuera de la transacción: recargar con Preload("Product") y devolver
+	var full models.CartItemDB
+	if err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+		return tx.Preload("Product").First(&full, "id = ?", itemID).Error
+	}); err != nil {
+		return nil, err
+	}
+
+	return mappers.CartItemDBToDTO(&full), nil
 }
 
 func (r *CartRepository) GetUserCart(userID string, tenantID string) ([]dto.CartItemDTO, error) {

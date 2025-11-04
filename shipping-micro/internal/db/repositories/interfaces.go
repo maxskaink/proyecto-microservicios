@@ -30,6 +30,7 @@ type IOrderRepository interface {
 	GetByID(id string, tenantID string) (*dto.OrderDTO, error)
 	GetByUserID(userID string, tenantID string) ([]dto.OrderDTO, error)
 	UpdateStatus(id string, status string, tenantID string) error
+	GetByStatus(status string, tenantID string) ([]dto.OrderDTO, error)
 }
 
 type IShippingRepository interface {

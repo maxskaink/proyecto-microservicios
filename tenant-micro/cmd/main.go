@@ -13,6 +13,7 @@ import (
 	"github.com/joho/godotenv"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/controllers"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/discovery"
+	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/models"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/repositories"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/services"
@@ -56,6 +57,7 @@ func main() {
 	r := gin.New()
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
+	r.Use(middleware.CORSMiddleware())
 
 	// Rutas
 	r.POST("/api/tenants", controller.CreateTenant)

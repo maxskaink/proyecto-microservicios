@@ -31,11 +31,48 @@
           <strong>Stock disponible:</strong> 
           {{ product.stock }} {{ product.unit }}
         </p>
-        <button class="btn btn-primary" 
-                [disabled]="product.stock === 0">
-          <i class="bi bi-cart-plus me-2"></i>
-          {{ product.stock === 0 ? 'Agotado' : 'Agregar al carrito' }}
-        </button>
+        
+        <!-- Mensaje de feedback -->
+        <div *ngIf="addToCartMessage" 
+             class="alert"
+             [ngClass]="{
+               'alert-success': !addToCartMessage.includes('Error'),
+               'alert-danger': addToCartMessage.includes('Error')
+             }"
+             role="alert">
+          {{ addToCartMessage }}
+        </div>
+
+        <!-- Controles de cantidad y botón agregar al carrito -->
+        <div class="d-flex align-items-center mb-3">
+          <label for="quantity" class="form-label me-3 mb-0">Cantidad:</label>
+          <input type="number" 
+                 id="quantity" 
+                 class="form-control quantity-input me-3" 
+                 #quantityInput
+                 [value]="1" 
+                 min="1" 
+                 [max]="product.stock"
+                 style="width: 80px;">
+          
+          <button class="btn btn-primary" 
+                  [disabled]="product.stock === 0 || isAddingToCart"
+                  (click)="addToCart(+quantityInput.value)">
+            <span *ngIf="isAddingToCart" class="spinner-border spinner-border-sm me-2" role="status"></span>
+            <i *ngIf="!isAddingToCart" class="bi bi-cart-plus me-2"></i>
+            {{ product.stock === 0 ? 'Agotado' : (isAddingToCart ? 'Agregando...' : 'Agregar al carrito') }}
+          </button>
+        </div>
+
+        <!-- Información adicional del producto -->
+        <div class="product-info mt-4">
+          <h5>Información del producto</h5>
+          <ul class="list-unstyled">
+            <li><strong>Productor ID:</strong> {{ product.producer_id }}</li>
+            <li><strong>Unidad:</strong> {{ product.unit }}</li>
+            <li><strong>Fecha de creación:</strong> {{ product.create_at | date:'short' }}</li>
+          </ul>
+        </div>
       </div>
     </div>
   </div>

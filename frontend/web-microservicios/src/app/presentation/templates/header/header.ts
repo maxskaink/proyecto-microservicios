@@ -3,6 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../service /Authser.vice';
+import { ShoppingCartService } from '../../../service /ShoppinCartService';
 import { Subscription } from 'rxjs';
 import { UserData } from '../../../Models/UserData';
 
@@ -24,17 +25,22 @@ export class Header implements OnInit, OnDestroy {
   searchTerm: string = '';
   
   
-  // Contador de carrito (simulado por ahora)
+  // Contador de carrito
   cartItemCount: number = 0;
   
   // Suscripciones
   private subscriptions = new Subscription();
 
-  constructor(private router: Router, private authService: AuthService) {}
+  constructor(
+    private router: Router, 
+    private authService: AuthService,
+    private shoppingCartService: ShoppingCartService
+  ) {}
 
   ngOnInit(): void {
     this.initializeAuth();
     this.getUserName();
+    this.loadCartItemCount();
   }
 
   ngOnDestroy(): void {
@@ -76,10 +82,12 @@ export class Header implements OnInit, OnDestroy {
       this.navigateTo('/login');
     }
   }
-
+  goToHome(): void {
+    this.navigateTo('/home');
+  }
   // Ir al carrito
   goToCart(): void {
-    this.navigateTo('/cart');
+    this.navigateTo('/shopping-cart');
   }
 
   // Función de búsqueda
@@ -102,18 +110,24 @@ export class Header implements OnInit, OnDestroy {
            'Usuario';
   }
 
-  // Simular actualización del carrito (conectar con servicio real después)
+  // Cargar contador del carrito
+  loadCartItemCount(): void {
+    if (this.isLoggedIn) {
+      const cartSub = this.shoppingCartService.getCartItemCount().subscribe({
+        next: (count) => {
+          this.cartItemCount = count;
+        },
+        error: (error) => {
+          console.error('Error al cargar contador del carrito:', error);
+          this.cartItemCount = 0;
+        }
+      });
+      this.subscriptions.add(cartSub);
+    }
+  }
+
+  // Actualizar contador del carrito
   updateCartCount(count: number): void {
     this.cartItemCount = count;
-  }
-
-  // Método para testing - agregar item al carrito
-  addToCart(): void {
-    this.cartItemCount++;
-  }
-
-  // Método para testing - limpiar carrito
-  clearCart(): void {
-    this.cartItemCount = 0;
   }
 }

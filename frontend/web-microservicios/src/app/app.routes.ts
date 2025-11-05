@@ -5,6 +5,8 @@ import { Home } from './presentation/pages/home/home';
 import { PublishProduct } from './presentation/pages/publish-product/publish-product';
 import { ViewProduct } from './presentation/pages/view-product/view-product';
 import { RegisterTenant } from './presentation/pages/register-tenant/register-tenant';
+import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
+import { ListOrders } from './presentation/pages/list-orders/list-orders';
 
 export const routes: Routes = [
     { 
@@ -30,6 +32,14 @@ export const routes: Routes = [
     {
         path: 'register-tenant',
         component: RegisterTenant
+    },
+    {
+        path: 'shopping-cart',
+        component: ShoppingCart
+    },
+    {
+        path: 'list-order',
+        component: ListOrders
     },
     {
         path: '',

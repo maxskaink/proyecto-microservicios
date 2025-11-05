@@ -23,6 +23,14 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server 
   },
   {
+    path: 'shopping-cart',
+    renderMode: RenderMode.Server
+  },
+  {
+    path: 'list-order',
+    renderMode: RenderMode.Server
+  },
+  {
     path: '', // ← Ruta raíz también sin barra
     renderMode: RenderMode.Prerender
   },

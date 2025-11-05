@@ -7,31 +7,31 @@
 
     <!-- ID -->
     <div class="mb-3">
-      <label for="idTenant" class="form-label">idTenant</label>
+      <label for="tenant_id" class="form-label">Tenant ID</label>
       <input 
         type="text" 
-        id="idTenant" 
+        id="tenant_id" 
         class="form-control" 
-        formControlName="idTenant" 
-        placeholder="Enter tenant id tenant"
+        formControlName="tenant_id" 
+        placeholder="Enter tenant ID"
       />
-      <div *ngIf="tenantForm.get('idTenant')?.invalid && tenantForm.get('idTenant')?.touched" class="text-danger">
-        Id tenant es requerido.
+      <div *ngIf="tenantForm.get('tenant_id')?.invalid && tenantForm.get('tenant_id')?.touched" class="text-danger">
+        Tenant ID es requerido.
       </div>
     </div>
 
     <!-- Nombre -->
     <div class="mb-3">
-      <label for="name" class="form-label">Nombre</label>
+      <label for="tenant_name" class="form-label">Nombre del Tenant</label>
       <input 
         type="text" 
-        id="name" 
+        id="tenant_name" 
         class="form-control" 
-        formControlName="name" 
+        formControlName="tenant_name" 
         placeholder="Enter tenant name"
       />
-      <div *ngIf="tenantForm.get('name')?.invalid && tenantForm.get('name')?.touched" class="text-danger">
-        Nombre requerido.
+      <div *ngIf="tenantForm.get('tenant_name')?.invalid && tenantForm.get('tenant_name')?.touched" class="text-danger">
+        Nombre del tenant es requerido.
       </div>
     </div>
 

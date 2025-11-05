@@ -45,7 +45,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Carrito de Compras',
       description: 'Ver productos en tu carrito',
       icon: 'bi-cart3',
-      route: '/cart',
+      route: '/shopping-cart',
       category: 'shopping'
     },
     {
@@ -69,9 +69,9 @@ export class User implements OnInit, OnDestroy {
     {
       id: 'my-products',
       title: 'Mis Productos',
-      description: 'Gestiona los productos que vendes',
+      description: 'Mira tus pedidos',
       icon: 'bi-box-seam',
-      route: '/my-products',
+      route: '/list-order',
       category: 'business'
     },
     {

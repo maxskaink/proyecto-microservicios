@@ -31,8 +31,8 @@ export class RegisterTenant implements OnInit {
 
   private initializeForm(): void {
     this.tenantForm = this.fb.group({
-      idTenant: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-]+$/)]],
-      name: ['', [Validators.required, Validators.minLength(3)]]
+      tenant_id: ['', [Validators.required, Validators.pattern(/^[a-zA-Z0-9-]+$/)]],
+      tenant_name: ['', [Validators.required, Validators.minLength(3)]]
     });
   }
 

@@ -10,6 +10,7 @@ services:
       - "8090:8001"
       - "8443:8443"
       - "8444:8444"
+    restart: unless-stopped
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /kong/kong.yml
@@ -100,7 +101,8 @@ services:
       - ./users-micro:/app:z
     command: air -c .air.toml
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.11
 
   product_db:
     image: postgres:16-alpine
@@ -173,7 +175,8 @@ services:
       - ./tenant-micro:/app:z
     command: air -c .air.toml
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.13
 
   product_api:
     build:
@@ -199,7 +202,8 @@ services:
       - ./product-micro:/app:z
     command: air -c .air.toml
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.12
 
   rabbitmq:
     image: rabbitmq:3-management
@@ -265,7 +269,8 @@ services:
       - ./shipping-micro:/app:z
     command: air -c .air.toml
     networks:
-      - micro-network
+      micro-network:
+        ipv4_address: 10.200.0.14
 
 volumes:
   product_db_data:

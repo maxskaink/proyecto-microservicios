@@ -43,6 +43,35 @@
             <div class="spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></div>
           </div>
         </div>
+
+        <!-- Selector de Tenant -->
+        <div class="mb-3">
+          <label for="tenant" class="form-label">Tienda</label>
+          <select
+            id="tenant"
+            name="tenant"
+            class="form-select"
+            [class.is-invalid]="tenantError"
+            [(ngModel)]="tenantId"
+            required
+            #tenantSelect="ngModel"
+            (change)="onTenantChange()"
+            [disabled]="isLoading"
+          >
+            <option value="">Selecciona una tienda</option>
+            <option 
+              *ngFor="let tenant of tenants" 
+              [value]="tenant.tenant_id">
+              {{ tenant.tenant_name }}
+            </option>
+          </select>
+          <div *ngIf="(tenantSelect.invalid && (tenantSelect.dirty || tenantSelect.touched || loginForm.submitted)) && !tenantError" class="text-danger small">
+            Debes seleccionar una tienda.
+          </div>
+          <div *ngIf="tenantError" class="text-danger small">
+            {{ tenantError }}
+          </div>
+        </div>
         
         <div class="mb-3">
           <label for="correo" class="form-label">Correo</label>

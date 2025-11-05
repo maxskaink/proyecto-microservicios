@@ -19,6 +19,10 @@ export const serverRoutes: ServerRoute[] = [
     renderMode: RenderMode.Server // Contenido dinámico para el usuario
   },
   {
+    path: 'register-tenant',
+    renderMode: RenderMode.Server 
+  },
+  {
     path: '', // ← Ruta raíz también sin barra
     renderMode: RenderMode.Prerender
   },

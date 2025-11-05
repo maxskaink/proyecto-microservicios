@@ -19,6 +19,22 @@
                 La imagen es obligatoria.
             </div>
         </div> 
+            
+            <div class="mb-3">
+                <label for="productName" class="form-label">Nombre del Producto</label>
+                <input 
+                    type="text" 
+                    id="productName" 
+                    class="form-control" 
+                    required 
+                    [(ngModel)]="product.name" 
+                    name="name" 
+                    #name="ngModel">
+                <div *ngIf="name.invalid && name.touched" class="text-danger">
+                    El nombre del producto es obligatorio.
+                </div>
+            </div>
+
             <div class="mb-3">
                 <label for="productCategory" class="form-label">Categoría del Producto</label>
                 <input 

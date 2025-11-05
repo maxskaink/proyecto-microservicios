@@ -13,6 +13,7 @@ import { ProductService } from '../../../service /ProductService';
 })
 export class PublishProduct {
   product: ProductPeticion = {
+    name: '',
     category: '',
     price: 0,
     description: '',
@@ -45,6 +46,7 @@ export class PublishProduct {
         alert('Producto publicado exitosamente!');
         form.resetForm();
         this.product = {
+          name: '',
           category: '',
           price: 0,
           description: '',

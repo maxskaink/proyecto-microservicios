@@ -37,7 +37,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Catálogo',
       description: 'Explora todos los productos disponibles',
       icon: 'bi-grid-3x3-gap',
-      route: '/catalog',
+      route: '/home',
       category: 'shopping'
     },
     {
@@ -88,6 +88,14 @@ export class User implements OnInit, OnDestroy {
       description: 'Gestiona los pedidos de tus productos',
       icon: 'bi-clipboard-check',
       route: '/orders',
+      category: 'business'
+    },
+    {
+      id: 'register',
+      title: 'Registrar zona veredal',
+      description: 'Registra tu zona veredal',
+      icon: 'bi-clipboard-check',
+      route: '/register-tenant',
       category: 'business'
     }
   ];

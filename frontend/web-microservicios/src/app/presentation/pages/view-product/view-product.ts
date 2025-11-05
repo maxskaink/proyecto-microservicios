@@ -25,18 +25,21 @@ export class ViewProduct implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    // Obtener el ID del producto desde los parámetros de la ruta
+    // Obtener el ID del producto y tenant desde los parámetros de la ruta
     this.route.params.subscribe(params => {
       this.productId = params['id'];
+      
       if (this.productId) {
         this.loadProduct();
+      } else {
+        console.warn('No se proporcionaron productId');
       }
     });
   }
 
   loadProduct(): void {
-    if (!this.productId) {
-      console.warn('No se proporcionó un productId');
+    if (!this.productId ) {
+      console.warn('No se proporcionó un productId ');
       return;
     }
 

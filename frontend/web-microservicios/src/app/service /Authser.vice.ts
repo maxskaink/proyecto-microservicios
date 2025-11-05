@@ -11,17 +11,12 @@ import { UserData } from '../Models/UserData';
 export class AuthService {
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private userDataSubject = new BehaviorSubject<UserData | null>(null);
-
+  private idTenantSubject = new BehaviorSubject<string | null>(null);
+  url:string = 'http://localhost:80/'
   constructor(private afAuth: Auth, private firestore: Firestore, private http: HttpClient, private injector: Injector) {
     authState(this.afAuth).subscribe(async (user) => {
       this.currentUserSubject.next(user);
       if (user) {
-        // Cargar datos del usuario desde el backend
-        try {
-          await this.fetchCurrentUserFromBackend();
-        } catch (error) {
-          console.error('Error al cargar datos del usuario desde backend:', error);
-          // Fallback: crear UserData básico con datos de Firebase Auth
           const fallbackUserData: UserData = {
             id: '', // Se llenará desde el backend
             firebaseUID: user.uid,
@@ -38,7 +33,6 @@ export class AuthService {
             }
           };
           this.userDataSubject.next(fallbackUserData);
-        }
       } else {
         this.userDataSubject.next(null);
       }
@@ -49,20 +43,25 @@ export class AuthService {
    * @param email correo electrónico del usuario
    * @param password contraseña del usuario 
    */
-  async login(email: string, password: string) {
+  async login(email: string, password: string, idTenant:string) {
     await runInInjectionContext(this.injector, async () => {
       await signInWithEmailAndPassword(this.afAuth, email, password);
+      try{
+        await this.fetchCurrentUserFromBackend(idTenant);
+      }catch(error){
+        console.error('Error al cargar datos del usuario tras lgon: ', error);
+      }
     });
   }
   /**
    * Consulta al backend los datos del usuario actualmente autenticado y los guarda en userData.
    * @returns Los datos del usuario actual obtenidos desde el backend
    */
-  async fetchCurrentUserFromBackend() {
+  async fetchCurrentUserFromBackend(idTenant: string) {
     const token = await this.getToken();
+    this.idTenantSubject.next(idTenant);
     console.log('Token obtenido de Firebase:', token); 
   
-    const url = `${environment.apiUrl}/users/me`;
     if (token) {
       const headers = { 
         'Authorization': `Bearer ${token}`,
@@ -71,7 +70,7 @@ export class AuthService {
       
       try {
         const backendUserData = await firstValueFrom(
-          this.http.get<UserData>(url, { headers })
+          this.http.get<UserData>(this.url + idTenant + '/api/users/me', { headers })
         );
         
         // Guardar los datos del backend en userDataSubject
@@ -148,22 +147,10 @@ export class AuthService {
   logout() {
     return signOut(this.afAuth);
   }
-
- 
   
-
-  /**
-   * Método para cargar datos del usuario desde el backend y actualizar userData
-   */
-  async loadUserDataFromBackend(): Promise<void> {
-    try {
-      await this.fetchCurrentUserFromBackend();
-      console.log('Datos del usuario cargados y guardados exitosamente');
-    } catch (error) {
-      console.error('Error al cargar datos del usuario desde backend:', error);
-    }
+  get idTenant$(): Observable<string | null> {
+    return this.idTenantSubject.asObservable();
   }
-
   /**
    * Observable que trae los datos completos del usuario desde el backend
    */

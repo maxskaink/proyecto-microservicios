@@ -1,45 +1,58 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, ChangeDetectorRef, NgZone } from '@angular/core';
 import { Router, ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { finalize } from 'rxjs/operators';
+
 import { Header } from '../../templates/header/header';
-import { ProductBox } from '../../components/product-box/product-box';
 import { ProductService } from '../../../service /ProductService';
-import { finalize, Subscription } from 'rxjs';
 import { Product } from '../../../Models/Product';
+import { ListProductTenantPreview } from '../../templates/list-product-tenant-preview/list-product-tenant-preview';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Header, ProductBox],
+  imports: [CommonModule, Header, ListProductTenantPreview],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
 export class Home implements OnInit, OnDestroy {
-  allProducts: Product[] = [];
+  // ==================== PROPIEDADES ====================
+  products: Product[] = [];
   filteredProducts: Product[] = [];
+  
+  // Estados de la UI
   isLoading: boolean = true;
   searchTerm: string = '';
   errorMessage: string = '';
   
   private subscriptions = new Subscription();
 
+  // ==================== CONSTRUCTOR ====================
   constructor(
     private productService: ProductService,
-    private cdr: ChangeDetectorRef,
     private router: Router,
-    private route: ActivatedRoute
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef, // ✅ Agregar ChangeDetectorRef
+    private zone: NgZone // ✅ Agregar NgZone
   ) {}
 
+  // ==================== CICLO DE VIDA ====================
   ngOnInit(): void {
-    this.loadProducts();
-    this.setupSearchListener();
+    this.initializeComponent();
   }
 
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
 
+  // ==================== INICIALIZACIÓN ====================
+  private initializeComponent(): void {
+    this.setupSearchListener();
+    this.loadProducts();
+  }
+
   /**
-   * Configure el listener para escuchar los parámetros de búsqueda de la URL
+   * Configura el listener para escuchar los parámetros de búsqueda de la URL
    */
   private setupSearchListener(): void {
     const queryParamsSub = this.route.queryParams.subscribe(params => {
@@ -47,84 +60,179 @@ export class Home implements OnInit, OnDestroy {
       if (searchParam !== this.searchTerm) {
         this.searchTerm = searchParam || '';
         this.filterProducts();
+        this.cdr.detectChanges(); // ✅ Forzar detección de cambios
       }
     });
     this.subscriptions.add(queryParamsSub);
   }
 
+  // ==================== CARGA DE DATOS ====================
   /**
-   * Carga los productos desde el servicio
+   * Carga los productos del tenant actual
    */
   loadProducts(): void {
-    this.isLoading = true;
-    this.errorMessage = '';
+    console.log('🚀 [HOME] Iniciando carga - isLoading:', this.isLoading);
     
-    this.productService.getProducts()
-      .pipe(finalize(() => {
-        this.isLoading = false;
-        this.cdr.markForCheck();
-      }))
+    this.zone.run(() => {
+      this.isLoading = true;
+      this.errorMessage = '';
+      this.cdr.detectChanges(); // ✅ Forzar detección inmediata
+    });
+
+    const loadSub = this.productService.getProducts(1, 50)
+      .pipe(
+        finalize(() => {
+          this.zone.run(() => {
+            this.isLoading = false;
+            this.cdr.detectChanges();
+          });
+        })
+      )
       .subscribe({
         next: (products) => {
-          this.allProducts = products || [];
-          this.filterProducts(); // Aplicar filtros después de cargar
-          console.log('Productos cargados:', this.allProducts.length);
+          this.zone.run(() => {
+            this.handleProductsLoaded(products);
+          });
         },
-        error: (err) => {
-          console.error('Error al cargar productos:', err);
-          this.errorMessage = 'Error al cargar los productos. Intenta de nuevo.';
-          this.allProducts = [];
-          this.filteredProducts = [];
+        error: (error) => {
+          this.zone.run(() => {
+            this.handleLoadError(error);
+          });
         }
       });
+
+    this.subscriptions.add(loadSub);
   }
 
   /**
-   * Filtra los productos basado en el término de búsqueda
+   * Maneja la carga exitosa de productos
+   */
+  private handleProductsLoaded(products: Product[]): void {
+    this.products = products;
+    this.filterProducts();
+    this.cdr.detectChanges(); // ✅ Forzar detección después de actualizar datos
+    
+    // Debug: verificar estado después de un momento
+    setTimeout(() => {
+      console.log('⏰ [HOME] Estado después de procesar:', {
+        isLoading: this.isLoading,
+        productsLength: this.products.length,
+        hasProducts: this.hasProducts
+      });
+    }, 100);
+  }
+
+  /**
+   * Maneja errores en la carga
+   */
+  private handleLoadError(error: any): void {
+    this.errorMessage = 'Error al cargar los productos. Intenta de nuevo.';
+    this.products = [];
+    this.filteredProducts = [];
+    this.cdr.detectChanges(); 
+  }
+
+  // ==================== FILTROS Y BÚSQUEDA ====================
+  /**
+   * Filtra productos basado en el término de búsqueda
    */
   private filterProducts(): void {
-    if (!this.searchTerm || this.searchTerm.trim() === '') {
-      this.filteredProducts = [...this.allProducts];
+    if (!this.searchTerm.trim()) {
+      this.filteredProducts = [...this.products];
     } else {
-      const searchLower = this.searchTerm.toLowerCase().trim();
-      this.filteredProducts = this.allProducts.filter(product => 
-        product.description?.toLowerCase().includes(searchLower) ||
-        product.category?.toLowerCase().includes(searchLower) ||
-        product.unit?.toLowerCase().includes(searchLower)
+      const term = this.searchTerm.toLowerCase().trim();
+      this.filteredProducts = this.products.filter(product => 
+        product.description?.toLowerCase().includes(term) ||
+        product.category?.toLowerCase().includes(term)
       );
     }
-    
-    console.log(`Productos filtrados: ${this.filteredProducts.length} de ${this.allProducts.length}`);
+    this.cdr.detectChanges(); // ✅ Forzar detección después de filtrar
   }
 
   /**
-   * Maneja el click en un producto para navegar a sus detalles
+   * Realiza una búsqueda
+   */
+  performSearch(searchTerm: string): void {
+    this.searchTerm = searchTerm;
+    this.filterProducts();
+    this.updateUrlWithSearch();
+  }
+
+  /**
+   * Limpia la búsqueda
+   */
+  clearSearch(): void {
+    this.searchTerm = '';
+    this.filterProducts();
+    this.clearUrlParams();
+  }
+
+  // ==================== GETTERS ====================
+  /**
+   * Productos a mostrar en la vista
+   */
+  get productsToShow(): Product[] {
+    const products = this.isSearchActive ? this.filteredProducts : this.products;
+    return products;
+  }
+
+  /**
+   * Si hay productos para mostrar
+   */
+  get hasProducts(): boolean {
+    const hasProducts = this.productsToShow.length > 0;
+    return hasProducts;
+  }
+
+  /**
+   * Si se está mostrando una búsqueda filtrada
+   */
+  get isSearchActive(): boolean {
+    return this.searchTerm.trim() !== '';
+  }
+
+  /**
+   * Mensaje a mostrar cuando no hay productos
+   */
+  get noProductsMessage(): string {
+    if (this.isLoading) return '';
+    if (this.errorMessage) return this.errorMessage;
+    if (this.isSearchActive) return `No se encontraron productos para "${this.searchTerm}"`;
+    return 'No hay productos disponibles en tu tienda';
+  }
+
+  // ==================== NAVEGACIÓN ====================
+  /**
+   * Maneja el click en un producto
    */
   onProductClick(product: Product): void {
-    console.log('Producto clickeado:', product);
     this.router.navigate(['/product', product.id]);
   }
 
   /**
-   * Filtra productos por categoría específica
+   * Recarga los productos
    */
-  filterByCategory(category: string): void {
-    if (!category || category.trim() === '') {
-      this.filteredProducts = [...this.allProducts];
-    } else {
-      this.filteredProducts = this.allProducts.filter(product => 
-        product.category?.toLowerCase() === category.toLowerCase()
-      );
-    }
+  refreshProducts(): void {
+    this.loadProducts();
+  }
+
+  // ==================== UTILIDADES PRIVADAS ====================
+  /**
+   * Actualiza la URL con el término de búsqueda
+   */
+  private updateUrlWithSearch(): void {
+    const queryParams = this.searchTerm ? { search: this.searchTerm } : {};
+    this.router.navigate([], {
+      relativeTo: this.route,
+      queryParams,
+      replaceUrl: true
+    });
   }
 
   /**
-   * Limpia todos los filtros y muestra todos los productos
+   * Limpia los parámetros de la URL
    */
-  clearFilters(): void {
-    this.searchTerm = '';
-    this.filteredProducts = [...this.allProducts];
-    // Limpiar query params
+  private clearUrlParams(): void {
     this.router.navigate([], {
       relativeTo: this.route,
       queryParams: {},
@@ -132,24 +240,25 @@ export class Home implements OnInit, OnDestroy {
     });
   }
 
+  // ==================== DEBUG ====================
   /**
-   * Retorna el array de productos a mostrar en la vista
+   * Estado actual del componente para debugging
    */
-  get productsToShow(): Product[] {
-    return this.filteredProducts;
+  get debugState(): any {
+    return {
+      isLoading: this.isLoading,
+      productsLength: this.products.length,
+      filteredProductsLength: this.filteredProducts.length,
+      hasProducts: this.hasProducts,
+      searchTerm: this.searchTerm,
+      errorMessage: this.errorMessage
+    };
   }
 
   /**
-   * Retorna si hay productos para mostrar
+   * Método para debugging manual
    */
-  get hasProducts(): boolean {
-    return this.productsToShow.length > 0;
-  }
-
-  /**
-   * Retorna si se está mostrando una búsqueda filtrada
-   */
-  get isSearchActive(): boolean {
-    return this.searchTerm.trim() !== '';
+  logState(): void {
+    console.log('🐛 [HOME] Estado actual:', this.debugState);
   }
 }

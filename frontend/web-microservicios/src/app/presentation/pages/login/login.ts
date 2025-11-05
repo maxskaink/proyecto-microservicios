@@ -1,18 +1,22 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { AuthService } from '../../../service /Authser.vice';
 import { Router } from '@angular/router';
+import { TenantService } from '../../../service /TenantService';
+import { Tenant } from '../../../Models/Tenant';
 @Component({
   selector: 'app-login',
   imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
-export class Login {
-correo: string = '';
+export class Login implements OnInit {
+  correo: string = '';
   nombre: string = '';
   password: string = '';
+  tenantId: string = '';
+  tenants: Tenant[] = [];
   
   // Estados para feedback visual
   isLoading: boolean = false;
@@ -25,6 +29,7 @@ correo: string = '';
   // Estados para errores específicos de campos
   emailError: string = '';
   passwordError: string = '';
+  tenantError: string = '';
   
   // Estados para modal de credenciales
   showCredentialsModal: boolean = false;
@@ -35,21 +40,46 @@ correo: string = '';
   maxAttempts: number = 5;
   isBlocked: boolean = false;
   blockTimeRemaining: number = 0;
+
+
+
   public router = inject(Router);
 
-  constructor(private authService: AuthService) {
-    console.log('LoginPage - Constructor iniciado');
-    
+  constructor(private authService: AuthService, private tenantSerice: TenantService) {}
 
-
-
+  ngOnInit(): void {
+    this.loadTenants();
   }
-   navigateTo(path: string) {
+
+  /**
+   * Carga la lista de tenants desde el servicio
+   */
+  private loadTenants(): void {
+    this.tenantSerice.getTenants().subscribe({
+      next: (tenants) => {
+        this.tenants = tenants;
+        console.log('Tenants cargados:', tenants);
+      },
+      error: (error) => {
+        console.error('Error al obtener tenants:', error);
+        this.showErrorMessage('Error al cargar las tiendas disponibles');
+      }
+    });
+  }
+
+  navigateTo(path: string) {
     this.router.navigate([path]);
   }
   async onLogin(form: NgForm) {
     if (form.invalid) {
       this.showErrorMessage('Por favor, completa todos los campos correctamente');
+      return;
+    }
+
+    // Validar que se haya seleccionado un tenant
+    if (!this.tenantId) {
+      this.tenantError = 'Debes seleccionar una tienda';
+      this.showErrorMessage('Por favor, selecciona una tienda');
       return;
     }
 
@@ -63,9 +93,11 @@ correo: string = '';
 
     try {
       console.log('Starting login process...');
-      console.log('Auth state before login:', this.authService.currentUser);
-      const result = await this.authService.login(this.correo, this.password);
-      this.navigateTo('/user');
+      console.log('Tenant seleccionado:', this.tenantId);
+      
+      // Pasar el tenantId al método login
+      await this.authService.login(this.correo, this.password, this.tenantId);
+      this.navigateTo('/home');
     } catch (error: any) {
       this.handleLoginError({
         success: false,
@@ -77,7 +109,16 @@ correo: string = '';
       this.isLoading = false;
     }
   }
-
+  private getTenantsList() {
+    this.tenantSerice.getTenants().subscribe({
+      next: (tenants) => {
+        this.tenants = tenants;
+      },
+      error: (error) => {
+        console.error('Error al obtener tenants:', error);
+      }
+    });
+  }
   private handleLoginError(result: { success: boolean; errorType?: string; errorMessage?: string; blocked?: boolean; retryAfter?: number }) {
     this.failedAttempts++;
     this.errorType = result.errorType || 'other';
@@ -163,9 +204,18 @@ correo: string = '';
     return message;
   }
 
+  /**
+   * Maneja el cambio de selección del tenant
+   */
+  onTenantChange(): void {
+    this.tenantError = ''; // Limpiar error cuando se selecciona un tenant
+    console.log('Tenant seleccionado:', this.tenantId);
+  }
+
   private clearFieldErrors() {
     this.emailError = '';
     this.passwordError = '';
+    this.tenantError = '';
   }
 
   private handleIPBlocked(retryAfter: number) {

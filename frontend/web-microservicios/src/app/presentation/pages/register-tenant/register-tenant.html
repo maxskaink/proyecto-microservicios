@@ -1,0 +1,48 @@
+<app-header></app-header>   
+
+<div class="container mt-5">
+  <h2 class="mb-4">Register Tenant</h2>
+
+  <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()">
+
+    <!-- ID -->
+    <div class="mb-3">
+      <label for="idTenant" class="form-label">idTenant</label>
+      <input 
+        type="text" 
+        id="idTenant" 
+        class="form-control" 
+        formControlName="idTenant" 
+        placeholder="Enter tenant id tenant"
+      />
+      <div *ngIf="tenantForm.get('idTenant')?.invalid && tenantForm.get('idTenant')?.touched" class="text-danger">
+        Id tenant es requerido.
+      </div>
+    </div>
+
+    <!-- Nombre -->
+    <div class="mb-3">
+      <label for="name" class="form-label">Nombre</label>
+      <input 
+        type="text" 
+        id="name" 
+        class="form-control" 
+        formControlName="name" 
+        placeholder="Enter tenant name"
+      />
+      <div *ngIf="tenantForm.get('name')?.invalid && tenantForm.get('name')?.touched" class="text-danger">
+        Nombre requerido.
+      </div>
+    </div>
+
+
+    <!-- Botón de envío -->
+    <button 
+      type="submit" 
+      class="btn btn-primary"
+      [disabled]="tenantForm.invalid"
+    >
+      Registrar mi tenant
+    </button>
+  </form>
+</div>

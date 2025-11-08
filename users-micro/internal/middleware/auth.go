@@ -13,6 +13,8 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 )
 
+const UUIDKey = "uuid"
+
 func FirebaseAuthMiddleware(userService services.UserService, FirebaseApp *firebase.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tenantId := GetTenantFromContext(c)
@@ -67,9 +69,13 @@ func FirebaseAuthMiddleware(userService services.UserService, FirebaseApp *fireb
 		}
 
 		c.Set("name", name)
-		c.Set("uid", token.UID)
+		c.Set(UUIDKey, token.UID)
 		c.Set("email", email)
 
 		c.Next()
 	}
+}
+
+func GetUUIDFromContext(c *gin.Context) string {
+	return c.GetString(UUIDKey)
 }

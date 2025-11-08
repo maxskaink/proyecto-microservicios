@@ -26,6 +26,7 @@ func NewUserController(userService services.UserService) *UserController {
 func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFunc) {
 	users := rg.Group("/users")
 	{
+		users.GET("", auth, uc.ListUsers)
 		users.GET("/producer/:id", auth, uc.GetInfoUser)
 		users.GET("/me", auth, uc.GetInfoUser)
 		users.PUT("/:id", auth, uc.UpdateUser)
@@ -33,6 +34,26 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFu
 
 	}
 
+}
+
+// ListUsers maneja GET /users
+func (uc *UserController) ListUsers(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
+	uuid := middleware.GetUUIDFromContext(c)
+
+	users, err := uc.UserService.ListUsers(tenantID, uuid)
+
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, users)
 }
 
 // GetUserByID maneja GET /users/me
@@ -45,7 +66,7 @@ func (uc *UserController) GetInfoUser(c *gin.Context) {
 		return
 	}
 
-	user_uid := c.GetString("uid") //Should have token because the middleware
+	user_uid := middleware.GetUUIDFromContext(c)
 
 	if user_uid == "" {
 		handleUserError(c, domain.InternalServerError{Message: "uid vacio, no deberia de haber entrado sin uid"})

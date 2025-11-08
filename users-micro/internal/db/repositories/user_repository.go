@@ -159,3 +159,23 @@ func (r *userRepository) Delete(id string, tenantID string) error {
 		return tx.Delete(&db_models.UserDB{}, "id = ?", id).Error
 	}))
 }
+
+// ListUsers lista todos los usuarios de un tenant
+func (r *userRepository) List(tenantID string) ([]dto.UserResponse, error) {
+	var users []db_models.UserDB
+
+	err := r.tenant.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+		return tx.Preload("Profile").Find(&users).Error
+	})
+	if err != nil {
+		return nil, db.ParseDBError(err)
+	}
+
+	var userResponses []dto.UserResponse
+	for _, user := range users {
+		userResp := db_mappers.UserModelToDto(&user)
+		userResponses = append(userResponses, *userResp)
+	}
+
+	return userResponses, nil
+}

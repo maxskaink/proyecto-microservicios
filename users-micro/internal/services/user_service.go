@@ -68,6 +68,31 @@ func (s *userService) CreateUser(u dto.UserRequest, tenantID string) (dto.UserRe
 	return *userCreated, nil
 }
 
+// ListUsers implements UserService.
+func (s *userService) ListUsers(tenantID string, uid string) ([]dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
+	//Validar permisos que si pueda ver los usuarios
+	requester, err := s.GetUserByUUID(uid, tenantID)
+	if err != nil {
+		return nil, err
+	}
+
+	if requester.Rol != domain.UserRoleAdmin {
+		return nil, domain.UnauthorizedError{Message: "Solo administradores pueden listar usuarios"}
+	}
+
+	// Llamar al repositorio para obtener la lista de usuarios
+	users, err := s.userRepo.List(tenantID)
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 // GetUserByID obtiene un usuario por su ID.
 func (s *userService) GetUserByID(id string, tenantID string) (dto.UserResponse, error) {
 	// Validar tenant
@@ -162,7 +187,6 @@ func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester st
 		return dto.UserResponse{}, err
 	}
 
-	// Verificar si el usuario es administrador
 	if string(requester.Rol) != string(domain.UserRoleAdmin) {
 		return dto.UserResponse{}, domain.UnauthorizedError{Message: "Solo administradores pueden cambiar roles de usuario"}
 	}

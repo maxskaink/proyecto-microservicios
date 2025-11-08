@@ -5,6 +5,7 @@ import (
 	"log"
 
 	firebase "firebase.google.com/go"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"google.golang.org/api/option"
 )
 
@@ -19,5 +20,5 @@ func InitFirebase() {
 	}
 	FirebaseApp = app
 
-	AuthMiddleware = FirebaseAuthMiddleware(UserService)
+	AuthMiddleware = middleware.FirebaseAuthMiddleware(UserService, FirebaseApp)
 }

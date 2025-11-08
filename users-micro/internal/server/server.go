@@ -55,18 +55,13 @@ func Run() error {
 	setupServiceDiscovery()
 	r := gin.New()
 	r.Use(gin.Recovery())
-	r.Use(gin.Logger())     //For logs request
-	r.Use(CORSMiddleware()) //For manage the cors
+	r.Use(gin.Logger())                //For logs request
+	r.Use(middleware.CORSMiddleware()) //For manage the cors
 
 	// Healthcheck básico (sin middleware de tenant, es público)
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
 	})
-
-	// Registrar middleware de tenant para rutas protegidas
-	// Las rutas de administración (sin tenant) se registrarán después
-	protectedRoutes := r.Group("/api")
-	protectedRoutes.Use(middleware.TenantMiddleware(DB))
 
 	r.GET("/users/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 

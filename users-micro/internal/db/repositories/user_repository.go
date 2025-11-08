@@ -113,9 +113,10 @@ func (r *userRepository) Update(id string, u *dto.UserRequest, tenantID string) 
 		if u.Profile != nil {
 
 			if err := tx.Model(&user.Profile).Updates(db_models.ProfileDB{
-				Address:   u.Profile.Address,
-				Phone:     u.Profile.Phone,
-				AvatarURL: u.Profile.AvatarURL,
+				Address:     u.Profile.Address,
+				Phone:       u.Profile.Phone,
+				Description: u.Profile.Description,
+				AvatarURL:   u.Profile.AvatarURL,
 			}).Error; err != nil {
 				return db.ParseDBError(err)
 			}

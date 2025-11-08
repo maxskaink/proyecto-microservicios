@@ -22,6 +22,7 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/tenant"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
+	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 )
 
@@ -112,7 +113,8 @@ func Test_Component_GetMe_OK(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 	r := gin.New()
 	api := r.Group("/api")
-	controllers.NewUserController(svc).RegisterRoutes(api, fakeAuthMiddleware(svc), db)
+	api.Use(middleware.TenantMiddleware(db))
+	controllers.NewUserController(svc).RegisterRoutes(api, fakeAuthMiddleware(svc))
 
 	// Ejecutar petición
 	req := httptest.NewRequest(http.MethodGet, "/api/users/me", nil)

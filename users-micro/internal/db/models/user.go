@@ -15,11 +15,12 @@ type UserDB struct {
 }
 
 type ProfileDB struct {
-	ID        string    `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"` // Clave primaria con UUID
-	UserID    string    `gorm:"uniqueIndex;not null"`                           // Relación uno a uno con UserDB
-	Address   string    `gorm:"size:255"`                                       // Dirección
-	Phone     string    `gorm:"size:20"`                                        // Teléfono
-	AvatarURL string    `gorm:"size:255"`                                       // URL del avatar
-	CreatedAt time.Time `gorm:"autoCreateTime"`                                 // Fecha de creación
-	UpdatedAt time.Time `gorm:"autoUpdateTime"`                                 // Fecha de actualización
+	ID          string    `gorm:"primaryKey;type:uuid;default:gen_random_uuid()"` // Clave primaria con UUID
+	UserID      string    `gorm:"uniqueIndex;not null"`                           // Relación uno a uno con UserDB
+	Address     string    `gorm:"size:255"`                                       // Dirección
+	Phone       string    `gorm:"size:20"`                                        // Teléfono
+	AvatarURL   string    `gorm:"size:255"`                                       // URL del avatar
+	Description string    `gorm:"type:text"`                                      // Descripción del perfil
+	CreatedAt   time.Time `gorm:"autoCreateTime"`                                 // Fecha de creación
+	UpdatedAt   time.Time `gorm:"autoUpdateTime"`                                 // Fecha de actualización
 }

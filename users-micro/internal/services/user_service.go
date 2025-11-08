@@ -126,6 +126,10 @@ func (s *userService) UpdateUser(id string, u dto.UserRequest, uid string, tenan
 		}
 	}
 
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+
 	return *response, err
 }
 
@@ -178,4 +182,28 @@ func (s *userService) UpdateRol(id string, rol domain.UserRole, uid_requester st
 
 	return *updated_user, err
 
+}
+
+// GetProducerByID implements UserService.
+func (s *userService) GetProducerByID(id string, tenantID string) (dto.UserResponse, error) {
+	// Validar tenant
+	if tenantID == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
+	if id == "" {
+		return dto.UserResponse{}, domain.BadRequestError{Message: "ID de productor requerido"}
+	}
+
+	// Llamar al repositorio para obtener el usuario
+	user, err := s.userRepo.FindByID(id, tenantID)
+	if err != nil {
+		return dto.UserResponse{}, err
+	}
+
+	if user.Rol == domain.UserRoleClient {
+		return dto.UserResponse{}, domain.NotFoundError{Message: "El usuario con id " + id + " es un cliente, no un productor o administrador"}
+	}
+
+	return *user, nil
 }

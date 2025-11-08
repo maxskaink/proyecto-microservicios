@@ -8,7 +8,6 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
-	"gorm.io/gorm"
 )
 
 // UserController maneja endpoints de usuarios.
@@ -24,18 +23,19 @@ func NewUserController(userService services.UserService) *UserController {
 }
 
 // RegisterRoutes registra rutas HTTP relacionadas a usuarios.
-func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFunc, db *gorm.DB) {
+func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFunc) {
 	users := rg.Group("/users")
 	{
-		users.GET("/me", middleware.TenantMiddleware(db), auth, uc.GetInfoUser)
-		users.PUT("/:id", middleware.TenantMiddleware(db), auth, uc.UpdateUser)
-		users.PATCH("/:id/rol", middleware.TenantMiddleware(db), auth, uc.UpdateRolUser)
+		users.GET("/producer/:id", auth, uc.GetInfoUser)
+		users.GET("/me", auth, uc.GetInfoUser)
+		users.PUT("/:id", auth, uc.UpdateUser)
+		users.PATCH("/:id/rol", auth, uc.UpdateRolUser)
 
 	}
 
 }
 
-// GetUserByID maneja GET /users/:id.
+// GetUserByID maneja GET /users/me
 func (uc *UserController) GetInfoUser(c *gin.Context) {
 	// Extraer tenant del contexto (agregado por middleware)
 
@@ -129,4 +129,29 @@ func (uc *UserController) UpdateRolUser(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, userResponse)
+}
+
+// GetUserByID maneja GET /users/producer/:id.
+func (uc *UserController) GetInfoProducer(c *gin.Context) {
+
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
+	user_id := c.Param("id")
+
+	if user_id == "" {
+		handleUserError(c, domain.InternalServerError{Message: "id vacio, no deberia de haber entrado sin uid"})
+		return
+	}
+
+	producer, err := uc.UserService.GetProducerByID(user_id, tenantID)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, producer)
 }

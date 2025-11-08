@@ -1,37 +1,21 @@
-package server
+package middleware
 
 import (
 	"context"
 	"fmt"
 	"net/http"
 	"strings"
-	"time"
 
-	"github.com/gin-contrib/cors"
+	firebase "firebase.google.com/go"
 	"github.com/gin-gonic/gin"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/dto"
-	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/middleware"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/services"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/pkg/logger"
 )
 
-func CORSMiddleware() gin.HandlerFunc {
-	cfg := cors.Config{
-		AllowAllOrigins:  true,
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Authorization", "Content-Type", "X-Requested-With"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}
-
-	// Could be important read this config from a env file
-	return cors.New(cfg)
-}
-
-func FirebaseAuthMiddleware(userService services.UserService) gin.HandlerFunc {
+func FirebaseAuthMiddleware(userService services.UserService, FirebaseApp *firebase.App) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tenantId := middleware.GetTenantFromContext(c)
+		tenantId := GetTenantFromContext(c)
 
 		if tenantId == "" {
 			logger.Error("Missing X-Tenant-Id")

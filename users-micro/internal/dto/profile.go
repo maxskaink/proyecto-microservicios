@@ -3,18 +3,20 @@ package dto
 import "time"
 
 type ProfileRequest struct {
-	UserID    string `json:"user_id"`
-	Address   string `json:"address" binding:"required"`
-	Phone     string `json:"phone" binding:"required"`
-	AvatarURL string `json:"avatar_url" binding:"required"`
+	UserID      string `json:"user_id"`
+	Address     string `json:"address" binding:"required"`
+	Phone       string `json:"phone" binding:"required"`
+	AvatarURL   string `json:"avatar_url" binding:"required"`
+	Description string `json:"description"`
 }
 
 type ProfileResponse struct {
-	ID        string    `json:"id"`
-	UserID    string    `json:"user_id"`
-	Address   string    `json:"address"`
-	Phone     string    `json:"phone"`
-	AvatarURL string    `json:"avatar_url"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          string    `json:"id"`
+	UserID      string    `json:"user_id"`
+	Address     string    `json:"address"`
+	Phone       string    `json:"phone"`
+	AvatarURL   string    `json:"avatar_url"`
+	Description string    `json:"description"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

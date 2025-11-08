@@ -74,18 +74,20 @@ func (oc *OrderController) listUserOrders(c *gin.Context) {
 
 func (oc *OrderController) getByID(c *gin.Context) {
 	tenantID := middleware.GetTenantFromContext(c)
-	_ = tenantID // reserved for future policies
 
 	id := c.Param("id")
+
 	if id == "" {
-		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid id"})
+		handleUserError(c, domain.BadRequestError{Message: "The id is missing"})
 		return
 	}
-	order, err := oc.svc.GetByID(id, middleware.GetTenantFromContext(c))
+	order, err := oc.svc.GetByID(id, tenantID)
+
 	if err != nil {
-		c.JSON(http.StatusNotFound, dto.ErrorResponse{Error: err.Error()})
+		handleUserError(c, err)
 		return
 	}
+
 	c.JSON(http.StatusOK, order)
 }
 

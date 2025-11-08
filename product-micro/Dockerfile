@@ -1,31 +1,54 @@
-FROM golang:1.25-alpine
-
-# Instalar dependencias y Air
-RUN apk add --no-cache git bash curl ca-certificates tzdata && \
-    go install github.com/air-verse/air@latest
-
-# Directorio de trabajo
+##############################
+# Etapa base (dependencias)
+##############################
+FROM golang:1.25-alpine AS base
+RUN apk add --no-cache git bash curl ca-certificates tzdata
 WORKDIR /app
-
-# Copiar los archivos de módulos y descargar dependencias
 COPY go.mod go.sum* ./
 RUN go mod download
 
-# Copiar el resto del código
-COPY . .
-
-# Variables de entorno
+##############################
+# Builder (compila binario)
+##############################
+FROM base AS builder
+ARG BUILD_DIR=./cmd/server
 ENV CGO_ENABLED=0 \
     GOPROXY=https://proxy.golang.org,direct
-
-# Crear archivo dummy si no existe
+COPY . .
+# Crear secretos dummy para evitar fallos si faltan
 RUN mkdir -p /app/secrets && \
-    if [ ! -f /app/secrets/serviceAccountKey.json ]; then \
-        echo '{"type":"service_account"}' > /app/secrets/serviceAccountKey.json; \
-    fi
+    if [ ! -f /app/secrets/serviceAccountKey.json ]; then echo '{"type":"service_account"}' > /app/secrets/serviceAccountKey.json; fi
+RUN go build -ldflags "-s -w" -o /out/app "$BUILD_DIR"
 
-# Exponer puerto
-EXPOSE 8080
-
-# Comando por defecto
+##############################
+# Dev (hot reload con Air)
+##############################
+FROM base AS dev
+RUN go install github.com/air-verse/air@latest
+ARG APP_PORT=8081
+ENV CGO_ENABLED=0 PORT=$APP_PORT
+COPY . .
+RUN mkdir -p /app/secrets && \
+    if [ ! -f /app/secrets/serviceAccountKey.json ]; then echo '{"type":"service_account"}' > /app/secrets/serviceAccountKey.json; fi
+EXPOSE $APP_PORT
 CMD ["air", "-c", ".air.toml"]
+
+##############################
+# Prod (imagen mínima)
+##############################
+FROM alpine:3.20 AS prod
+RUN apk add --no-cache ca-certificates tzdata && adduser -D -H appuser
+WORKDIR /app
+ARG APP_PORT=8081
+ENV PORT=$APP_PORT
+COPY --from=builder /out/app ./app
+COPY --from=builder /app/secrets ./secrets
+EXPOSE $APP_PORT
+USER appuser
+ENTRYPOINT ["./app"]
+
+##############################
+# Instrucciones:
+#   docker build --target dev -t product-micro:dev .
+#   docker build --target prod -t product-micro:prod .
+# Start.sh usará --target según modo.

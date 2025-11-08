@@ -6,6 +6,13 @@ RED='\033[0;31m'
 NC='\033[0m'
 
 PROJECT_NAME="proyecto-microservicios"
+MODE=${1:-dev} # dev (por defecto) | prod
+
+if [[ "$MODE" != "dev" && "$MODE" != "prod" ]]; then
+  echo -e "${RED}Modo inválido: $MODE. Usa 'dev' o 'prod'.${NC}"; exit 1;
+fi
+
+echo -e "${YELLOW}Modo seleccionado: $MODE${NC}"
 
 echo -e "${GREEN}Preparando infraestructura de microservicios...${NC}"
 
@@ -32,19 +39,26 @@ docker network prune -f >/dev/null 2>&1
 
 echo -e "${GREEN}Iniciando servicios...${NC}"
 
-if ! docker compose up --build -d; then
+COMPOSE_FILE="docker-compose.yml"
+if [[ "$MODE" == "prod" ]]; then
+  COMPOSE_FILE="docker-compose.prod.yml"
+fi
+
+echo -e "${YELLOW}Usando archivo: $COMPOSE_FILE${NC}"
+
+if ! docker compose -f "$COMPOSE_FILE" up --build -d; then
   echo -e "${RED}⚠️ Error creando red. Intentando limpiar...${NC}"
   docker network rm ${PROJECT_NAME}_micro-network 2>/dev/null
-  docker compose up --build -d
+  docker compose -f "$COMPOSE_FILE" up --build -d
 fi
 
 echo -e "${YELLOW}Esperando inicio...${NC}"
 sleep 8
 
 echo -e "${GREEN}Servicios activos:${NC}"
-docker compose ps
+docker compose -f "$COMPOSE_FILE" ps
 
-echo -e "\n${GREEN}✅ Infraestructura levantada${NC}"
+echo -e "\n${GREEN}✅ Infraestructura levantada (${MODE})${NC}"
 echo -e "- Consul: http://localhost:8500/ui/"
 echo -e "- Kong Admin: http://localhost:8090"
 echo -e "- RabbitMQ: http://localhost:15672 (guest/guest)"

@@ -79,8 +79,7 @@ services:
   users_api:
     build:
       context: ./users-micro
-      dockerfile: Dockerfile
-      target: dev
+      target: prod
     container_name: users_api
     depends_on:
       users_db:
@@ -98,8 +97,6 @@ services:
       CONSUL_HTTP_ADDR: "consul:8500"
       TRAEFIK_ENABLE: "true"
       RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
-    volumes:
-      - ./users-micro:/app:z
     networks:
       micro-network:
         ipv4_address: 10.200.0.11
@@ -147,8 +144,7 @@ services:
   tenant_api:
     build:
       context: ./tenant-micro
-      dockerfile: Dockerfile
-      target: dev
+      target: prod
     container_name: tenant_api
     depends_on:
       tenant_db:
@@ -172,8 +168,6 @@ services:
       SERVICE_TAGS: "tenant,api"
       CONSUL_HTTP_ADDR: "consul:8500"
       TRAEFIK_ENABLE: "true"
-    volumes:
-      - ./tenant-micro:/app:z
     networks:
       micro-network:
         ipv4_address: 10.200.0.13
@@ -181,8 +175,7 @@ services:
   product_api:
     build:
       context: ./product-micro
-      dockerfile: Dockerfile
-      target: dev
+      target: prod
     container_name: product_api
     depends_on:
       product_db:
@@ -199,8 +192,6 @@ services:
       CONSUL_HTTP_ADDR: "consul:8500"
       TRAEFIK_ENABLE: "true"
       RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
-    volumes:
-      - ./product-micro:/app:z
     networks:
       micro-network:
         ipv4_address: 10.200.0.12
@@ -248,8 +239,7 @@ services:
   shipping_api:
     build:
       context: ./shipping-micro
-      dockerfile: Dockerfile
-      target: dev
+      target: prod
     container_name: shipping_api
     depends_on:
       shipping_db:
@@ -266,8 +256,6 @@ services:
       CONSUL_HTTP_ADDR: "consul:8500"
       TRAEFIK_ENABLE: "true"
       RABBITMQ_URL: "amqp://guest:guest@rabbitmq:5672/"
-    volumes:
-      - ./shipping-micro:/app:z
     networks:
       micro-network:
         ipv4_address: 10.200.0.14

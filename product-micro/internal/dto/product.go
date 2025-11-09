@@ -29,3 +29,32 @@ type ProductDTORequest struct {
 	Unit        domain.ProductUnit     `json:"unit" binding:"required,unit"`
 	PhotoUrl    string                 `json:"photo_url" binding:"omitempty,url"`
 }
+
+type ProductPhotoInfoDTO struct {
+	UploadURL string `json:"upload_url"`
+	ObjectKey string `json:"object_key"`
+	PublicURL string `json:"public_url"`
+	ExpiresIn int    `json:"expires_in"` // segundos
+}
+
+type UploadURLRequest struct {
+	Filename    string `json:"filename" binding:"required"`
+	ContentType string `json:"content_type" binding:"required"`
+}
+
+type CompletePhotoRequest struct {
+	ObjectKey string `json:"object_key" binding:"required"`
+}
+
+func ProductDTOResponseTORequest(response ProductDTOResponse) ProductDTORequest {
+	return ProductDTORequest{
+		ProducerID:  response.ProducerID,
+		Category:    response.Category,
+		Price:       response.Price,
+		Description: response.Description,
+		Name:        response.Name,
+		Stock:       response.Stock,
+		Unit:        response.Unit,
+		PhotoUrl:    response.PhotoUrl,
+	}
+}

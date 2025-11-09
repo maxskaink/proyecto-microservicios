@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"path/filepath"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -34,6 +35,10 @@ func (pc *ProductController) RegisterRoutes(rg *gin.RouterGroup, auth gin.Handle
 		products.GET("/:id", auth, pc.GetProductByID)
 		products.POST("", auth, pc.CreateProduct)
 		products.PUT("/:id", auth, pc.UpdateProduct)
+
+		//for uploads photos
+		products.POST("/upload-url", auth, pc.GetUploadURL)
+		products.PUT("/:id/photo", auth, pc.CompletePhoto)
 	}
 }
 
@@ -229,4 +234,62 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 func (pc *ProductController) GetCategories(c *gin.Context) {
 	categories := domain.GetCategoriesList()
 	c.JSON(http.StatusOK, categories)
+}
+
+func (pc *ProductController) GetUploadURL(c *gin.Context) {
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+	var req dto.UploadURLRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		handleUserError(c, domain.BadRequestError{Message: "Datos inválidos: " + err.Error()})
+		return
+	}
+
+	// normalizar filename
+	if filepath.Ext(req.Filename) == "" {
+		req.Filename = req.Filename + ".img"
+	}
+
+	productPhotoInfo, err := pc.productService.GetUploadURL(tenantID, req.Filename, req.ContentType)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusCreated, productPhotoInfo)
+}
+
+func (pc *ProductController) CompletePhoto(c *gin.Context) {
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+	productID := c.Param("id")
+	if productID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "ID producto requerido"})
+		return
+	}
+
+	var req dto.CompletePhotoRequest
+	if err := c.ShouldBindJSON(&req); err != nil {
+		handleUserError(c, domain.BadRequestError{Message: "Datos inválidos: " + err.Error()})
+		return
+	}
+
+	userUID := c.GetString("uid")
+	if userUID == "" {
+		handleUserError(c, domain.InternalServerError{Message: "UID usuario no encontrado"})
+		return
+	}
+
+	res, err := pc.productService.CompletePhotoUpload(productID, req.ObjectKey, tenantID, userUID)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, res)
 }

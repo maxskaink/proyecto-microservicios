@@ -11,6 +11,8 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/config"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/tenant"
@@ -19,11 +21,15 @@ import (
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/server/validators"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/services"
 	tenant_services "github.com/maxskaink/proyecto-microservicios/product-micro/internal/services/tenant"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/storage"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/pkg/logger"
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
 	"gorm.io/gorm"
 )
+
+// Config
+var appConfig *config.Config
 
 // Services
 var ProductService services.IProductService
@@ -31,6 +37,7 @@ var UserService services.IUserService
 var serviceRegistry *discovery.ServiceRegistration
 var eventManager *messaging.EventManager
 var tenantService *tenant_services.TenantService
+var storageClient storage.ObjectStorage
 
 // Repositories
 var ProductRepository repositories.IProductRepository
@@ -112,13 +119,24 @@ func configDB() {
 }
 
 func configServices() {
+
+	_ = godotenv.Load()
+	appConfig = config.Load()
+
+	//Inicializar storage R2 (No rompe el flujo)
+	var errStorage error
+	storageClient, errStorage = storage.NewFromConfig(context.Background(), appConfig)
+	if errStorage != nil {
+		logger.Error(fmt.Sprintf("error al crear storage R2: %v", errStorage))
+	}
+
 	UserService = services.NewUserService(UserRepository)
 	// Crear publisher de eventos de productos
 	productPublisher, err := messaging.NewProductEventPublisher()
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error al crear publisher de productos: %v", err))
 	}
-	ProductService = services.NewProductService(ProductRepository, UserService, productPublisher)
+	ProductService = services.NewProductService(ProductRepository, UserService, productPublisher, storageClient, appConfig)
 
 	// Configurar el gestor de eventos (consumidor de RabbitMQ)
 	eventManager, err = messaging.NewEventManager(UserRepository, tenantService)

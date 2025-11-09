@@ -1,25 +1,38 @@
 package services
 
 import (
+	"context"
 	"fmt"
+	"path/filepath"
+	"strings"
+	"time"
 
+	"github.com/google/uuid"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/config"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/domain"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/messaging"
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/storage"
 )
 
 type productService struct {
 	productRepo repositories.IProductRepository
 	userService IUserService
 	publisher   messaging.Publisher
+
+	//for storage
+	storage storage.ObjectStorage
+	cfg     *config.Config
 }
 
-func NewProductService(productRepo repositories.IProductRepository, userService IUserService, publisher messaging.Publisher) IProductService {
+func NewProductService(productRepo repositories.IProductRepository, userService IUserService, publisher messaging.Publisher, storage storage.ObjectStorage, cfg *config.Config) IProductService {
 	return &productService{
 		productRepo: productRepo,
 		userService: userService,
 		publisher:   publisher,
+		storage:     storage,
+		cfg:         cfg,
 	}
 }
 
@@ -144,4 +157,89 @@ func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest,
 	}
 
 	return result, nil
+}
+
+// CompletePhotoUpload implements IProductService.
+func (p *productService) CompletePhotoUpload(productID string, objectKey string, tenantID string, userUID string) (*dto.ProductDTOResponse, error) {
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+	if productID == "" || objectKey == "" {
+		return nil, domain.BadRequestError{Message: "Datos incompletos"}
+	}
+	if !strings.HasPrefix(objectKey, tenantID+"/") {
+		return nil, domain.BadRequestError{Message: "object_key inválido"}
+	}
+	// Validar usuario
+	user, err := p.userService.GetUserByUUID(userUID, tenantID)
+	if err != nil {
+		return nil, domain.UnauthorizedError{Message: "Usuario no válido"}
+	}
+
+	// Verificar producto
+	current, err := p.productRepo.GetByIdProduct(productID, tenantID)
+	if err != nil || current == nil {
+		return nil, domain.NotFoundError{Message: "Producto no encontrado"}
+	}
+	if current.ProducerID != user.ID && user.Rol != domain.UserRoleAdmin {
+		return nil, domain.UnauthorizedError{Message: "No autorizado a modificar foto"}
+	}
+
+	// HEAD objeto
+	_, err = p.storage.HeadObject(context.Background(), p.cfg.R2Bucket, objectKey)
+	if err != nil {
+		return nil, domain.BadRequestError{Message: "Objeto no encontrado en storage"}
+	}
+
+	// Mover a final
+	finalKey := fmt.Sprintf("%s/products/%s/%s", tenantID, productID, filepath.Base(objectKey))
+	if err := p.storage.CopyObject(context.Background(), p.cfg.R2Bucket, objectKey, finalKey); err != nil {
+		return nil, domain.InternalServerError{Message: "Error moviendo objeto"}
+	}
+	_ = p.storage.DeleteObject(context.Background(), p.cfg.R2Bucket, objectKey)
+
+	publicURL := fmt.Sprintf("%s/%s", p.cfg.R2PublicBaseURL, finalKey)
+
+	newProduct := dto.ProductDTOResponseTORequest(*current)
+	newProduct.PhotoUrl = publicURL
+
+	updated, err := p.productRepo.UpdateProduct(productID, &newProduct, tenantID)
+	if err != nil {
+		return nil, err
+	}
+
+	if p.publisher != nil {
+		_ = p.publisher.PublishProductUpdated(*updated, tenantID)
+	}
+
+	return updated, nil
+}
+
+// GetUploadURL implements IProductService.
+func (p *productService) GetUploadURL(tenantID string, filename string, contentType string) (*dto.ProductPhotoInfoDTO, error) {
+	if tenantID == "" {
+		return nil, domain.BadRequestError{Message: "Tenant requerido"}
+	}
+	// Validar content-type simple
+	if !strings.HasPrefix(contentType, "image/") {
+		return nil, domain.BadRequestError{Message: "Tipo de contenido no permitido"}
+	}
+	ext := filepath.Ext(filename)
+	if ext == "" {
+		ext = ".img"
+	}
+	u := uuid.New().String()
+	objectKey := fmt.Sprintf("%s/products/tmp/%s%s", tenantID, u, ext)
+
+	exp := time.Duration(p.cfg.PresignExpiresSec) * time.Second
+	uploadURL, publicURL, err := p.storage.PresignPut(context.Background(), p.cfg.R2Bucket, objectKey, contentType, exp)
+	if err != nil {
+		return nil, domain.InternalServerError{Message: "Error generando URL de subida"}
+	}
+	return &dto.ProductPhotoInfoDTO{
+		UploadURL: uploadURL,
+		ObjectKey: objectKey,
+		PublicURL: publicURL,
+		ExpiresIn: p.cfg.PresignExpiresSec,
+	}, nil
 }

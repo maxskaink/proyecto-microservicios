@@ -15,4 +15,8 @@ type IProductService interface {
 	GetByIdProduct(id string, tenantID string) (*dto.ProductDTOResponse, error)
 	CreateProduct(product dto.ProductDTORequest, idProducer string, tenantID string) (*dto.ProductDTOResponse, error)
 	UpdateProduct(idProduct string, product dto.ProductDTORequest, idProducer string, tenantID string) (*dto.ProductDTOResponse, error)
+
+	// Methods for image handling
+	GetUploadURL(tenantID string, filename string, contentType string) (*dto.ProductPhotoInfoDTO, error)
+	CompletePhotoUpload(productID string, objectKey string, tenantID string, userUID string) (*dto.ProductDTOResponse, error)
 }

@@ -48,6 +48,46 @@ export class ProductService {
   }
 
   /**
+   * Solicita una URL pre-firmada para subir una imagen
+   */
+  getUploadUrl(filename: string, contentType: string): Observable<{ upload_url: string; object_key: string }> {
+    return this.getTenantAndHeaders().pipe(
+      switchMap(({ tenantId, headers }) =>
+        this.http.post<{ upload_url: string; object_key: string }>(
+          `${this.apiUrlProduct}${tenantId}/api/products/upload-url`,
+          { filename, content_type: contentType },
+          { headers }
+        )
+      )
+    );
+  }
+
+  /**
+   * Sube la imagen a la URL pre-firmada
+   */
+  uploadImageToUrl(uploadUrl: string, file: File): Observable<any> {
+    const headers = new HttpHeaders({
+      'Content-Type': file.type
+    });
+    return this.http.put(uploadUrl, file, { headers });
+  }
+
+  /**
+   * Actualiza la foto del producto con el object_key
+   */
+  updateProductPhoto(productId: string, objectKey: string): Observable<any> {
+    return this.getTenantAndHeaders().pipe(
+      switchMap(({ tenantId, headers }) =>
+        this.http.put(
+          `${this.apiUrlProduct}${tenantId}/api/products/${productId}/photo`,
+          { object_key: objectKey },
+          { headers }
+        )
+      )
+    );
+  }
+
+  /**
    * Crea un nuevo producto - VERSIÓN REACTIVA
    */
    postProduct(product: ProductPeticion): Observable<Product> {    

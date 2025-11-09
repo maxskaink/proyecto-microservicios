@@ -16,7 +16,7 @@ export const serverRoutes: ServerRoute[] = [
   },
   {
     path: 'publishProduct',
-    renderMode: RenderMode.Server // Contenido dinámico para el usuario
+    renderMode: RenderMode.Client // Contenido dinámico para el usuario
   },
   {
     path: 'register-tenant',

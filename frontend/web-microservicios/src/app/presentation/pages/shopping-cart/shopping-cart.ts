@@ -11,7 +11,7 @@ import { Header } from '../../templates/header/header';
 
 @Component({
   selector: 'app-shopping-cart',
-  imports: [CommonModule, RouterModule, FormsModule, ArrowLeft, Header],
+  imports: [CommonModule, RouterModule, FormsModule, Header],
   templateUrl: './shopping-cart.html',
   styleUrl: './shopping-cart.css',
 })

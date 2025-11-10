@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/mappers"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/tenant"
@@ -30,7 +31,7 @@ func (r *ShippingRepository) Create(shipping *dto.ShippingDTO, tenantID string) 
 		return tx.Create(&created).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.ShippingDBToDTO(&created), nil
 }
@@ -41,7 +42,7 @@ func (r *ShippingRepository) GetByID(id string, tenantID string) (*dto.ShippingD
 		return tx.Where("id = ?", id).First(&s).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.ShippingDBToDTO(&s), nil
 }
@@ -52,15 +53,17 @@ func (r *ShippingRepository) GetByOrderID(orderID string, tenantID string) (*dto
 		return tx.Where("order_id = ?", orderID).First(&s).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.ShippingDBToDTO(&s), nil
 }
 
 func (r *ShippingRepository) UpdateStatus(id string, status string, tenantID string) error {
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Model(&models.ShippingDB{}).Where("id = ?", id).Update("status", status).Error
 	})
+
+	return db.ParseDBError(err)
 }
 
 func (r *ShippingRepository) List(tenantID string) ([]dto.ShippingDTO, error) {
@@ -69,7 +72,7 @@ func (r *ShippingRepository) List(tenantID string) ([]dto.ShippingDTO, error) {
 		return tx.Order("created_at DESC").Find(&sh).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	res := make([]dto.ShippingDTO, len(sh))
 	for i := range sh {

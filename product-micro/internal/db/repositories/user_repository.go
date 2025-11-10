@@ -39,7 +39,7 @@ func (r *UserRepository) CreateUser(userReq dto.UserRequest, tenantId string) (*
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return result, nil
@@ -59,7 +59,7 @@ func (r *UserRepository) FindById(id string, tenantId string) (*dto.UserResponse
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return result, nil
@@ -79,7 +79,7 @@ func (r *UserRepository) FindByUID(uid string, tenantId string) (*dto.UserRespon
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return result, nil
@@ -111,7 +111,7 @@ func (r *UserRepository) UpdateUser(userReq dto.UserRequest, tenantId string) (*
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return result, nil

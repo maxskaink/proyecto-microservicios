@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/mappers"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/tenant"
@@ -28,18 +29,18 @@ func (r *CartRepository) AddItem(userID, productID string, quantity int, tenantI
 		if err := tx.Where("user_id = ? AND product_id = ?", userID, productID).First(&dbItem).Error; err == nil {
 			dbItem.Quantity += quantity
 			if err := tx.Save(&dbItem).Error; err != nil {
-				return err
+				return db.ParseDBError(err)
 			}
 			itemID = dbItem.ID
 			return nil
 		} else if err != gorm.ErrRecordNotFound {
-			return err
+			return db.ParseDBError(err)
 		}
 
 		// Validar que el producto exista (evita huérfanos)
 		var product models.ProductDB
 		if err := tx.Where("id = ?", productID).First(&product).Error; err != nil {
-			return err
+			return db.ParseDBError(err)
 		}
 
 		// Crear nuevo item
@@ -49,12 +50,12 @@ func (r *CartRepository) AddItem(userID, productID string, quantity int, tenantI
 			Quantity:  quantity,
 		}
 		if err := tx.Create(&newItem).Error; err != nil {
-			return err
+			return db.ParseDBError(err)
 		}
 		itemID = newItem.ID
 		return nil
 	}); err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	// Fuera de la transacción: recargar con Preload("Product") y devolver
@@ -76,7 +77,7 @@ func (r *CartRepository) GetUserCart(userID string, tenantID string) ([]dto.Cart
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	result := make([]dto.CartItemDTO, len(items))
@@ -88,25 +89,28 @@ func (r *CartRepository) GetUserCart(userID string, tenantID string) ([]dto.Cart
 }
 
 func (r *CartRepository) UpdateItem(itemID string, quantity int, tenantID string) error {
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	var err = r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		if quantity == 0 {
 			// Si la cantidad es 0, eliminar el item
 			return tx.Where("id = ?", itemID).Delete(&models.CartItemDB{}).Error
 		}
 		return tx.Model(&models.CartItemDB{}).Where("id = ?", itemID).Update("quantity", quantity).Error
 	})
+	return db.ParseDBError(err)
 }
 
 func (r *CartRepository) DeleteItem(itemID string, tenantID string) error {
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	var err = r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Where("id = ?", itemID).Delete(&models.CartItemDB{}).Error
 	})
+	return db.ParseDBError(err)
 }
 
 func (r *CartRepository) ClearCart(userID string, tenantID string) error {
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	var err = r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Where("user_id = ?", userID).Delete(&models.CartItemDB{}).Error
 	})
+	return db.ParseDBError(err)
 }
 
 func (r *CartRepository) GetItemByID(itemID string, tenantID string) (*dto.CartItemDTO, error) {
@@ -117,7 +121,7 @@ func (r *CartRepository) GetItemByID(itemID string, tenantID string) (*dto.CartI
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return mappers.CartItemDBToDTO(&item), nil

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/mappers"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/tenant"
@@ -47,7 +48,7 @@ func (r *OrderRepository) Create(order *dto.OrderDTO, items []dto.OrderItemDTO, 
 		return nil
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.OrderDBToDTO(&created), nil
 }
@@ -58,7 +59,7 @@ func (r *OrderRepository) GetByID(id string, tenantID string) (*dto.OrderDTO, er
 		return tx.Preload("Items").Where("id = ?", id).First(&order).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.OrderDBToDTO(&order), nil
 }
@@ -69,7 +70,7 @@ func (r *OrderRepository) GetByUserID(userID string, tenantID string) ([]dto.Ord
 		return tx.Preload("Items").Where("user_id = ?", userID).Order("created_at DESC").Find(&orders).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	res := make([]dto.OrderDTO, len(orders))
 	for i := range orders {
@@ -79,9 +80,11 @@ func (r *OrderRepository) GetByUserID(userID string, tenantID string) ([]dto.Ord
 }
 
 func (r *OrderRepository) UpdateStatus(id string, status string, tenantID string) error {
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	var err = r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Model(&models.OrderDB{}).Where("id = ?", id).Update("status", status).Error
 	})
+
+	return db.ParseDBError(err)
 }
 
 // GetByStatus implements IOrderRepository.
@@ -91,7 +94,7 @@ func (r *OrderRepository) GetByStatus(status string, tenantID string) ([]dto.Ord
 		return tx.Preload("Items").Where("status = ?", status).Order("created_at DESC").Find(&orders).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	res := make([]dto.OrderDTO, len(orders))
 	for i := range orders {

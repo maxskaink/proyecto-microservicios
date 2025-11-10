@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/mappers"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/tenant"
@@ -25,9 +26,11 @@ func (r *UserRepository) Create(user *dto.UserDTO, tenantID string) error {
 		Name:  user.Name,
 	}
 
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Create(userDB).Error
 	})
+
+	return db.ParseDBError(err)
 }
 
 func (r *UserRepository) GetByID(id string, tenantID string) (*dto.UserDTO, error) {
@@ -36,7 +39,7 @@ func (r *UserRepository) GetByID(id string, tenantID string) (*dto.UserDTO, erro
 		return tx.Where("id = ?", id).First(&user).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.UserDBToDTO(&user), nil
 }
@@ -48,7 +51,7 @@ func (r *UserRepository) GetByUUID(uid string, tenantID string) (*dto.UserDTO, e
 		return tx.Where("uuid = ?", uid).First(&user).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.UserDBToDTO(&user), nil
 }

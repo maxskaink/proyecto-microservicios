@@ -124,7 +124,7 @@ export class ProductService {
   /**
    * Obtiene productos con paginación - VERSIÓN REACTIVA
    */
-  getProducts(page: number = 1, pageSize: number = 10): Observable<Product[]> {
+  getProducts(page: number, pageSize: number): Observable<Product[]> {
     return this.getTenantAndHeaders().pipe(
       switchMap(({ tenantId, headers }) => 
         this.http.get<Product[]>(

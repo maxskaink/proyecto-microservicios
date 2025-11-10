@@ -1,43 +1,18 @@
 <app-header></app-header>
-
-<div class="home-container">
-  
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-container">
-    <div class="spinner"></div>
-    <p>Cargando productos...</p>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="!isLoading && errorMessage" class="error-container">
-    <p>{{ errorMessage }}</p>
-    <button (click)="refreshProducts()" class="retry-btn">
-      Reintentar
-    </button>
-  </div>
-
-  <!-- Products Content -->
-  <div *ngIf="!isLoading && !errorMessage" class="products-content">
-    <!-- Search Results Info -->
-    <div *ngIf="isSearchActive" class="search-info">
-      <p>Mostrando {{ filteredProducts.length }} resultados para "{{ searchTerm }}"</p>
-      <button (click)="clearSearch()">Limpiar búsqueda</button>
-    </div>
-
-    <!-- Products List -->
-    <div *ngIf="hasProducts; else noProducts" class="products-container">
-      <app-list-product-tenant-preview 
-        [products]="productsToShow">
-      </app-list-product-tenant-preview>
-    </div>
-
-    <!-- No Products Template -->
-    <ng-template #noProducts>
-      <div class="no-products">
-        <h3>Sin productos</h3>
-        <p>{{ noProductsMessage }}</p>
-      </div>
-    </ng-template>
+<div class="container-fluid home-section-welcome d-flex justify-content-center align-items-center">
+  <div>
+    <h1 id="title-welcome">¡Bienvenido!</h1>
   </div>
 </div>
+<div class="descriptio-welcome d-flex justify-content-center align-items-center flex-column ">
+  <p id="descriptio-welcome-text">Disfruta el placer de alimentarte bien</p>
+</div>
+<section>
+  <div class="container-fluid">
+    <div class="row">
+        <app-list-product-tenant-preview 
+          (productClick)="onProductClick($event)">
+        </app-list-product-tenant-preview>
+    </div>
+  </div>
+</section>

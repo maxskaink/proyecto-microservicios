@@ -1,11 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
-import { Tenant } from '../../../Models/Tenant';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { ProductBox } from '../../components/product-box/product-box';
 import { Product } from '../../../Models/Product';
-import { Route, Router } from '@angular/router';
+import {  Router } from '@angular/router';
 import { ProductService } from '../../../service /ProductService';
-import { TenantService } from '../../../service /TenantService';
+
 
 @Component({
   selector: 'app-list-product-tenant-preview',
@@ -13,18 +12,22 @@ import { TenantService } from '../../../service /TenantService';
   templateUrl: './list-product-tenant-preview.html',
   styleUrl: './list-product-tenant-preview.css',
 })
-export class ListProductTenantPreview {
+export class ListProductTenantPreview implements OnInit {
   public products: Product[] = [];
   public tenantid: string = '';
   @Output() productClick = new EventEmitter<Product>();
   constructor(private router: Router,
      private productService: ProductService,
     ) {}
+  ngOnInit(): void {
+    this.loadProductsForTenant();
+  }
 
   loadProductsForTenant(): void {
     this.productService.getProducts(1,10).subscribe((products: Product[]) => {
       this.products = products;
     });
+    console.log(this.products);
   }
   /**
    * Maneja el click en un producto para navegar a sus detalles

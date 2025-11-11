@@ -11,6 +11,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/maxskaink/proyecto-microservicios/pkg/observability"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/controllers"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/discovery"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/middleware"
@@ -58,6 +59,10 @@ func main() {
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
 	r.Use(middleware.CORSMiddleware())
+	r.Use(observability.PrometheusMiddleware())
+
+	// Endpoint de métricas para Prometheus
+	r.GET("/metrics", observability.MetricsHandler())
 
 	// Rutas
 	r.POST("/api/tenants", controller.CreateTenant)

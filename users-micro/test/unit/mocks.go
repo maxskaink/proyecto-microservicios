@@ -11,6 +11,11 @@ type MockUserRepository struct {
 	mock.Mock
 }
 
+// List implements repositories.UserRepository.
+func (m *MockUserRepository) List(tenantID string) ([]dto.UserResponse, error) {
+	panic("unimplemented")
+}
+
 func NewMockUserService() repositories.UserRepository {
 	return &MockUserRepository{}
 }

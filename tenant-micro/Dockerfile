@@ -4,7 +4,8 @@
 FROM golang:1.25-alpine AS base
 RUN apk add --no-cache git bash curl ca-certificates tzdata
 WORKDIR /app
-COPY go.mod go.sum* ./
+COPY tenant-micro/go.mod tenant-micro/go.sum* ./
+COPY pkg/observability /pkg/observability
 RUN go mod download
 
 ##############################
@@ -14,7 +15,7 @@ FROM base AS builder
 ARG BUILD_DIR=./cmd/main.go
 ENV CGO_ENABLED=0 \
     GOPROXY=https://proxy.golang.org,direct
-COPY . .
+COPY tenant-micro/ .
 RUN go build -ldflags "-s -w" -o /out/app "$BUILD_DIR"
 
 ##############################
@@ -24,7 +25,7 @@ FROM base AS dev
 RUN go install github.com/air-verse/air@latest
 ARG APP_PORT=8082
 ENV CGO_ENABLED=0 PORT=$APP_PORT
-COPY . .
+COPY tenant-micro/ .
 EXPOSE $APP_PORT
 CMD ["air", "-c", ".air.toml"]
 

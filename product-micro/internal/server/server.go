@@ -144,7 +144,7 @@ func configServices() {
 	ProductService = services.NewProductService(ProductRepository, UserService, productPublisher, storageClient, appConfig)
 
 	// Configurar el gestor de eventos (consumidor de RabbitMQ)
-	eventManager, err = messaging.NewEventManager(UserRepository, tenantService)
+	eventManager, err = messaging.NewEventManager(UserRepository, ProductRepository, tenantService)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error al crear gestor de eventos: %v", err))
 		return

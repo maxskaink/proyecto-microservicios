@@ -19,10 +19,10 @@ type EventManager struct {
 
 // NewEventManager crea un nuevo gestor de eventos
 // Configura el dispatcher con todos los handlers y el consumer de RabbitMQ
-func NewEventManager(userRepository repositories.IUserRepository, tenantService *tenant.TenantService) (*EventManager, error) {
+func NewEventManager(userRepository repositories.IUserRepository, productRepository repositories.IProductRepository, tenantService *tenant.TenantService) (*EventManager, error) {
 	// Crear el dispatcher con todos los handlers registrados
-	// (user.created, user.updated, user.deleted, tenant.created, tenant.deleted)
-	dispatcher := handlers.NewEventDispatcher(userRepository, tenantService)
+	// (user.created, user.updated, user.deleted, tenant.created, tenant.deleted, order.paid)
+	dispatcher := handlers.NewEventDispatcher(userRepository, productRepository, tenantService)
 
 	// Crear el connection manager para conectarse a RabbitMQ
 	config := rabbitmq.DefaultConfig()

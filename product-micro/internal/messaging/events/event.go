@@ -6,13 +6,15 @@ import "time"
 type EventType string
 
 const (
-	UserCreated    EventType = "user.created"
-	UserUpdated    EventType = "user.updated"
-	UserDeleted    EventType = "user.deleted"
-	ProductCreated EventType = "product.created"
-	ProductUpdated EventType = "product.updated"
-	TenantCreated  EventType = "tenant.created"
-	TenantDeleted  EventType = "tenant.deleted"
+	UserCreated         EventType = "user.created"
+	UserUpdated         EventType = "user.updated"
+	UserDeleted         EventType = "user.deleted"
+	ProductCreated      EventType = "product.created"
+	ProductUpdated      EventType = "product.updated"
+	ProductStockUpdated EventType = "product.stock_updated"
+	TenantCreated       EventType = "tenant.created"
+	TenantDeleted       EventType = "tenant.deleted"
+	OrderPaid           EventType = "order.paid"
 )
 
 // Event es la estructura base para todos los eventos

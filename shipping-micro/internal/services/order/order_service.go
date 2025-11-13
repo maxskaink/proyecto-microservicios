@@ -144,13 +144,37 @@ func (s *Service) UpdateStatus(orderID string, status string, tenantID string) e
 			_ = s.shippingRepo.UpdateStatus(sh.ID, "in_transit", tenantID)
 		}
 	}
+
+	// Publicar evento de cambio de estado
 	if s.publisher != nil {
 		ctx := context.Background()
 		_ = s.publisher.PublishOrderStatusChanged(ctx, map[string]interface{}{
 			"id":     orderID,
 			"status": status,
 		}, tenantID)
+
+		// Si la orden fue pagada, publicar evento order.paid con los items para descontar stock
+		// El descuento de stock se hará en product-micro al recibir este evento
+		if status == "paid" {
+			order, err := s.orderRepo.GetByID(orderID, tenantID)
+			if err == nil && order != nil {
+				// Preparar los items para el evento
+				items := make([]map[string]interface{}, 0, len(order.Items))
+				for _, item := range order.Items {
+					items = append(items, map[string]interface{}{
+						"product_id": item.ProductID,
+						"quantity":   item.Quantity,
+					})
+				}
+
+				_ = s.publisher.PublishOrderPaid(ctx, map[string]interface{}{
+					"order_id": orderID,
+					"items":    items,
+				}, tenantID)
+			}
+		}
 	}
+
 	return nil
 }
 

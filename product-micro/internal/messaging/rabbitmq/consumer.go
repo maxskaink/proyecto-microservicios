@@ -27,6 +27,14 @@ const (
 	TenantQueueName    = "product_tenant_events"
 )
 
+// Order Events
+const (
+	OrderExchangeName = "orders_events"
+	OrderExchangeType = "topic"
+	OrderPaidKey      = "order.paid"
+	OrderQueueName    = "product_order_events"
+)
+
 type Consumer struct {
 	cm         *ConnectionManager
 	dispatcher Dispatcher
@@ -50,6 +58,10 @@ func NewConsumer(cm *ConnectionManager, dispatcher Dispatcher) (*Consumer, error
 	}
 
 	if err := c.setupTenantQueue(); err != nil {
+		return nil, err
+	}
+
+	if err := c.setupOrderQueue(); err != nil {
 		return nil, err
 	}
 
@@ -154,7 +166,56 @@ func (c *Consumer) setupTenantQueue() error {
 	return nil
 }
 
-// StartConsuming comienza a consumir mensajes de ambos exchanges
+// setupOrderQueue inicializa el exchange y la cola para eventos de órdenes
+func (c *Consumer) setupOrderQueue() error {
+	ch, err := c.cm.Channel()
+	if err != nil {
+		return err
+	}
+	defer ch.Close()
+
+	err = ch.ExchangeDeclare(
+		OrderExchangeName,
+		OrderExchangeType,
+		true,  // durable
+		false, // auto-eliminated
+		false, // internal
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		return err
+	}
+
+	q, err := ch.QueueDeclare(
+		OrderQueueName,
+		true,  // durable
+		false, // auto-eliminated
+		false, // exclusive
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		return err
+	}
+
+	err = ch.QueueBind(
+		q.Name,
+		"order.#",
+		OrderExchangeName,
+		false,
+		nil,
+	)
+
+	if err != nil {
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("Cola de órdenes configurada: %s", OrderQueueName))
+	return nil
+}
+
+// StartConsuming comienza a consumir mensajes de todos los exchanges
 func (c *Consumer) StartConsuming(ctx context.Context) error {
 	// Consumidor de eventos de usuario
 	go func() {
@@ -167,6 +228,13 @@ func (c *Consumer) StartConsuming(ctx context.Context) error {
 	go func() {
 		if err := c.startTenantConsumer(ctx); err != nil {
 			logger.Error(fmt.Sprintf("Error en consumidor de tenants: %v", err))
+		}
+	}()
+
+	// Consumidor de eventos de órdenes
+	go func() {
+		if err := c.startOrderConsumer(ctx); err != nil {
+			logger.Error(fmt.Sprintf("Error en consumidor de órdenes: %v", err))
 		}
 	}()
 
@@ -265,6 +333,56 @@ func (c *Consumer) startTenantConsumer(ctx context.Context) error {
 
 			if err := c.processMessage(msg); err != nil {
 				logger.Error(fmt.Sprintf("Error al procesar mensaje de tenant (routing key: %s): %v", msg.RoutingKey, err))
+				msg.Ack(false)
+			} else {
+				msg.Ack(false)
+			}
+		}
+	}
+}
+
+// startOrderConsumer consume mensajes de orders_events
+func (c *Consumer) startOrderConsumer(ctx context.Context) error {
+	ch, err := c.cm.Channel()
+	if err != nil {
+		return err
+	}
+	defer ch.Close()
+
+	err = ch.Qos(1, 0, false)
+	if err != nil {
+		return err
+	}
+
+	msgs, err := ch.Consume(
+		OrderQueueName,
+		"",    // consumer
+		false, // auto-ack
+		false, // exclusive
+		false, // no-local
+		false, // no-wait
+		nil,   // args
+	)
+	if err != nil {
+		return err
+	}
+
+	logger.Info(fmt.Sprintf("Comenzando a consumir mensajes de órdenes desde %s", OrderQueueName))
+
+	for {
+		select {
+		case <-ctx.Done():
+			logger.Info("Deteniendo consumo de mensajes de órdenes")
+			return nil
+
+		case msg, ok := <-msgs:
+			if !ok {
+				logger.Error("Canal de mensajes de órdenes cerrado")
+				return nil
+			}
+
+			if err := c.processMessage(msg); err != nil {
+				logger.Error(fmt.Sprintf("Error al procesar mensaje de orden (routing key: %s): %v", msg.RoutingKey, err))
 				msg.Ack(false)
 			} else {
 				msg.Ack(false)

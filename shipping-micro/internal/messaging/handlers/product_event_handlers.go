@@ -34,6 +34,7 @@ func (h *ProductCreatedHandler) Handle(data []byte) error {
 			return err
 		}
 		fmt.Println(p)
+
 		return h.repo.Create(&p, env.TenantID)
 	}
 	return fmt.Errorf("invalid format of the event")

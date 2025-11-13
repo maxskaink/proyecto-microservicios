@@ -23,6 +23,7 @@ func (r *ProductRepository) Create(product *dto.ProductDTO, tenantID string) err
 		ID:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
+		ProducerID:  product.ProducerID,
 		Price:       product.Price,
 		Stock:       product.Stock,
 	}

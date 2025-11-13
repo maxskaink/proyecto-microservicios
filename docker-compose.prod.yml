@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   api-gateway:
     build:
@@ -78,7 +76,8 @@ services:
 
   users_api:
     build:
-      context: ./users-micro
+      context: .
+      dockerfile: users-micro/Dockerfile
       target: prod
     container_name: users_api
     depends_on:
@@ -143,7 +142,8 @@ services:
 
   tenant_api:
     build:
-      context: ./tenant-micro
+      context: .
+      dockerfile: tenant-micro/Dockerfile
       target: prod
     container_name: tenant_api
     depends_on:
@@ -174,7 +174,8 @@ services:
 
   product_api:
     build:
-      context: ./product-micro
+      context: .
+      dockerfile: product-micro/Dockerfile
       target: prod
     container_name: product_api
     depends_on:
@@ -238,7 +239,8 @@ services:
 
   shipping_api:
     build:
-      context: ./shipping-micro
+      context: .
+      dockerfile: shipping-micro/Dockerfile
       target: prod
     container_name: shipping_api
     depends_on:

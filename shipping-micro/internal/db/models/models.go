@@ -29,6 +29,7 @@ func (u *UserDB) BeforeCreate(tx *gorm.DB) error {
 type ProductDB struct {
 	ID          string `gorm:"type:string;primaryKey"`
 	Name        string `gorm:"not null"`
+	ProducerID  string `gorm:"type:string;not null;index"`
 	Description string
 	Price       float64 `gorm:"not null"`
 	Stock       int     `gorm:"not null;default:0"`

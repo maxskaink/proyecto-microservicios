@@ -102,3 +102,29 @@ func (r *OrderRepository) GetByStatus(status string, tenantID string) ([]dto.Ord
 	}
 	return res, nil
 }
+
+func (r *OrderRepository) GetOrdersByProducer(producerID string, tenantID string) ([]dto.OrderDTO, error) {
+	var orders []models.OrderDB
+
+	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+		// Seleccionar todas las columnas de order_dbs para que GORM rellene todos los campos.
+		// No usar Distinct("order_dbs.id") porque anula el SELECT y deja solo el id.
+		return tx.Model(&models.OrderDB{}).
+			Select("order_dbs.*").
+			Joins("JOIN order_item_dbs ON order_item_dbs.order_id = order_dbs.id").
+			Joins("JOIN product_dbs ON product_dbs.id = order_item_dbs.product_id AND product_dbs.producer_id = ?", producerID).
+			Preload("Items").
+			Preload("Items.Product").
+			Distinct(). // mantener DISTINCT general para evitar duplicados sin limitar columnas
+			Find(&orders).Error
+	})
+	if err != nil {
+		return nil, db.ParseDBError(err)
+	}
+
+	var out []dto.OrderDTO
+	for _, o := range orders {
+		out = append(out, *mappers.OrderDBToDTO(&o))
+	}
+	return out, nil
+}

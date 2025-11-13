@@ -158,3 +158,20 @@ func (s *Service) UpdateStatus(orderID string, status string, tenantID string) e
 func generateTracking() string {
 	return "TRK-" + uuid.New().String()[0:8]
 }
+
+func (s *Service) GetOrdersByProducer(producerID string, tenantID string) ([]dto.OrderDTO, error) {
+	if producerID == "" || tenantID == "" {
+		return nil, domain.BadRequestError{Message: "producerID y tenantID requeridos"}
+	}
+
+	producer, err := s.userRepo.GetByID(producerID, tenantID)
+	if err != nil {
+		return nil, err
+	}
+	fmt.Println(producer.Rol)
+	if producer.Rol != "producer" && producer.Rol != "admin" {
+		return nil, domain.UnauthorizedError{Message: "El usuario no es un productor válido"}
+	}
+
+	return s.orderRepo.GetOrdersByProducer(producerID, tenantID)
+}

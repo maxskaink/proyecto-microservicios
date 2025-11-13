@@ -184,7 +184,7 @@ func RegisterRoutes(r *gin.Engine) {
 		// Controladores
 		cartCtrl := controllers.NewCartController(cartService)
 		orderCtrl := controllers.NewOrderController(orderService)
-		shipCtrl := controllers.NewShippingController(shippingService)
+		shipCtrl := controllers.NewShippingController(shippingService, userRepo)
 
 		cartCtrl.Register(api)
 		orderCtrl.Register(api)

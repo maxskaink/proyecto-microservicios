@@ -4,7 +4,8 @@
 FROM golang:1.25-alpine AS base
 RUN apk add --no-cache git bash curl ca-certificates tzdata
 WORKDIR /app
-COPY go.mod go.sum* ./
+COPY users-micro/go.mod users-micro/go.sum* ./
+COPY pkg/observability /pkg/observability
 RUN go mod download
 
 ##############################
@@ -14,7 +15,7 @@ FROM base AS builder
 ARG BUILD_DIR=./cmd/server
 ENV CGO_ENABLED=0 \
     GOPROXY=https://proxy.golang.org,direct
-COPY . .
+COPY users-micro/ .
 RUN mkdir -p /app/secrets && \
     if [ ! -f /app/secrets/serviceAccountKey.json ]; then echo '{"type":"service_account"}' > /app/secrets/serviceAccountKey.json; fi
 RUN go build -ldflags "-s -w" -o /out/app "$BUILD_DIR"
@@ -26,7 +27,7 @@ FROM base AS dev
 RUN go install github.com/air-verse/air@latest
 ARG APP_PORT=8080
 ENV CGO_ENABLED=0 PORT=$APP_PORT
-COPY . .
+COPY users-micro/ .
 RUN mkdir -p /app/secrets && \
     if [ ! -f /app/secrets/serviceAccountKey.json ]; then echo '{"type":"service_account"}' > /app/secrets/serviceAccountKey.json; fi
 EXPOSE $APP_PORT

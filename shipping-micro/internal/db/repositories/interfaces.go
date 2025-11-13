@@ -14,6 +14,7 @@ type IUserRepository interface {
 	Create(user *dto.UserDTO, tenantID string) error
 	GetByID(id string, tenantID string) (*dto.UserDTO, error)
 	GetByUUID(uid string, tenantID string) (*dto.UserDTO, error)
+	Update(user *dto.UserDTO, tenantID string) error
 }
 
 type ICartRepository interface {
@@ -31,6 +32,7 @@ type IOrderRepository interface {
 	GetByUserID(userID string, tenantID string) ([]dto.OrderDTO, error)
 	UpdateStatus(id string, status string, tenantID string) error
 	GetByStatus(status string, tenantID string) ([]dto.OrderDTO, error)
+	GetOrdersByProducer(producerID string, tenantID string) ([]dto.OrderDTO, error)
 }
 
 type IShippingRepository interface {

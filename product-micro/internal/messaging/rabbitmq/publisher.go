@@ -121,3 +121,9 @@ func (p *productPublisher) PublishProductUpdated(product dto.ProductDTOResponse,
 	evt := buildProductEvent(msgEvents.ProductUpdated, tenantID, product)
 	return p.publish(string(msgEvents.ProductUpdated), evt)
 }
+
+// PublishProductStockUpdated publica un evento de stock de producto actualizado
+func (p *productPublisher) PublishProductStockUpdated(product dto.ProductDTOResponse, tenantID string) error {
+	evt := buildProductEvent(msgEvents.ProductStockUpdated, tenantID, product)
+	return p.publish(string(msgEvents.ProductStockUpdated), evt)
+}

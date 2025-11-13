@@ -5,16 +5,18 @@ import "time"
 type EventType string
 
 const (
-	UserCreated        EventType = "user.created"
-	UserUpdated        EventType = "user.updated"
-	UserDeleted        EventType = "user.deleted"
-	ProductCreated     EventType = "product.created"
-	ProductUpdated     EventType = "product.updated"
-	TenantCreated      EventType = "tenant.created"
-	TenantDeleted      EventType = "tenant.deleted"
-	OrderCreated       EventType = "order.created"
-	OrderStatusChanged EventType = "order.status_changed"
-	ShippingCreated    EventType = "shipping.created"
+	UserCreated         EventType = "user.created"
+	UserUpdated         EventType = "user.updated"
+	UserDeleted         EventType = "user.deleted"
+	ProductCreated      EventType = "product.created"
+	ProductUpdated      EventType = "product.updated"
+	ProductStockUpdated EventType = "product.stock_updated"
+	TenantCreated       EventType = "tenant.created"
+	TenantDeleted       EventType = "tenant.deleted"
+	OrderCreated        EventType = "order.created"
+	OrderStatusChanged  EventType = "order.status_changed"
+	OrderPaid           EventType = "order.paid"
+	ShippingCreated     EventType = "shipping.created"
 )
 
 // Envelope compatible con otros micros (users-micro)

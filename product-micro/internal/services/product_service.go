@@ -154,6 +154,11 @@ func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest,
 	// Publicar evento de producto actualizado
 	if p.publisher != nil && result != nil {
 		_ = p.publisher.PublishProductUpdated(*result, tenantID)
+
+		// Si cambió el stock, publicar evento específico de actualización de stock
+		if currentProduct.Stock != result.Stock {
+			_ = p.publisher.PublishProductStockUpdated(*result, tenantID)
+		}
 	}
 
 	return result, nil

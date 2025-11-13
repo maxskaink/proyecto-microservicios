@@ -45,3 +45,37 @@ func (h *UserCreatedHandler) Handle(data []byte) error {
 	}
 	return h.repo.Create(&u, "")
 }
+
+// UserUpdatedHandler maneja user.updated
+type UserUpdatedHandler struct {
+	BaseHandler
+	repo repositories.IUserRepository
+}
+
+func NewUserUpdatedHandler(repo repositories.IUserRepository) *UserUpdatedHandler {
+	return &UserUpdatedHandler{BaseHandler: NewBaseHandler(string(events.UserUpdated)), repo: repo}
+}
+
+func (h *UserUpdatedHandler) Handle(data []byte) error {
+	// Soporta envelope y formato plano
+	var env events.Event
+	if err := json.Unmarshal(data, &env); err == nil && env.Data != nil {
+		payload, ok := env.Data["payload"]
+		if !ok {
+			logger.Error("payload no encontrado en evento user.updated")
+			return fmt.Errorf("payload not found")
+		}
+		b, _ := json.Marshal(payload)
+		var u dto.UserDTO
+		if err := json.Unmarshal(b, &u); err != nil {
+			return err
+		}
+		return h.repo.Update(&u, env.TenantID)
+	}
+	// Formato plano
+	var u dto.UserDTO
+	if err := json.Unmarshal(data, &u); err != nil {
+		return err
+	}
+	return h.repo.Update(&u, "")
+}

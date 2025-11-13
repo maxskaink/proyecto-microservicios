@@ -16,6 +16,7 @@ type EventDispatcher struct {
 // NewEventDispatcher crea un nuevo dispatcher con los handlers registrados
 func NewEventDispatcher(
 	userRepository repositories.IUserRepository,
+	productRepository repositories.IProductRepository,
 	tenantService *tenant.TenantService,
 ) *EventDispatcher {
 	registry := NewEventRegistry()
@@ -28,6 +29,9 @@ func NewEventDispatcher(
 	// Registrar handlers de tenant
 	registry.Register(NewTenantCreatedHandler(tenantService))
 	registry.Register(NewTenantDeletedHandler(tenantService))
+
+	// Registrar handlers de orden
+	registry.Register(NewOrderPaidHandler(productRepository))
 
 	logger.Info("EventDispatcher inicializado con todos los handlers")
 

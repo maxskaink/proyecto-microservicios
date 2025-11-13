@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db"
 	db_mappers "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/mappers"
 	db_models "github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/tenant"
@@ -29,14 +30,14 @@ func (p *ProductRepository) CreateProduct(product *dto.ProductDTORequest, tenant
 
 	err := p.tenantDB.ExecuteInSchema(tenantId, func(tx *gorm.DB) error {
 		if err := tx.Create(&productModel).Error; err != nil {
-			return err
+			return db.ParseDBError(err)
 		}
 		response = db_mappers.ProductModelToDto(productModel)
 		return nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return response, nil
@@ -52,14 +53,14 @@ func (p *ProductRepository) GetByIdProduct(id string, tenantId string) (*dto.Pro
 			if err == gorm.ErrRecordNotFound {
 				return nil
 			}
-			return err
+			return db.ParseDBError(err)
 		}
 		response = db_mappers.ProductModelToDto(&product)
 		return nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return response, nil
@@ -80,7 +81,7 @@ func (p *ProductRepository) ListProducts(page int, pageSize int, tenantId string
 
 	err := p.tenantDB.ExecuteInSchema(tenantId, func(tx *gorm.DB) error {
 		if err := tx.Offset(offset).Limit(pageSize).Find(&products).Error; err != nil {
-			return err
+			return db.ParseDBError(err)
 		}
 
 		result := make([]dto.ProductDTOResponse, len(products))
@@ -93,7 +94,7 @@ func (p *ProductRepository) ListProducts(page int, pageSize int, tenantId string
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return responses, nil
@@ -107,14 +108,14 @@ func (p *ProductRepository) UpdateProduct(id string, product *dto.ProductDTORequ
 
 	err := p.tenantDB.ExecuteInSchema(tenantId, func(tx *gorm.DB) error {
 		if err := tx.Model(&productModel).Updates(productModel).Error; err != nil {
-			return err
+			return db.ParseDBError(err)
 		}
 		response = db_mappers.ProductModelToDto(productModel)
 		return nil
 	})
 
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 
 	return response, nil
@@ -124,7 +125,7 @@ func (p *ProductRepository) UpdateProduct(id string, product *dto.ProductDTORequ
 func (p *ProductRepository) DeleteProduct(id string, tenantId string) error {
 	return p.tenantDB.ExecuteInSchema(tenantId, func(tx *gorm.DB) error {
 		if err := tx.Delete(&db_models.ProductDB{}, "id = ?", id).Error; err != nil {
-			return err
+			return db.ParseDBError(err)
 		}
 		return nil
 	})

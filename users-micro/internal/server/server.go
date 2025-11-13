@@ -11,6 +11,7 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
+	"github.com/maxskaink/proyecto-microservicios/pkg/observability"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/repositories"
 	"github.com/maxskaink/proyecto-microservicios/users-micro/internal/db/tenant"
@@ -55,8 +56,12 @@ func Run() error {
 	setupServiceDiscovery()
 	r := gin.New()
 	r.Use(gin.Recovery())
-	r.Use(gin.Logger())                //For logs request
-	r.Use(middleware.CORSMiddleware()) //For manage the cors
+	r.Use(gin.Logger())                         //For logs request
+	r.Use(middleware.CORSMiddleware())          //For manage the cors
+	r.Use(observability.PrometheusMiddleware()) //For metrics collection
+
+	// Endpoint de métricas para Prometheus
+	r.GET("/metrics", observability.MetricsHandler())
 
 	// Healthcheck básico (sin middleware de tenant, es público)
 	r.GET("/health", func(c *gin.Context) {

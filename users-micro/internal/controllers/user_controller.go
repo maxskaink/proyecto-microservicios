@@ -90,7 +90,7 @@ func (uc *UserController) UpdateUser(c *gin.Context) {
 		return
 	}
 
-	user_uid := c.GetString("uid") //Should have token because the middleware
+	user_uid := middleware.GetUUIDFromContext(c) //Should have token because the middleware
 
 	if user_uid == "" {
 		handleUserError(c, domain.InternalServerError{Message: "uid vacio, no deberia de haber entrado sin uid"})
@@ -130,7 +130,7 @@ func (uc *UserController) UpdateRolUser(c *gin.Context) {
 	}
 
 	// Verificar que el usuario que solicita el cambio esté autenticado
-	uid_requester := c.GetString("uid")
+	uid_requester := middleware.GetUUIDFromContext(c)
 	if uid_requester == "" {
 		handleUserError(c, domain.InternalServerError{Message: "uid vacío, no debería haber entrado sin uid"})
 		return

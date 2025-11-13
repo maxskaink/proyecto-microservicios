@@ -12,6 +12,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"github.com/maxskaink/proyecto-microservicios/pkg/observability"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/config"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/product-micro/internal/db/repositories"
@@ -62,8 +63,12 @@ func Run() error {
 	setupServiceDiscovery()
 	r := gin.New()
 	r.Use(gin.Recovery())
-	r.Use(gin.Logger())     //For logs request
-	r.Use(CORSMiddleware()) //For manage the cors
+	r.Use(gin.Logger())                         //For logs request
+	r.Use(CORSMiddleware())                     //For manage the cors
+	r.Use(observability.PrometheusMiddleware()) //For metrics collection
+
+	// Endpoint de métricas para Prometheus
+	r.GET("/metrics", observability.MetricsHandler())
 
 	// Healthcheck básico
 	r.GET("/health", func(c *gin.Context) {
@@ -139,7 +144,7 @@ func configServices() {
 	ProductService = services.NewProductService(ProductRepository, UserService, productPublisher, storageClient, appConfig)
 
 	// Configurar el gestor de eventos (consumidor de RabbitMQ)
-	eventManager, err = messaging.NewEventManager(UserRepository, tenantService)
+	eventManager, err = messaging.NewEventManager(UserRepository, ProductRepository, tenantService)
 	if err != nil {
 		logger.Error(fmt.Sprintf("Error al crear gestor de eventos: %v", err))
 		return

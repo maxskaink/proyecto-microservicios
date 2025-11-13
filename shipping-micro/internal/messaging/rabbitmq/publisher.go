@@ -13,6 +13,7 @@ const (
 	OrdersExchangeType    = "topic"
 	OrderCreatedKey       = "order.created"
 	OrderStatusChangedKey = "order.status_changed"
+	OrderPaidKey          = "order.paid"
 
 	ShippingExchangeName = "shipping_events"
 	ShippingExchangeType = "topic"
@@ -79,6 +80,10 @@ func (p *Publisher) PublishOrderCreated(ctx context.Context, order interface{}, 
 
 func (p *Publisher) PublishOrderStatusChanged(ctx context.Context, payload interface{}, tenantID string) error {
 	return p.publish(ctx, OrdersExchangeName, OrderStatusChangedKey, payload, tenantID)
+}
+
+func (p *Publisher) PublishOrderPaid(ctx context.Context, payload interface{}, tenantID string) error {
+	return p.publish(ctx, OrdersExchangeName, OrderPaidKey, payload, tenantID)
 }
 
 func (p *Publisher) PublishShippingCreated(ctx context.Context, shipping interface{}, tenantID string) error {

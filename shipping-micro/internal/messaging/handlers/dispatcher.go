@@ -13,7 +13,9 @@ func NewEventDispatcher(productRepo repositories.IProductRepository, userRepo re
 	// Registrar handlers
 	reg.Register(NewProductCreatedHandler(productRepo))
 	reg.Register(NewProductUpdatedHandler(productRepo))
+	reg.Register(NewProductStockUpdatedHandler(productRepo))
 	reg.Register(NewUserCreatedHandler(userRepo))
+	reg.Register(NewUserUpdatedHandler(userRepo))
 	reg.Register(NewTenantCreatedHandler(tenantService))
 	reg.Register(NewTenantDeletedHandler(tenantService))
 	return &EventDispatcher{registry: reg}

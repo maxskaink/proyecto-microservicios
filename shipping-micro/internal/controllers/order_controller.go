@@ -18,6 +18,7 @@ func NewOrderController(svc *ordersvc.Service) *OrderController { return &OrderC
 
 func (oc *OrderController) Register(rg *gin.RouterGroup) {
 	rg.POST("/orders", oc.createOrder)
+	rg.GET("/orders/producer/:id_producer", oc.GetOrdersByProducer)
 	rg.GET("/orders", oc.listUserOrders)
 	rg.GET("/orders/:id", oc.getByID)
 	rg.PUT("/orders/:id/status", oc.updateStatus)
@@ -42,6 +43,30 @@ func (oc *OrderController) createOrder(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusCreated, gin.H{"order": order, "shipping": shipping})
+}
+
+// GetOrdersByProducer devuelve todas las órdenes que contienen al menos un producto
+// cuyo Product.ProducerID coincide con producerId. Sin paginación (simple).
+func (oc *OrderController) GetOrdersByProducer(c *gin.Context) {
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "tenant no especificado"})
+		return
+	}
+
+	producerID := c.Param("id_producer")
+	if producerID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "producerId requerido"})
+		return
+	}
+
+	orders, err := oc.svc.GetOrdersByProducer(producerID, tenantID)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+
+	c.JSON(http.StatusOK, orders)
 }
 
 func (oc *OrderController) listUserOrders(c *gin.Context) {

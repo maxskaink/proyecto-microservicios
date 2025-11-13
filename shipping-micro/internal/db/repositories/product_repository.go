@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/mappers"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/models"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/tenant"
@@ -22,13 +23,16 @@ func (r *ProductRepository) Create(product *dto.ProductDTO, tenantID string) err
 		ID:          product.ID,
 		Name:        product.Name,
 		Description: product.Description,
+		ProducerID:  product.ProducerID,
 		Price:       product.Price,
 		Stock:       product.Stock,
 	}
 
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Create(productDB).Error
 	})
+
+	return db.ParseDBError(err)
 }
 
 func (r *ProductRepository) GetByID(id string, tenantID string) (*dto.ProductDTO, error) {
@@ -37,13 +41,13 @@ func (r *ProductRepository) GetByID(id string, tenantID string) (*dto.ProductDTO
 		return tx.Where("id = ?", id).First(&product).Error
 	})
 	if err != nil {
-		return nil, err
+		return nil, db.ParseDBError(err)
 	}
 	return mappers.ProductDBToDTO(&product), nil
 }
 
 func (r *ProductRepository) Update(product *dto.ProductDTO, tenantID string) error {
-	return r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
+	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {
 		return tx.Model(&models.ProductDB{}).
 			Where("id = ?", product.ID).
 			Updates(map[string]interface{}{
@@ -53,4 +57,6 @@ func (r *ProductRepository) Update(product *dto.ProductDTO, tenantID string) err
 				"stock":       product.Stock,
 			}).Error
 	})
+
+	return db.ParseDBError(err)
 }

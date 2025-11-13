@@ -34,6 +34,7 @@ func (h *ProductCreatedHandler) Handle(data []byte) error {
 			return err
 		}
 		fmt.Println(p)
+
 		return h.repo.Create(&p, env.TenantID)
 	}
 	return fmt.Errorf("invalid format of the event")
@@ -63,6 +64,45 @@ func (h *ProductUpdatedHandler) Handle(data []byte) error {
 		}
 		return h.repo.Update(&p, env.TenantID)
 	}
+	var p dto.ProductDTO
+	if err := json.Unmarshal(data, &p); err != nil {
+		return err
+	}
+	return h.repo.Update(&p, "")
+}
+
+// ProductStockUpdatedHandler maneja product.stock_updated
+type ProductStockUpdatedHandler struct {
+	BaseHandler
+	repo repositories.IProductRepository
+}
+
+func NewProductStockUpdatedHandler(repo repositories.IProductRepository) *ProductStockUpdatedHandler {
+	return &ProductStockUpdatedHandler{BaseHandler: NewBaseHandler(string(events.ProductStockUpdated)), repo: repo}
+}
+
+func (h *ProductStockUpdatedHandler) Handle(data []byte) error {
+	// Soporta formato envelope (Event) con data.payload
+	var env events.Event
+	if err := json.Unmarshal(data, &env); err == nil && env.Data != nil {
+		payload, ok := env.Data["payload"]
+		if !ok {
+			logger.Error("payload no encontrado en data")
+			return fmt.Errorf("payload not found")
+		}
+		b, _ := json.Marshal(payload)
+		var p dto.ProductDTO
+		if err := json.Unmarshal(b, &p); err != nil {
+			return err
+		}
+
+		logger.Info(fmt.Sprintf("Actualizando stock del producto %s a %d en tenant %s",
+			p.ID, p.Stock, env.TenantID))
+
+		return h.repo.Update(&p, env.TenantID)
+	}
+
+	// Formato plano como fallback
 	var p dto.ProductDTO
 	if err := json.Unmarshal(data, &p); err != nil {
 		return err

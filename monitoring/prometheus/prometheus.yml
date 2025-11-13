@@ -1,0 +1,49 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'microservices-dev'
+    environment: 'development'
+
+scrape_configs:
+  # Prometheus self-monitoring
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Consul
+  - job_name: 'consul'
+    static_configs:
+      - targets: ['consul:8500']
+    metrics_path: '/v1/agent/metrics'
+    params:
+      format: ['prometheus']
+
+  # RabbitMQ
+  - job_name: 'rabbitmq'
+    static_configs:
+      - targets: ['rabbitmq:15692']
+
+  # Users Microservice
+  - job_name: 'users-service'
+    static_configs:
+      - targets: ['users_api:8080']
+    metrics_path: '/metrics'
+
+  # Products Microservice
+  - job_name: 'products-service'
+    static_configs:
+      - targets: ['product_api:8081']
+    metrics_path: '/metrics'
+
+  # Tenants Microservice
+  - job_name: 'tenants-service'
+    static_configs:
+      - targets: ['tenant_api:8082']
+    metrics_path: '/metrics'
+
+  # Shipping Microservice
+  - job_name: 'shipping-service'
+    static_configs:
+      - targets: ['shipping_api:8083']
+    metrics_path: '/metrics'

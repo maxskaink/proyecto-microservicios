@@ -9,6 +9,7 @@ import (
 	"syscall"
 
 	"github.com/gin-gonic/gin"
+	"github.com/maxskaink/proyecto-microservicios/pkg/observability"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/controllers"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db"
 	"github.com/maxskaink/proyecto-microservicios/shipping-micro/internal/db/repositories"
@@ -58,6 +59,10 @@ func Run() error {
 	r.Use(gin.Recovery())
 	r.Use(gin.Logger())
 	r.Use(CORSMiddleware())
+	r.Use(observability.PrometheusMiddleware())
+
+	// Endpoint de métricas para Prometheus
+	r.GET("/metrics", observability.MetricsHandler())
 
 	r.GET("/health", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"status": "ok"})
@@ -179,7 +184,7 @@ func RegisterRoutes(r *gin.Engine) {
 		// Controladores
 		cartCtrl := controllers.NewCartController(cartService)
 		orderCtrl := controllers.NewOrderController(orderService)
-		shipCtrl := controllers.NewShippingController(shippingService)
+		shipCtrl := controllers.NewShippingController(shippingService, userRepo)
 
 		cartCtrl.Register(api)
 		orderCtrl.Register(api)

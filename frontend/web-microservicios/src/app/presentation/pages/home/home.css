@@ -6,29 +6,39 @@
   
 }
 .descriptio-welcome{
-   height: 20rem;
-   color: black;
+  margin-top: 5rem;
+  height: 10rem;  
 }
 #title-welcome{
   color: var(--color-success);
   font-weight: 700;
-  font-size: 3rem;
+  font-size: 2rem;
+  padding: 3rem;
 }
 #descriptio-welcome-text{
   color: white;
-  font-size: 2vh;
-  font-weight: 500;
+  font-size: 1rem;
+  font-weight: 0.5rem;
 }
-.filters-section {
-  border-bottom: 1px solid #dee2e6;
-}
-
-.category-filters .btn {
-  margin-bottom: 0.5rem;
-  transition: all 0.3s ease;
+.category-section{
+   transition: transform 0.2s ease;
+  height: 30rem;
+  background-color: var(--color-success);
 }
 
-.category-filters .btn:hover {
-  transform: translateY(-2px);
+
+
+.card-section{
+  background-color: white;
+  height: 10rem;
+  width: 10rem;
+  border-radius: 3px;
+  padding: 2rem;
+}html {
+  scroll-behavior: smooth;
 }
 
+
+.card-section:hover {
+  transform: scale(1.05);
+}

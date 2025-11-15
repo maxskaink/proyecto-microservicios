@@ -1,8 +1,7 @@
 /* Header fijo y estilos generales */
 .navbar {
   z-index: 1050;
-  backdrop-filter: blur(10px);
-  background-color: var(--color-secondary);
+  background-color: white;  
 }
 .separator{
   height: 3px;

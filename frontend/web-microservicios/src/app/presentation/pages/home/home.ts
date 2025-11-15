@@ -33,7 +33,6 @@ export class Home  implements OnInit {
   public products: Product[] = [];
   onProductClick(product: any) {
     console.log('Producto clickeado:', product);
-    // Aquí puedes navegar, abrir un modal, etc.
   }
   /**
    * Agrupa los productos por categoría
@@ -56,10 +55,6 @@ private groupProductsByCategory(products: Product[]): void {
   }, {} as { [category: string]: Product[] });
   
   this.categories = Object.keys(this.productsByCategory);
-  
-  console.log('✅ productsByCategory FINAL:', this.productsByCategory);
-  console.log('✅ categories FINAL:', this.categories);
-  console.log('🔢 Cantidad de categorías:', this.categories.length);
 }
   /**
    * Carga los productos para el tenant actual
@@ -74,6 +69,16 @@ loadProductsForTenant(): void {
     this.cdr.detectChanges();   // 🔥 Fuerza actualización de la vista
   });
 }
-
+scrollToSection(sectionId: string, event?: Event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  const element = document.getElementById(sectionId);
+  if (element) {
+    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+}
 
 }

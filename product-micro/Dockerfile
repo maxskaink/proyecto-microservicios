@@ -44,6 +44,7 @@ ARG APP_PORT=8081
 ENV PORT=$APP_PORT
 COPY --from=builder /out/app ./app
 COPY --from=builder /app/secrets ./secrets
+COPY --from=builder /app/.env ./.env
 EXPOSE $APP_PORT
 USER appuser
 ENTRYPOINT ["./app"]

@@ -117,6 +117,6 @@ func (r *R2Storage) publicURL(bucket, key string) string {
 		return fmt.Sprintf("%s/%s", r.publicBaseURL, url.PathEscape(key))
 	}
 	// fallback: usar endpoint directo (requiere que el bucket sea público por políticas Cloudflare)
-	endpoint := os.Getenv("R2_ENDPOINT")
+	endpoint := os.Getenv("R2Endpoint")
 	return fmt.Sprintf("%s/%s/%s", endpoint, bucket, url.PathEscape(key))
 }

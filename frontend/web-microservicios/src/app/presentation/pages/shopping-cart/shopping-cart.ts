@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
-import { ShoppingCartService } from '../../../service /ShoppinCartService';
+import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { CartItem } from '../../../Models/Cart';
 import { OrderPeticion, OrderResponse } from '../../../Models/OrderPeticion';
 import { catchError, of } from 'rxjs';

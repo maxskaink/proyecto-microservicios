@@ -1,18 +1,15 @@
 <app-header></app-header>
-<div class="container-fluid home-section-welcome d-flex justify-content-center align-items-center">
-  <div>
-    <h1 id="title-welcome">¡Bienvenido!</h1>
-  </div>
-</div>
 <div class="descriptio-welcome d-flex justify-content-center align-items-center flex-column ">
   <p id="descriptio-welcome-text">Disfruta el placer de alimentarte bien</p>
 </div>
 <section>
   <div class="container-fluid">
-    <div class="row">
-        <app-list-product-tenant-preview 
-          (productClick)="onProductClick($event)">
-        </app-list-product-tenant-preview>
+   <div *ngFor="let category of categories" class="row">
+      <app-list-product-tenant-preview
+        [category]="category"
+        [products]="productsByCategory[category]"
+        (productClick)="onProductClick($event)"
+      ></app-list-product-tenant-preview>
     </div>
   </div>
 </section>

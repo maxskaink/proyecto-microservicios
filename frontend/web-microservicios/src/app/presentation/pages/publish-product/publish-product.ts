@@ -3,7 +3,7 @@ import { ChangeDetectorRef, Component, ElementRef, Inject, PLATFORM_ID, ViewChil
 import { FormsModule, NgForm } from '@angular/forms';
 import { Header } from '../../templates/header/header';
 import { ProductPeticion } from '../../../Models/PrdocutPeticion';
-import { ProductService } from '../../../service /ProductService';
+import { ProductService } from '../../../service/ProductService';
 import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 

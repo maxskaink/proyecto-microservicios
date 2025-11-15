@@ -1,11 +1,11 @@
-
-<div class="tenant-section mb-5" >
-  <!-- Grid de productos del tenant -->
-  <div class="products-grid">
-    <div class="row g-4">
+<div class="tenant-section mb-5">
+  <h2>{{ category }}</h2>
+  <!-- Carrusel de productos del tenant -->
+  <div class="products-carousel">
+    <div class="carousel-container">
       <div 
         *ngFor="let product of products" 
-        class="col-sm-6 col-md-4 col-lg-3">
+        class="product-item">
         <app-product-box 
           [product]="product"
           (productClick)="onProductClick($event)">
@@ -16,5 +16,4 @@
 
   <!-- Separador entre tenants -->
   <hr class="tenant-separator mt-5">
-
 </div>

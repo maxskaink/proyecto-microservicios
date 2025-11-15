@@ -34,25 +34,7 @@
         <p class="fw-bold mb-0 " style="cursor: pointer;" (click)="goToHome()">Catálogo</p>
         <p class="fw-bold mb-0" style="cursor: pointer;">Historial</p>
       </div>
-      <div class="col-12 col-md-6">
-        <form 
-          class="d-flex justify-content-center justify-content-md-end mx-md-3"
-          (ngSubmit)="onSearch()"
-        >
-          <input 
-            class="form-control me-2 w-100 w-md-auto" 
-            type="search" 
-            placeholder="Buscar productos..."
-            aria-label="Buscar"
-            [(ngModel)]="searchTerm"
-            name="searchTerm"
-          >
-          <button class="btn btn-light text-primary" type="submit">
-            <i class="bi bi-search"></i>
-          </button>
-        </form>
-      </div>
-
+      
     </div>
   </div>
   

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
-import { ShoppingCartService } from '../../../service /ShoppinCartService';
+import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { Header } from '../../templates/header/header';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { catchError, of } from 'rxjs';

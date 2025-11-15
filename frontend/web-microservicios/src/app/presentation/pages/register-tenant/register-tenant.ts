@@ -2,7 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, OnInit } from '@angular/core';
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { TenantService } from '../../../service /TenantService';
+import { TenantService } from '../../../service/TenantService';
 import { TenantPeticion } from '../../../Models/TenantPeticion';
 import { Header } from '../../templates/header/header';
 

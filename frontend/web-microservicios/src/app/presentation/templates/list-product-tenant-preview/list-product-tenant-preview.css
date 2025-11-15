@@ -90,3 +90,81 @@
     margin-bottom: 1.5rem;
   }
 }
+.tenant-section {
+  margin-bottom: 2rem;
+}
+
+.products-carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  padding: 10px 0;
+  
+  /* Ocultar scrollbar en webkit browsers (Chrome, Safari) */
+  &::-webkit-scrollbar {
+    height: 8px;
+  }
+  
+  &::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 10px;
+  }
+  
+  &::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+  }
+}
+
+.product-item {
+  flex: 0 0 auto;
+  width: 280px; /* Ancho fijo para cada producto */
+  
+  /* Responsive breakpoints */
+  @media (max-width: 768px) {
+    width: 250px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 220px;
+  }
+}
+
+/* Opcional: Agregar indicadores de scroll */
+.products-carousel::before,
+.products-carousel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 20px; /* Espacio para el scrollbar */
+  width: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.products-carousel::before {
+  left: 0;
+  background: linear-gradient(to right, rgba(255,255,255,0.8), transparent);
+}
+
+.products-carousel::after {
+  right: 0;
+  background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
+}
+
+.tenant-separator {
+  margin-top: 3rem;
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
+}

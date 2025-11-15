@@ -2,8 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../service /Authser.vice';
-import { ShoppingCartService } from '../../../service /ShoppinCartService';
+import { AuthService } from '../../../service/Authser.vice';
 import { Subscription } from 'rxjs';
 import { UserData } from '../../../Models/UserData';
 
@@ -21,8 +20,6 @@ export class Header implements OnInit, OnDestroy {
   // Menú móvil
   isMenuOpen: boolean = false;
   
-  // Búsqueda
-  searchTerm: string = '';
   
   
   // Contador de carrito
@@ -34,13 +31,11 @@ export class Header implements OnInit, OnDestroy {
   constructor(
     private router: Router, 
     private authService: AuthService,
-    private shoppingCartService: ShoppingCartService
   ) {}
 
   ngOnInit(): void {
     this.initializeAuth();
     this.getUserName();
-    this.loadCartItemCount();
   }
 
   ngOnDestroy(): void {
@@ -90,16 +85,7 @@ export class Header implements OnInit, OnDestroy {
     this.navigateTo('/shopping-cart');
   }
 
-  // Función de búsqueda
-  onSearch(): void {
-    if (this.searchTerm.trim()) {
-      console.log('Buscando:', this.searchTerm);
-      // Navegar a home con parámetro de búsqueda
-      this.router.navigate(['/home'], { 
-        queryParams: { search: this.searchTerm.trim() } 
-      });
-    }
-  }
+
 
   // Obtener nombre del usuario
   getUserName(): string {
@@ -110,24 +96,5 @@ export class Header implements OnInit, OnDestroy {
            'Usuario';
   }
 
-  // Cargar contador del carrito
-  loadCartItemCount(): void {
-    if (this.isLoggedIn) {
-      const cartSub = this.shoppingCartService.getCartItemCount().subscribe({
-        next: (count) => {
-          this.cartItemCount = count;
-        },
-        error: (error) => {
-          console.error('Error al cargar contador del carrito:', error);
-          this.cartItemCount = 0;
-        }
-      });
-      this.subscriptions.add(cartSub);
-    }
-  }
 
-  // Actualizar contador del carrito
-  updateCartCount(count: number): void {
-    this.cartItemCount = count;
-  }
 }

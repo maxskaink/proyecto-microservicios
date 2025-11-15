@@ -7,6 +7,7 @@ import { ViewProduct } from './presentation/pages/view-product/view-product';
 import { RegisterTenant } from './presentation/pages/register-tenant/register-tenant';
 import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
 import { ListOrders } from './presentation/pages/list-orders/list-orders';
+import { roleGuard } from './guards/role.guards';
 
 export const routes: Routes = [
     { 
@@ -19,7 +20,8 @@ export const routes: Routes = [
     },
     {
         path:'home',
-        component: Home
+        component: Home,canActivate: [roleGuard],
+        data: { roles: ['producer'] } 
     },
     {
         path: 'publishProduct',

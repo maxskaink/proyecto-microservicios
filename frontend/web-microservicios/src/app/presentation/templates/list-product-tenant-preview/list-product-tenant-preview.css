@@ -15,8 +15,8 @@
 }
 
 .tenant-title {
-  color: #333;
-  font-size: 1.5rem;
+  color: var(--color-success);
+  font-size: 3rem;
   font-weight: 600;
   margin: 0;
 }
@@ -77,10 +77,6 @@
     flex-direction: column;
     gap: 1rem;
     text-align: center;
-  }
-  
-  .tenant-title {
-    font-size: 1.25rem;
   }
   
   .tenant-section {

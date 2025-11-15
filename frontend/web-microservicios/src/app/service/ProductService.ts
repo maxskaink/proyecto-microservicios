@@ -191,4 +191,14 @@ export class ProductService {
       )
     );
   }
+  getCategories(): Observable<string[]> {
+    return this.getTenantAndHeaders().pipe(
+      switchMap(({ tenantId, headers }) =>
+        this.http.get<string[]>(
+          `${this.apiUrlProduct}${tenantId}/api/products/categories`,
+          { headers }
+        )
+      )
+    );
+  }
 }

@@ -16,16 +16,21 @@ export const routes: Routes = [
     },
     { 
         path: 'user', 
-        component: User 
+        component: User,
+        canActivate: [roleGuard],
+        data: {roles: ['admin', 'client', 'producer']}
     },
     {
-        path:'home',
-        component: Home,canActivate: [roleGuard],
-        data: { roles: ['producer'] } 
+        path: 'home',
+        component: Home,
+        canActivate: [roleGuard],
+        data: { roles: ['producer', 'admin', 'client'] }
     },
     {
         path: 'publishProduct',
-        component: PublishProduct
+        component: PublishProduct,
+        canActivate: [roleGuard],
+        data: { roles: ['producer', 'admin'] }
     },
     {
         path: 'product/:tenantid/:id',
@@ -33,7 +38,9 @@ export const routes: Routes = [
     }, 
     {
         path: 'register-tenant',
-        component: RegisterTenant
+        component: RegisterTenant,
+        canActivate: [roleGuard],
+        data: { roles: ['producer', 'admin'] }
     },
     {
         path: 'shopping-cart',

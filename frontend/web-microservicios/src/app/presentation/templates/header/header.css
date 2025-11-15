@@ -2,7 +2,7 @@
 .navbar {
   z-index: 1050;
   backdrop-filter: blur(10px);
-  background-color: white;
+  background-color: var(--color-secondary);
 }
 .separator{
   height: 3px;

@@ -1,10 +1,13 @@
 .home-section-welcome{
-  height: 40rem;
-  background-color: rgb(247, 245, 245);
+  height: 60rem;
+  
+}
+.home-page-content{
+  
 }
 .descriptio-welcome{
-   height: 10rem;
-   background-color: rgb(59, 47, 47);
+   height: 20rem;
+   color: black;
 }
 #title-welcome{
   color: var(--color-success);

@@ -2,8 +2,8 @@
 <div class="descriptio-welcome d-flex justify-content-center align-items-center flex-column ">
   <p id="descriptio-welcome-text">Disfruta el placer de alimentarte bien</p>
 </div>
-<section>
-  <div class="container-fluid">
+<section class="home-page-content">
+  <div class="container-fluid" >
    <div *ngFor="let category of categories" class="row">
       <app-list-product-tenant-preview
         [category]="category"

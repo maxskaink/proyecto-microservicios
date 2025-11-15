@@ -1,7 +1,6 @@
 /* Sección del Tenant */
 .tenant-section {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
+  padding: 2rem;
   border-radius: 8px;
   margin-bottom: 2rem;
 }
@@ -51,7 +50,6 @@
 .tenant-separator {
   border: none;
   height: 2px;
-  background: linear-gradient(90deg, #dee2e6 0%, #adb5bd 50%, #dee2e6 100%);
   margin: 2rem 0;
 }
 
@@ -107,28 +105,19 @@
   padding: 10px 0;
   
   /* Ocultar scrollbar en webkit browsers (Chrome, Safari) */
-  &::-webkit-scrollbar {
-    height: 8px;
-  }
+
   
-  &::-webkit-scrollbar-track {
-    background: #f1f1f1;
+  -webkit-scrollbar-thumb {
+    background: #c1c1c100;
     border-radius: 10px;
   }
   
-  &::-webkit-scrollbar-thumb {
-    background: #c1c1c1;
-    border-radius: 10px;
-  }
   
-  &::-webkit-scrollbar-thumb:hover {
-    background: #a8a8a8;
-  }
 }
 
 .product-item {
   flex: 0 0 auto;
-  width: 280px; /* Ancho fijo para cada producto */
+  margin: 20px;
   
   /* Responsive breakpoints */
   @media (max-width: 768px) {
@@ -152,15 +141,6 @@
   z-index: 1;
 }
 
-.products-carousel::before {
-  left: 0;
-  background: linear-gradient(to right, rgba(255,255,255,0.8), transparent);
-}
-
-.products-carousel::after {
-  right: 0;
-  background: linear-gradient(to left, rgba(255,255,255,0.8), transparent);
-}
 
 .tenant-separator {
   margin-top: 3rem;

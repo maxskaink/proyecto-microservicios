@@ -79,6 +79,9 @@ storage-debug.log
 *.bak
 *.old
 
+# Scripts ejecutables generados
+scripts/populate-data.sh
+
 # ======================================
 # 🔹 TypeScript / Compilación
 # ======================================

@@ -1,7 +1,7 @@
 import { Component, OnInit, OnDestroy, NgZone, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { AuthService } from '../../../service /Authser.vice';
+import { AuthService } from '../../../service/Authser.vice';
 import { combineLatest, finalize, Subscription } from 'rxjs';
 import { UserData } from '../../../Models/UserData';
 interface MenuOption {

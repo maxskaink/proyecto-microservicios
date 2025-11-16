@@ -1,7 +1,6 @@
 /* Sección del Tenant */
 .tenant-section {
-  padding: 1.5rem;
-  background-color: #f8f9fa;
+  padding: 2rem;
   border-radius: 8px;
   margin-bottom: 2rem;
 }
@@ -16,8 +15,8 @@
 }
 
 .tenant-title {
-  color: #333;
-  font-size: 1.5rem;
+  color: var(--color-success);
+  font-size: 3rem;
   font-weight: 600;
   margin: 0;
 }
@@ -51,7 +50,6 @@
 .tenant-separator {
   border: none;
   height: 2px;
-  background: linear-gradient(90deg, #dee2e6 0%, #adb5bd 50%, #dee2e6 100%);
   margin: 2rem 0;
 }
 
@@ -81,12 +79,68 @@
     text-align: center;
   }
   
-  .tenant-title {
-    font-size: 1.25rem;
-  }
-  
   .tenant-section {
     padding: 1rem;
     margin-bottom: 1.5rem;
   }
+}
+.tenant-section {
+  margin-bottom: 2rem;
+}
+
+.products-carousel {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-container {
+  display: flex;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  gap: 1rem;
+  padding: 10px 0;
+  
+  /* Ocultar scrollbar en webkit browsers (Chrome, Safari) */
+
+  
+  -webkit-scrollbar-thumb {
+    background: #c1c1c100;
+    border-radius: 10px;
+  }
+  
+  
+}
+
+.product-item {
+  flex: 0 0 auto;
+  margin: 20px;
+  
+  /* Responsive breakpoints */
+  @media (max-width: 768px) {
+    width: 250px;
+  }
+  
+  @media (max-width: 480px) {
+    width: 220px;
+  }
+}
+
+/* Opcional: Agregar indicadores de scroll */
+.products-carousel::before,
+.products-carousel::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 20px; /* Espacio para el scrollbar */
+  width: 20px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+
+.tenant-separator {
+  margin-top: 3rem;
+  border: none;
+  height: 1px;
+  background-color: #e0e0e0;
 }

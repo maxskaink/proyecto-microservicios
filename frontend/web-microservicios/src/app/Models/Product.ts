@@ -3,6 +3,7 @@ export interface Product {
   producer_id: string;
   category: string;
   price: number;
+  name: string;
   description: string;
   stock: number;
   unit: string;

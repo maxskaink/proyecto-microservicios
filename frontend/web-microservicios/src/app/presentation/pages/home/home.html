@@ -1,43 +1,25 @@
 <app-header></app-header>
-
-<div class="home-container">
-  
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-container">
-    <div class="spinner"></div>
-    <p>Cargando productos...</p>
-  </div>
-
-  <!-- Error State -->
-  <div *ngIf="!isLoading && errorMessage" class="error-container">
-    <p>{{ errorMessage }}</p>
-    <button (click)="refreshProducts()" class="retry-btn">
-      Reintentar
-    </button>
-  </div>
-
-  <!-- Products Content -->
-  <div *ngIf="!isLoading && !errorMessage" class="products-content">
-    <!-- Search Results Info -->
-    <div *ngIf="isSearchActive" class="search-info">
-      <p>Mostrando {{ filteredProducts.length }} resultados para "{{ searchTerm }}"</p>
-      <button (click)="clearSearch()">Limpiar búsqueda</button>
-    </div>
-
-    <!-- Products List -->
-    <div *ngIf="hasProducts; else noProducts" class="products-container">
-      <app-list-product-tenant-preview 
-        [products]="productsToShow">
-      </app-list-product-tenant-preview>
-    </div>
-
-    <!-- No Products Template -->
-    <ng-template #noProducts>
-      <div class="no-products">
-        <h3>Sin productos</h3>
-        <p>{{ noProductsMessage }}</p>
-      </div>
-    </ng-template>
-  </div>
+<div class="descriptio-welcome d-flex justify-content-center align-items-center flex-column ">
+  <h2 id="title-welcome">¿Que necesitas hoy en tu hogar?</h2>
 </div>
+<div class="category-section container-fluid d-flex align-items-center justify-content-center "> 
+    <div *ngFor="let category of categories" class="row m-2">
+      <div class="card-section d-flex justify-content-center align-items-center flex-column p-3" 
+          (click)="scrollToSection('category-' + category, $event)"
+          style="text-decoration: none; color: inherit; cursor: pointer;">
+        <p>{{category}}</p>
+      </div>   
+    </div>
+</div>
+<section class="home-page-content">
+  <div class="container-fluid" >
+   <div *ngFor="let category of categories" class="row">
+      <app-list-product-tenant-preview
+        [category]="category"
+        [products]="productsByCategory[category]"
+        (productClick)="onProductClick($event)"
+        [id]="'category-' + category"
+      ></app-list-product-tenant-preview>
+    </div>
+  </div>
+</section>

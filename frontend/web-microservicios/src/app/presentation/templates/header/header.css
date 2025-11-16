@@ -1,22 +1,26 @@
 /* Header fijo y estilos generales */
 .navbar {
   z-index: 1050;
-  backdrop-filter: blur(10px);
-  
+  background-color: white;  
 }
-
+.separator{
+  height: 3px;
+  width: 100%;
+  background-color: var(--color-primary);
+}
 .navbar-brand {
   font-size: 1.5rem;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
 }
-
+.navbar-toggler-icon {
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='%238B4513' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e") !important;
+}
 .navbar-brand:hover {
   transform: scale(1.05);
   color: rgba(255, 255, 255, 0.9) !important;
 }
-
 /* Espaciador para compensar header fijo */
 .header-spacer {
   height: 76px; /* Altura aproximada del navbar */
@@ -28,49 +32,9 @@
   border-radius: 8px;
   padding: 0.5rem;
   transition: all 0.3s ease;
+  
 }
 
-.navbar-toggler:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.navbar-toggler:focus {
-  box-shadow: 0 0 0 0.2rem rgba(255, 255, 255, 0.25);
-}
-
-/* El menú colapsible siempre se comporta como móvil */
-.navbar-collapse {
-  display: none; /* Oculto por defecto */
-}
-
-.navbar-collapse.show {
-  display: block; /* Mostrar cuando esté activo */
-  background-color: rgba(0, 0, 0, 0.95);
-  border-radius: 12px;
-  margin-top: 1rem;
-  padding: 1rem;
-}
-
-/* Estilos del carrito */
-.btn-outline-light {
-  border-radius: 50%;
-  width: 45px;
-  height: 45px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-  position: relative;
-}
-
-.btn-outline-light:hover {
-  background-color: rgba(255, 255, 255, 0.2);
-  transform: scale(1.1);
-}
-
-.btn-outline-light i {
-  font-size: 1.2rem;
-}
 
 /* Badge del carrito */
 .badge {
@@ -83,39 +47,8 @@
   animation: pulse 2s infinite;
 }
 
-@keyframes pulse {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-50%, -50%) scale(1.1); }
-  100% { transform: translate(-50%, -50%) scale(1); }
-}
 
-/* Estilos de navegación dentro del menú desplegable */
-.nav-link {
-  transition: all 0.3s ease;
-  border-radius: 8px;
-  margin: 0.2rem 0;
-  cursor: pointer;
-  padding: 0.8rem 1rem !important;
-}
 
-.nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  transform: translateX(5px);
-}
-
-.nav-link i {
-  font-size: 1rem;
-}
-
-/* Sección de usuario en el menú */
-.user-section {
-  padding: 1rem 0;
-}
-
-/* Animaciones de entrada */
-.navbar {
-  animation: slideDown 0.5s ease-out;
-}
 
 @keyframes slideDown {
   from {
@@ -136,23 +69,8 @@
 
 /* Estilos para el icono del usuario */
 .bi-person-circle {
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-primary);
 }
-
-/* Mejoras para accesibilidad */
-.nav-link:focus,
-.btn-outline-light:focus,
-.navbar-toggler:focus {
-  outline: 2px solid #fff;
-  outline-offset: 2px;
-}
-
-/* Gradiente sutil en el fondo */
-.bg-primary {
-  background: var(--color-primary) !important;
-}
-
-/* Responsivo para móviles */
 @media (max-width: 575.98px) {
   .navbar-brand {
     font-size: 1.2rem;

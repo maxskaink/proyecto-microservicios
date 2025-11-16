@@ -124,7 +124,7 @@ export class ProductService {
   /**
    * Obtiene productos con paginación - VERSIÓN REACTIVA
    */
-  getProducts(page: number = 1, pageSize: number = 10): Observable<Product[]> {
+  getProducts(page: number, pageSize: number): Observable<Product[]> {
     return this.getTenantAndHeaders().pipe(
       switchMap(({ tenantId, headers }) => 
         this.http.get<Product[]>(
@@ -186,6 +186,16 @@ export class ProductService {
       switchMap(({ tenantId, headers }) =>
         this.http.delete<void>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
+          { headers }
+        )
+      )
+    );
+  }
+  getCategories(): Observable<string[]> {
+    return this.getTenantAndHeaders().pipe(
+      switchMap(({ tenantId, headers }) =>
+        this.http.get<string[]>(
+          `${this.apiUrlProduct}${tenantId}/api/products/categories`,
           { headers }
         )
       )

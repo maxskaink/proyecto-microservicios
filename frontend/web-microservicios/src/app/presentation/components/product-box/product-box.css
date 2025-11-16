@@ -1,0 +1,30 @@
+.product-card{
+    /* Estilos del contenedor de la tarjeta */
+    overflow: hidden;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    width: 16rem;
+    height: 32rem;
+}
+
+/* Limitar el tamaño de las imágenes */
+.product-card img {
+    width: 100%;
+    height: 400px; /* Altura fija para mantener consistencia */
+    object-fit: cover; /* Mantiene las proporciones y recorta si es necesario */
+    object-position: center; /* Centra la imagen al recortar */
+    display: block;
+}
+.title-name{
+    font: 300;
+    font-size: medium;
+    height: 2rem;
+}
+.price{
+    font-size: 2rem;
+    font-weight: 600;
+}
+.card-body{
+    height: 50%;
+    background-color: rgb(252, 253, 240);
+}

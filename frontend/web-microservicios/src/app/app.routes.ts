@@ -7,6 +7,7 @@ import { ViewProduct } from './presentation/pages/view-product/view-product';
 import { RegisterTenant } from './presentation/pages/register-tenant/register-tenant';
 import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
 import { ListOrders } from './presentation/pages/list-orders/list-orders';
+import { roleGuard } from './guards/role.guards';
 
 export const routes: Routes = [
     { 
@@ -15,15 +16,21 @@ export const routes: Routes = [
     },
     { 
         path: 'user', 
-        component: User 
+        component: User,
+        canActivate: [roleGuard],
+        data: {roles: ['admin', 'client', 'producer']}
     },
     {
-        path:'home',
-        component: Home
+        path: 'home',
+        component: Home,
+        canActivate: [roleGuard],
+        data: { roles: ['producer', 'admin', 'client'] }
     },
     {
         path: 'publishProduct',
-        component: PublishProduct
+        component: PublishProduct,
+        canActivate: [roleGuard],
+        data: { roles: ['producer', 'admin'] }
     },
     {
         path: 'product/:tenantid/:id',
@@ -31,7 +38,9 @@ export const routes: Routes = [
     }, 
     {
         path: 'register-tenant',
-        component: RegisterTenant
+        component: RegisterTenant,
+        canActivate: [roleGuard],
+        data: { roles: ['producer', 'admin'] }
     },
     {
         path: 'shopping-cart',

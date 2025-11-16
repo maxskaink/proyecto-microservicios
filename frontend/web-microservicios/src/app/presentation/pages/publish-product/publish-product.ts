@@ -1,9 +1,9 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, Inject, PLATFORM_ID, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, Inject, OnInit, PLATFORM_ID, ViewChild } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
 import { Header } from '../../templates/header/header';
 import { ProductPeticion } from '../../../Models/PrdocutPeticion';
-import { ProductService } from '../../../service /ProductService';
+import { ProductService } from '../../../service/ProductService';
 import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 
@@ -13,14 +13,14 @@ import { of } from 'rxjs';
   templateUrl: './publish-product.html',
   styleUrl: './publish-product.css',
   standalone: true,
-})
-export class PublishProduct {
+})// ✅ Verificar que estamos en el navegador
+export class PublishProduct implements OnInit {
   product: ProductPeticion = {
     name: '',
     category: '',
-    price: 0,
+    price: 100,
     description: '',
-    stock: 0,
+    stock: 1,
     unit: '',
     photo_url: ''
   };
@@ -31,12 +31,17 @@ export class PublishProduct {
   imageError: string = '';
   selectedFile: File | null = null;
   @ViewChild('fileInput') fileInputRef?: ElementRef<HTMLInputElement>;
+  categories: string[] =[];
+  public units: string[] = ['kg', 'atado', 'libra'];
 
   constructor(
     private productService: ProductService,
     private cdr: ChangeDetectorRef,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
+  ngOnInit(): void {
+    this.loadCategories();
+  }
 
   onSubmit(form: NgForm): void {
     if (this.isSubmitting) return; 
@@ -56,7 +61,6 @@ export class PublishProduct {
   }
 
   onImageChange(event: Event): void {
-    // ✅ Verificar que estamos en el navegador
     if (!isPlatformBrowser(this.platformId)) {
       console.warn('⚠️ FileReader no disponible en SSR');
       return;
@@ -206,6 +210,19 @@ export class PublishProduct {
         console.error('❌ Error final:', err);
         alert('Error al publicar el producto.');
         this.isSubmitting = false;
+      }
+    });
+  }
+
+  private loadCategories(): void { 
+    this.productService.getCategories().subscribe({
+      next: (categories: string[]) => {
+        this.categories = categories;
+        console.log('✅ Categorías cargadas:', categories);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('❌ Error al cargar categorías:', error);
       }
     });
   }

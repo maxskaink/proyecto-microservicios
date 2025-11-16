@@ -2,12 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { Product } from '../../../Models/Product';
-import { ProductService } from '../../../service /ProductService';
+import { ProductService } from '../../../service/ProductService';
 import { finalize, catchError, of } from 'rxjs';
 import { Header } from '../../templates/header/header';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { ShoppingCart } from '../shopping-cart/shopping-cart';
-import { ShoppingCartService } from '../../../service /ShoppinCartService';
+import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { ShoppingPeticion } from '../../../Models/ShoppingPeticion';
 
 @Component({

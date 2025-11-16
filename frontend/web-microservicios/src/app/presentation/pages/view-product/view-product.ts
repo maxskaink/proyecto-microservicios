@@ -122,4 +122,18 @@ export class ViewProduct implements OnInit {
       currency: 'COP'
     });
   }
+
+decreaseQuantity(input: HTMLInputElement): void {
+  const currentValue = +input.value;
+  if (currentValue > 1) {
+    input.value = (currentValue - 1).toString();
+  }
+}
+
+increaseQuantity(input: HTMLInputElement, maxStock: number): void {
+  const currentValue = +input.value;
+  if (currentValue < maxStock) {
+    input.value = (currentValue + 1).toString();
+  }
+}
 }

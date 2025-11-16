@@ -39,9 +39,7 @@
                             />
                         </div>
                     </div>
-                </div>
-
-                                
+                </div>          
                 <div class="mb-3 mt-5">
                     <label for="productName" class="form-label">Nombre del Producto</label>
                     <input 
@@ -114,7 +112,6 @@
                 </div>
                 <div class="mb-3 mt-5">
                     <label for="productUnits" class="form-label">Unidades</label>
-
                     <select 
                         id="productUnits"
                         class="form-control"
@@ -153,14 +150,10 @@
                 <div *ngIf="price.errors?.['required'] && price.touched" class="text-danger">
                     El precio es obligatorio.
                 </div>
-
                 <div *ngIf="price.errors?.['min'] && price.touched" class="text-danger">
                     El precio debe ser mayor que 0.
                 </div>
                 </div>
-
-
-                
                 <button type="submit" class="btn" [disabled]="productForm.invalid || isSubmitting">
                     <span *ngIf="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status"></span>
                     {{ isSubmitting ? 'Publicando...' : 'Publicar Producto' }}

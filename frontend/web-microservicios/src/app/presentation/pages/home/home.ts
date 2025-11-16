@@ -13,15 +13,10 @@ import { ProductService } from '../../../service/ProductService';
   styleUrl: './home.css',
 })
 export class Home  implements OnInit {
-  /**
-   * Productos organizados por categoría
-   */
-  public productsByCategory: { [category: string]: Product[] } = {};
-  /**
-   * Lista de categorías disponibles
-   */
-  public categories: string[] = [];
-
+  categories: string[] = [];
+  productsByCategory: { [key: string]: any[] } = {};
+  searchTerm: string = '';
+  allProducts: any[] = []; 
 
   constructor(private productService: ProductService,   private cdr: ChangeDetectorRef) {}
 

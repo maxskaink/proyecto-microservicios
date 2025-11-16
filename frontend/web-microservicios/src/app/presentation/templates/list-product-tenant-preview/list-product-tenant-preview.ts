@@ -4,6 +4,8 @@ import { ProductBox } from '../../components/product-box/product-box';
 import { Product } from '../../../Models/Product';
 import {  Router } from '@angular/router';
 import { ProductService } from '../../../service/ProductService';
+import { TenantService } from '../../../service/TenantService';
+import { Tenant } from '../../../Models/Tenant';
 
 
 @Component({
@@ -18,15 +20,25 @@ export class ListProductTenantPreview {
   ];
   public tenantid: string = '';
   @Output() productClick = new EventEmitter<Product>();
-  constructor(private router: Router) {}
+  constructor(private router: Router, private  serviceTenant: TenantService) {}
   /**
    * Maneja el click en un producto para navegar a sus detalles
    */
   onProductClick(product: Product): void {
-    console.log('Producto clickeado:', product);
-    // Emitir el evento para el componente padre
     this.productClick.emit(product);
-    // Navegar a la página de detalles del producto
-  }
 
+    this.serviceTenant.getCurrentUserTenant().subscribe((tenant: Tenant | null) => {
+
+      if (!tenant) {
+        console.error('No se encontró el tenant actual');
+        return;
+      }
+
+      this.router.navigate([
+        'product',
+        tenant.tenant_id,  // <-- tenant_id seguro aquí
+        product.id
+      ]);
+    });
+  }
 }

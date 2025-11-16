@@ -1,86 +1,159 @@
 <app-header></app-header>
-<app-header></app-header>
 <app-arrow-left></app-arrow-left>
-<div class="view-product-container">
+
+<div class="view-product-container magazine-style">
   
   <!-- Loading state -->
-  <div *ngIf="isLoading" class="text-center py-5">
-    <div class="spinner-border text-primary mb-3" role="status">
+  <div *ngIf="isLoading" class="loading-state">
+    <div class="spinner-border text-light mb-3" role="status">
       <span class="visually-hidden">Cargando producto...</span>
     </div>
-    <p class="text-muted">Cargando producto...</p>
+    <p class="text-light">Cargando producto...</p>
   </div>
 
   <!-- Product details -->
-  <div *ngIf="!isLoading && product" class="container py-4">
-    <div class="row">
-      <div class="col-md-6">
-        <img [src]="product.photo_url" 
-             [alt]="product.description" 
-             class="img-fluid rounded">
-      </div>
-      <div class="col-md-6">
-        <h1 class="mb-3">{{ product.description }}</h1>
-        <p class="text-muted mb-2">
-          <strong>Categoría:</strong> {{ product.category }}
-        </p>
-        <h3 class="text-success mb-3">
-          {{ product.price | currency:'COP':'symbol':'1.0-0' }}
-        </h3>
-        <p class="mb-3">
-          <strong>Stock disponible:</strong> 
-          {{ product.stock }} {{ product.unit }}
-        </p>
-        
-        <!-- Mensaje de feedback -->
-        <div *ngIf="addToCartMessage" 
-             class="alert"
-             [ngClass]="{
-               'alert-success': !addToCartMessage.includes('Error'),
-               'alert-danger': addToCartMessage.includes('Error')
-             }"
-             role="alert">
-          {{ addToCartMessage }}
-        </div>
-
-        <!-- Controles de cantidad y botón agregar al carrito -->
-        <div class="d-flex align-items-center mb-3">
-          <label for="quantity" class="form-label me-3 mb-0">Cantidad:</label>
-          <input type="number" 
-                 id="quantity" 
-                 class="form-control quantity-input me-3" 
-                 #quantityInput
-                 [value]="1" 
-                 min="1" 
-                 [max]="product.stock"
-                 style="width: 80px;">
-          
-          <button class="btn btn-primary" 
-                  [disabled]="product.stock === 0 || isAddingToCart"
-                  (click)="addToCart(+quantityInput.value)">
-            <span *ngIf="isAddingToCart" class="spinner-border spinner-border-sm me-2" role="status"></span>
-            <i *ngIf="!isAddingToCart" class="bi bi-cart-plus me-2"></i>
-            {{ product.stock === 0 ? 'Agotado' : (isAddingToCart ? 'Agregando...' : 'Agregar al carrito') }}
-          </button>
-        </div>
-
-        <!-- Información adicional del producto -->
-        <div class="product-info mt-4">
-          <h5>Información del producto</h5>
-          <ul class="list-unstyled">
-            <li><strong>Productor ID:</strong> {{ product.producer_id }}</li>
-            <li><strong>Unidad:</strong> {{ product.unit }}</li>
-            <li><strong>Fecha de creación:</strong> {{ product.create_at | date:'short' }}</li>
-          </ul>
+  <div *ngIf="!isLoading && product" class="magazine-container">
+    
+    <!-- Hero Section con imagen de fondo -->
+    <div class="hero-section" [style.background-image]="'url(' + product.photo_url + ')'">
+      <div class="hero-overlay">
+        <div class="hero-content container">
+          <span class="category-badge">{{ product.category }}</span>
+          <h1 class="hero-title">{{ product.name }}</h1>
+          <p class="hero-subtitle">Producto Premium</p>
         </div>
       </div>
     </div>
+
+    <!-- Content Section -->
+    <div class="magazine-content-wrapper">
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            
+            <!-- Precio destacado -->
+            <div class="price-section mb-4">
+              <h2 class="display-4 fw-bold text-dark mb-0">
+                {{ product.price | currency:'$':'symbol':'1.0-0' }}
+              </h2>
+            </div>
+
+            <!-- Mensaje de feedback -->
+            <div *ngIf="addToCartMessage" 
+                 class="alert alert-dismissible fade show"
+                 [ngClass]="{
+                   'alert-success': !addToCartMessage.includes('Error'),
+                   'alert-danger': addToCartMessage.includes('Error')
+                 }"
+                 role="alert">
+              {{ addToCartMessage }}
+              <button type="button" class="btn-close" (click)="addToCartMessage = ''" aria-label="Close"></button>
+            </div>
+
+            <!-- Features con iconos -->
+            <div class="features-grid mb-4">
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="bi bi-box-seam"></i>
+                </div>
+                <div class="feature-content">
+                  <strong class="d-block">Stock disponible</strong>
+                  <span class="text-muted">{{ product.stock }} {{ product.unit }}</span>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="bi bi-person-badge"></i>
+                </div>
+                <div class="feature-content">
+                  <strong class="d-block">Productor</strong>
+                  <span class="text-muted">ID</span>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="bi bi-rulers"></i>
+                </div>
+                <div class="feature-content">
+                  <strong class="d-block">Unidad de medida</strong>
+                  <span class="text-muted">{{ product.unit }}</span>
+                </div>
+              </div>
+
+              <div class="feature-item">
+                <div class="feature-icon">
+                  <i class="bi bi-calendar-check"></i>
+                </div>
+                <div class="feature-content">
+                  <strong class="d-block">Disponible desde</strong>
+                  <span class="text-muted">{{ product.create_at | date:'mediumDate' }}</span>
+                </div>
+              </div>
+            </div>
+              <div>
+                <h3>¿Qué estoy comprando?</h3>
+                <p>
+                  {{product.description}}
+                </p>
+              </div>
+            <!-- Selector de cantidad y botón de compra -->
+            <div class="purchase-section">
+              <div class="quantity-selector-wrapper">
+                <label for="quantity" class="form-label fw-semibold mb-2">Cantidad:</label>
+                <div class="quantity-controls">
+                  <button class="qty-btn" 
+                          type="button"
+                          (click)="decreaseQuantity(quantityInput)"
+                          [disabled]="product.stock === 0">
+                    <i class="bi bi-dash"></i>
+                  </button>
+                  
+                  <input type="number" 
+                         id="quantity" 
+                         class="quantity-input" 
+                         #quantityInput
+                         [value]="1" 
+                         min="1" 
+                         [max]="product.stock">
+                  
+                  <button class="qty-btn" 
+                          type="button"
+                          (click)="increaseQuantity(quantityInput, product.stock)"
+                          [disabled]="product.stock === 0 || +quantityInput.value >= product.stock">
+                    <i class="bi bi-plus"></i>
+                  </button>
+                </div>
+              </div>
+
+              <button class="btn-add-to-cart" 
+                      [disabled]="product.stock === 0 || isAddingToCart"
+                      (click)="addToCart(+quantityInput.value)">
+                <span *ngIf="isAddingToCart" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                <i *ngIf="!isAddingToCart" class="bi bi-cart-plus me-2"></i>
+                {{ product.stock === 0 ? 'Agotado' : (isAddingToCart ? 'Agregando...' : 'Agregar al carrito') }}
+              </button>
+              
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 
-  <div *ngIf="!isLoading && !product" class="text-center py-5">
-    <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
-    <h4 class="text-muted">Producto no encontrado</h4>
-    <p class="text-muted">El producto que buscas no existe o no está disponible.</p>
+  <!-- Error state -->
+  <div *ngIf="!isLoading && !product" class="error-state">
+    <div class="error-content">
+      <i class="bi bi-exclamation-triangle display-1 text-warning mb-3"></i>
+      <h4 class="text-light mb-2">Producto no encontrado</h4>
+      <p class="text-light opacity-75">El producto que buscas no existe o no está disponible.</p>
+      <button class="btn btn-outline-light mt-3" routerLink="/productos">
+        <i class="bi bi-arrow-left me-2"></i>
+        Volver a productos
+      </button>
+    </div>
   </div>
 
 </div>

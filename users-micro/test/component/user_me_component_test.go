@@ -89,7 +89,7 @@ func fakeAuthMiddleware(svc services.UserService) gin.HandlerFunc {
 			}
 		}
 
-		c.Set("uid", uid)
+		c.Set(middleware.UUIDKey, uid)
 		c.Set("email", email)
 		c.Set("name", name)
 		c.Next()

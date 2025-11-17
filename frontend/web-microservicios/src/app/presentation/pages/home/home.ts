@@ -26,7 +26,7 @@ export class Home  implements OnInit {
   productsByCategory: { [key: string]: any[] } = {};
   searchTerm: string = '';
   allProducts: Product[] = []; 
-
+  public products: Product[] = [];
   constructor(
     private productService: ProductService,   
     private cdr: ChangeDetectorRef,
@@ -39,7 +39,7 @@ export class Home  implements OnInit {
     this.loadProductsForTenant();
   }
 
-  public products: Product[] = [];
+  
   
   /**
    * Maneja el click en un producto para navegar a su vista de detalles

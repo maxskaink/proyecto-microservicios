@@ -18,21 +18,19 @@
 
 /* Hero Section */
 .hero-section {
-  height: 60vh;
+  height: 40vh;
   min-height: 400px;
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-  position: relative;
 }
-
-.hero-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.8) 100%);
-  display: flex;
-  align-items: flex-end;
-  padding: 3rem 2rem;
+.img-product {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;   /* Ajusta la imagen sin deformarla */
+  display: block;
+}
+.hero-description-title{
+  margin-top: 2rem;
+  color: white;
+  font-weight: 400;
 }
 
 .hero-content {

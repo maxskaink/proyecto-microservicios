@@ -1,30 +1,44 @@
-.product-card{
-    /* Estilos del contenedor de la tarjeta */
-    overflow: hidden;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    width: 16rem;
-    height: 32rem;
+.product-card {
+  width: 100%;
+  height: 90%;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  display: flex;
+  flex-direction: column;
+  background-color: rgb(252, 253, 240);
 }
 
-/* Limitar el tamaño de las imágenes */
-.product-card img {
-    width: 100%;
-    height: 400px; /* Altura fija para mantener consistencia */
-    object-fit: cover; /* Mantiene las proporciones y recorta si es necesario */
-    object-position: center; /* Centra la imagen al recortar */
-    display: block;
+/* Contenedor que controla la altura de la imagen */
+.image-container {
+  width: 100%;
+  aspect-ratio: 3 / 4;  /* Todas iguales */
+  overflow: hidden;     /* Recorta lo que sobra */
 }
-.title-name{
-    font: 300;
-    font-size: medium;
-    height: 2rem;
+
+/* Imagen ajustada */
+.card-img-top {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;     /* Recorta y agranda sin deformar */
+  display: block;
 }
-.price{
-    font-size: 2rem;
-    font-weight: 600;
+
+.card-body {
+  padding: 1rem;
+  
+  flex: 1;  /* Se ajusta a lo que queda del card */
 }
-.card-body{
-    height: 50%;
-    background-color: rgb(252, 253, 240);
+
+.title-name {
+  font-weight: 300;
+  font-size: medium;
+  height: 2rem;
+  overflow: hidden;
+}
+
+.price {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--color-success);
 }

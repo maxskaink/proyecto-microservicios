@@ -13,6 +13,7 @@ export class ProductBox {
   @Output() productClick = new EventEmitter<Product>();
 
   onProductClick(): void {
+    console.log('🎯 Click en ProductBox para producto:', this.product.id, this.product.name);
     this.productClick.emit(this.product);
   }
 }

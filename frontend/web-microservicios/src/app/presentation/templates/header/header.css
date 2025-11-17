@@ -1,8 +1,16 @@
 /* Header fijo y estilos generales */
 .navbar {
   z-index: 1050;
-  background-color: white;  
   height: 5rem;
+  border-radius: 0 0 20px 20px;
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* para Safari */
+}
+.title{
+  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-weight: 400;
 }
 
 .bi-person-circle{
@@ -54,43 +62,7 @@
 }
 
 
-
-
-@keyframes slideDown {
-  from {
-    transform: translateY(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-/* Estados activos */
-.nav-link.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  font-weight: 600;
-}
-
-/* Estilos para el icono del usuario */
-.bi-person-circle {
-  color: var(--color-primary);
-}
-@media (max-width: 575.98px) {
-  .navbar-brand {
-    font-size: 1.2rem;
-  }
-  
-  .btn-outline-light {
-    width: 40px;
-    height: 40px;
-  }
-  
-  .header-spacer {
-    height: 65px;
-  }
-}
-.container-help{
-  background-color: var(--color-secondary);
+.bi-list{
+  background: transparent;
+  border-color: transparent;
 }

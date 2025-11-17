@@ -1,6 +1,7 @@
 /* Sección del Tenant */
 .tenant-section {
-  padding: 2rem;
+  padding: 10rem;
+  padding-bottom: 0rem;
   border-radius: 8px;
   margin-bottom: 2rem;
 }
@@ -16,7 +17,7 @@
 
 .tenant-title {
   color: var(--color-success);
-  font-size: 3rem;
+  font-size: 2rem;
   font-weight: 600;
   margin: 0;
 }
@@ -88,10 +89,7 @@
   margin-bottom: 2rem;
 }
 
-.products-carousel {
-  position: relative;
-  overflow: hidden;
-}
+
 
 .carousel-container {
   display: flex;
@@ -114,15 +112,6 @@
 .product-item {
   flex: 0 0 auto;
   margin: 20px;
-  
-  /* Responsive breakpoints */
-  @media (max-width: 768px) {
-    width: 250px;
-  }
-  
-  @media (max-width: 480px) {
-    width: 220px;
-  }
 }
 
 /* Opcional: Agregar indicadores de scroll */

@@ -1,9 +1,10 @@
-<div class=" product-card" 
-     style=" cursor: pointer;" 
-     (click)="onProductClick()">
-  <img [src]="product.photo_url" class="card-img-top" [alt]="product.description">
-  <div class="card-body  d-flex flex-column align-items-between p-4">
-    <h5 class=" title-name">{{ product.name }}</h5>
-    <p class="price"> {{ product.price | currency:'$':'symbol':'1.0-0' }}</p>
+<div class="product-card" (click)="onProductClick()" style="cursor: pointer;">
+  <div class="image-container">
+      <img [src]="product.photo_url" [alt]="product.name" class="card-img-top">
+  </div>
+
+  <div class="card-body">
+      <h5 class="title-name">{{ product.name }}</h5>
+      <p class="price">{{ product.price | currency:'COP':'symbol':'1.0-0' }}</p>
   </div>
 </div>

@@ -1,28 +1,31 @@
-.home-section-welcome{
-  height: 50rem;
-}
-.home-page-content{
-  
-}
-
 #title-welcome{
     color: white;
     font-weight: 700;
-    font-size: 2rem;
-    padding: 4rem;
+    font-size: 2.6rem;
+    padding: 3rem;
     padding-bottom: 1rem;
-    margin-top: 2rem;
+    margin-top: 3rem;
 }
 #descriptio-welcome-text{
   color: white;
   font-size: 1rem;
   font-weight: 0.5rem;
 }
+.help-text{
+  font-size: 1.3rem;
+  margin-top: 2rem;
+  margin-bottom: 2rem;
+  margin-left: 1rem;
+}
+.divider-separator{
+  height: 2rem;
+   background: linear-gradient(145deg, #125c32, #2aeb94);
+}
 .category-section {
   padding-top: 2rem;
   transition: transform 0.2s ease;
-  height: 25rem;
-  background: linear-gradient(145deg, #47a16e, #2bb979, rgb(57, 192, 102));
+  height: 23rem;
+  background: linear-gradient(145deg, #46e68b, #2bb979, rgb(57, 192, 102));
   flex-wrap: wrap; /* Permite que las tarjetas se envuelvan */
 }
 
@@ -33,19 +36,51 @@
   transition: background-position 1.5s ease, transform 0.5s ease;
   
   border: transparent;
-  height: 3rem;
-  width: 7rem;
-  border-radius: 4em;
+  height: 8rem;
+  width: 100%;
+  border-radius: 1rem;
+  overflow: hidden;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  
+  /* ✅ Agregar estas propiedades para posicionar el texto */
+  display: flex;
+  align-items: flex-end; /* Baja el texto hacia abajo */
+  justify-content: flex-start; /* Alinea el texto a la izquierda */
+  padding: 1rem; /* Espacio desde los bordes */
+}
+/* Superposición para todas las tarjetas con imagen */
+.card-section[style*="background-image"]::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom, 
+    rgba(0, 0, 0, 0.3) 0%, 
+    rgba(0, 0, 0, 0.6) 100%
+  );
+  z-index: 1;
 }
 
 .card-section:hover {
   background-position: right;
   transform: scale(1.05);
+  
 }
 
 .card-section p {
-  font-weight: 500;
-  font-size: 0.9rem;
+  position: relative;
+  z-index: 2;
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.9);
+  margin: 0; /* ✅ Elimina márgenes por defecto */
+  padding: 0; /* ✅ Elimina padding por defecto */
 }
 html {
   scroll-behavior: smooth;

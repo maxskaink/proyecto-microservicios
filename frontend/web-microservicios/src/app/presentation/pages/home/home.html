@@ -1,29 +1,35 @@
 <app-header></app-header>
 <div class="category-section">
-  <div class="text-center d-flex justify-content-center align-items-center flex-column ">
+  <div class="d-flex justify-content-center align-items-center  flex-column ">
     <h2 id="title-welcome">¿Que necesitas hoy en tu hogar?</h2>
   </div>
-
-  <div class=" d-flex align-items-center justify-content-center"> 
-      <div *ngFor="let category of categories" class="col-auto m-2">
-        <div class="card-section d-flex justify-content-center align-items-center p-3" 
-            (click)="scrollToSection('category-' + category, $event)"
-            style="text-decoration: none; color: inherit; cursor: pointer;">
-          <p class="mb-0 text-center">{{category}}</p>
-        </div>   
-      </div>
-  </div>
-
 </div>
+<div class="divider-separator container-fluid"></div>
 <section class="home-page-content">
-  <div class="container-fluid" >
-   <div *ngFor="let category of categories" class="row">
-      <app-list-product-tenant-preview
-        [category]="category"
-        [products]="productsByCategory[category]"
-        (productClick)="onProductClick($event)"
-        [id]="'category-' + category"
-      ></app-list-product-tenant-preview>
+  <div class="container p-4">
+    <div class="d-flex align-items-center justify-content-center flex-column text-center">
+        <h2>Explora por categorias</h2>
+        <p>Encuentra exactamente lo que necesitas navegando por nuestras categorías de productos frescos</p>
     </div>
+  </div>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-6 col-lg-2 p-3" *ngFor="let category of categories">
+        <div class="card-section d-flex justify-content-center align-items-center p-3"
+            [ngStyle]="{ 'background-image': 'url(' + category.img + ')' }"
+            style="background-size: cover; background-position: center; cursor: pointer;">
+            
+          <p class=" shadow-text">{{ category.name }}</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  
+  <div class="container-fluid" >
+        <app-list-product-tenant-preview
+          [products]="allProducts"
+          (productClick)="onProductClick($event)"
+        ></app-list-product-tenant-preview>
   </div>
 </section>

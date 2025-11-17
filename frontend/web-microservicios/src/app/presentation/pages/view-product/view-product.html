@@ -1,7 +1,22 @@
 <app-header></app-header>
 <app-arrow-left></app-arrow-left>
-
-<div class="view-product-container magazine-style">
+<!-- Notificación de éxito -->
+<div *ngIf="showSuccessMessage" class="success-notification animated">
+  <div class="notification-content">
+    <div class="success-icon">
+      <i class="bi bi-check-circle-fill"></i>
+    </div>
+    <div class="notification-text">
+      <h5>¡Se añadio al carrito!</h5>
+      <p>{{ addToCartMessage }}</p>
+      <small>Se ha agregado {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} de "{{ product?.name }}" a tu carrito</small>
+    </div>
+    <button type="button" class="btn-close" (click)="closeSuccessMessage()">
+      <i class="bi bi-x"></i>
+    </button>
+  </div>
+</div>
+<div class="container-fluid p-0">
   
   <!-- Loading state -->
   <div *ngIf="isLoading" class="loading-state">
@@ -10,136 +25,44 @@
     </div>
     <p class="text-light">Cargando producto...</p>
   </div>
-
-  <!-- Product details -->
-  <div *ngIf="!isLoading && product" class="magazine-container">
-    <div class="section-image d-flex justify-content-center align-items-center">
-      <img [src]="product.photo_url" alt="{{ product.name }}" class="img-fluid img-product  ">
-    </div>
-    <!-- Hero Section con imagen de fondo -->
-    <div class="hero-section">
-        <div class="hero-overlay">
-        <div class="hero-content container">
-          <span class="category-badge">{{ product.category }}</span>
-          <h1 class="hero-title">{{ product.name }}</h1>
-          <p class="hero-subtitle">Producto Premium</p>
-          <h3 class="hero-description-title ">¿Qué estoy comprando?</h3>
-          <p class="hero-subtitle">{{product.description}}</p>    
+    <!-- Product details -->
+    <div *ngIf="!isLoading && product" class="container mt-4 d-flex justify-content-center product-details align-items-center">
+      <div class="row">
+        <div class="col-12 col-lg-6 p-0 section-image">
+          <div class="d-flex justify-content-center align-items-center ">
+            <img [src]="product.photo_url" 
+                alt="{{ product.name }}" 
+                class="w-100 img-fluid ">
+          </div>
         </div>
-      </div>
-    </div>
-
-    <!-- Content Section -->
-    <div class="magazine-content-wrapper">
-      <div class="container">
-        <div class="row">
-          <div class="col-lg-8 mx-auto">
-            
-            <!-- Precio destacado -->
-            <div class="price-section mb-4">
-              <h2 class="display-4 fw-bold text-dark mb-0">
-                {{ product.price | currency:'$':'symbol':'1.0-0' }}
-              </h2>
+        <div class="col-12 col-lg-6">
+          <div class="container-info">
+            <h2 class="product-name">{{ product.name }}</h2>
+            <p class="">{{product.category}}</p>
+            <p class="product-description">{{ product.description }}</p>
+            <div class="container-price">
+                <p class="product-price">{{ product.price | currency:'$':'symbol':'1.0-0' }} / {{ product.unit }}</p>
             </div>
-     
-            <!-- Selector de cantidad y botón de compra -->
-            <div class="purchase-section">
-              <div class="quantity-selector-wrapper">
-                <label for="quantity" class="form-label fw-semibold mb-2">Cantidad:</label>
-                <div class="quantity-controls">
-                  <button class="qty-btn" 
-                          type="button"
-                          (click)="decreaseQuantity(quantityInput)"
-                          [disabled]="product.stock === 0">
-                    <i class="bi bi-dash"></i>
-                  </button>
-                  
-                  <input type="number" 
-                         id="quantity" 
-                         class="quantity-input" 
-                         #quantityInput
-                         [value]="1" 
-                         min="1" 
-                         [max]="product.stock">
-                  
-                  <button class="qty-btn" 
-                          type="button"
-                          (click)="increaseQuantity(quantityInput, product.stock)"
-                          [disabled]="product.stock === 0 || +quantityInput.value >= product.stock">
-                    <i class="bi bi-plus"></i>
-                  </button>
-                </div>
-              </div>
+            <div class=" mt-3 mb-3 quantity-selector d-flex align-items-center">
+              <button class="btn btn-qty" (click)="decreaseQty()">−</button>
 
-              <button class="btn-add-to-cart" 
-                      [disabled]="product.stock === 0 || isAddingToCart"
-                      (click)="addToCart(+quantityInput.value)">
-                <span *ngIf="isAddingToCart" class="spinner-border spinner-border-sm me-2" role="status"></span>
-                <i *ngIf="!isAddingToCart" class="bi bi-cart-plus me-2"></i>
-                {{ product.stock === 0 ? 'Agotado' : (isAddingToCart ? 'Agregando...' : 'Agregar al carrito') }}
-              </button>
-              
+              <input 
+                type="number" 
+                class="form-control qty-input text-center" 
+                [(ngModel)]="quantity" 
+                min="1">
+
+              <button class="btn btn-qty" (click)="increaseQty()">+</button>
             </div>
-            <!-- Mensaje de feedback -->
-            <div *ngIf="addToCartMessage" 
-                 class="alert alert-dismissible fade show"
-                 [ngClass]="{
-                   'alert-success': !addToCartMessage.includes('Error'),
-                   'alert-danger': addToCartMessage.includes('Error')
-                 }"
-                 role="alert">
-              {{ addToCartMessage }}
-              <button type="button" class="btn-close" (click)="addToCartMessage = ''" aria-label="Close"></button>
-            </div>
-
-            <!-- Features con iconos -->
-            <div class="features-grid mb-4">
-              <div class="feature-item">
-                <div class="feature-icon">
-                  <i class="bi bi-box-seam"></i>
-                </div>
-                <div class="feature-content">
-                  <strong class="d-block">Stock disponible</strong>
-                  <span class="text-muted">{{ product.stock }} {{ product.unit }}</span>
-                </div>
-              </div>
-
-              <div class="feature-item">
-                <div class="feature-icon">
-                  <i class="bi bi-person-badge"></i>
-                </div>
-                <div class="feature-content">
-                  <strong class="d-block">Productor</strong>
-                  <span class="text-muted">ID</span>
-                </div>
-              </div>
-
-              <div class="feature-item">
-                <div class="feature-icon">
-                  <i class="bi bi-rulers"></i>
-                </div>
-                <div class="feature-content">
-                  <strong class="d-block">Unidad de medida</strong>
-                  <span class="text-muted">{{ product.unit }}</span>
-                </div>
-              </div>
-
-              <div class="feature-item">
-                <div class="feature-icon">
-                  <i class="bi bi-calendar-check"></i>
-                </div>
-                <div class="feature-content">
-                  <strong class="d-block">Disponible desde</strong>
-                  <span class="text-muted">{{ product.create_at | date:'mediumDate' }}</span>
-                </div>
-              </div>
-            </div>
+            <button class="btn btn-buy" (click)="addToCart(quantity)" ><i class="bi bi-cart4">
+              </i>
+            </button>
           </div>
         </div>
       </div>
+      
     </div>
 
-  </div>
 
   <!-- Error state -->
   <div *ngIf="!isLoading && !product" class="error-state">

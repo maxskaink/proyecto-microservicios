@@ -9,20 +9,25 @@ import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { ShoppingCart } from '../shopping-cart/shopping-cart';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { ShoppingPeticion } from '../../../Models/ShoppingPeticion';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-view-product',
-  imports: [CommonModule, Header, ArrowLeft],
+  imports: [CommonModule, Header, ArrowLeft, FormsModule],
   templateUrl: './view-product.html',
   styleUrl: './view-product.css',
 })
 export class ViewProduct implements OnInit {
   product?: Product;
+
   isLoading: boolean = false;
   productId: string = '';
   isAddingToCart: boolean = false;
   addToCartMessage: string = '';
-  
+  showSuccessMessage: boolean = false;
+  public quantity: number= 1;
+
+
   constructor(
     private productService: ProductService,
     private cdr: ChangeDetectorRef,
@@ -68,11 +73,20 @@ export class ViewProduct implements OnInit {
         }
       });
   }
+  increaseQty() {
+    this.quantity++;
+  }
+
+  decreaseQty() {
+    if (this.quantity > 1) {
+      this.quantity--;
+    }
+  }
 
   /**
    * Agrega el producto actual al carrito de compras
    */
-  addToCart(quantity: number = 1): void {
+  addToCart(quantity: number): void {
     if (!this.product) {
       console.warn('No hay producto para agregar al carrito');
       return;
@@ -102,15 +116,25 @@ export class ViewProduct implements OnInit {
         if (cartItem) {
           console.log('Producto agregado al carrito:', cartItem);
           this.addToCartMessage = '¡Producto agregado al carrito exitosamente!';
+          this.showSuccessMessage = true;
           
-          // Limpiar el mensaje después de 3 segundos
+          // Limpiar el mensaje después de 4 segundos
           setTimeout(() => {
+            this.showSuccessMessage = false;
             this.addToCartMessage = '';
             this.cdr.markForCheck();
-          }, 3000);
+          }, 4000);
         }
       }
     });
+  }
+
+  /**
+   * Cierra la notificación de éxito manualmente
+   */
+  closeSuccessMessage(): void {
+    this.showSuccessMessage = false;
+    this.addToCartMessage = '';
   }
 
   /**

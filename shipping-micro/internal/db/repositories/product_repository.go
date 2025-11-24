@@ -24,6 +24,7 @@ func (r *ProductRepository) Create(product *dto.ProductDTO, tenantID string) err
 		Name:        product.Name,
 		Description: product.Description,
 		ProducerID:  product.ProducerID,
+		PhotoUrl:    product.PhotoUrl,
 		Price:       product.Price,
 		Stock:       product.Stock,
 	}
@@ -55,6 +56,7 @@ func (r *ProductRepository) Update(product *dto.ProductDTO, tenantID string) err
 				"description": product.Description,
 				"price":       product.Price,
 				"stock":       product.Stock,
+				"photo_url":   product.PhotoUrl,
 			}).Error
 	})
 

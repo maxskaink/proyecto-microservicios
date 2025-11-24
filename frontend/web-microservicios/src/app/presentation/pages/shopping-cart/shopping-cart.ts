@@ -7,10 +7,11 @@ import { CartItem } from '../../../Models/Cart';
 import { OrderPeticion, OrderResponse } from '../../../Models/OrderPeticion';
 import { catchError, of } from 'rxjs';
 import { Header } from '../../templates/header/header';
+import { ProductViewBuy } from '../../templates/product-view-buy/product-view-buy';
 
 @Component({
   selector: 'app-shopping-cart',
-  imports: [CommonModule, RouterModule, FormsModule, Header],
+  imports: [CommonModule, RouterModule, FormsModule, Header, ProductViewBuy],
   templateUrl: './shopping-cart.html',
   styleUrl: './shopping-cart.css',
 })

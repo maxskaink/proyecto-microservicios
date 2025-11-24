@@ -9,21 +9,9 @@
     </div>
 
     <div class="quantity-controls">
-      <button 
-        (click)="onDecrement(item)"
-        [disabled]="item.quantity <= 1"
-        class="quantity-button">
-        -
-      </button>
-
       <span class="quantity">{{ item.quantity }}</span>
 
-      <button 
-        (click)="onIncrement(item)"
-        [disabled]="item.quantity >= item.product.stock"
-        class="quantity-button">
-        +
-      </button>
+
     </div>
 
     <div class="item-total">

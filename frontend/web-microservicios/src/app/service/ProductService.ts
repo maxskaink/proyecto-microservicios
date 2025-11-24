@@ -15,48 +15,29 @@ export class ProductService {
     private authService: AuthService
   ) {}
 
-  /**
-   * Método privado para obtener headers con autenticación
-   */
-  private getAuthHeaders(): Observable<HttpHeaders> {
-    return from(this.authService.getToken()).pipe(
-      map(token => {
-        if (!token) {
-          throw new Error('No se pudo obtener el token de autenticación');
-        }
-        return new HttpHeaders({
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        });
-      })
-    );
-  }
+  
 
   /**
    * Combina tenant ID y headers de autenticación
    */
-  private getTenantAndHeaders(): Observable<{ tenantId: string; headers: HttpHeaders }> {
-    return combineLatest([
-      this.authService.idTenant$.pipe(
-        filter((tenantId): tenantId is string => !!tenantId), // Filtrar valores null/undefined
-        take(1) // Tomar solo el primer valor válido
-      ),
-      this.getAuthHeaders()
-    ]).pipe(
-      map(([tenantId, headers]) => ({ tenantId, headers }))
+  private getTenant(): Observable<{ tenantId: string }> {
+    return this.authService.idTenant$.pipe(
+      filter((tenantId): tenantId is string => !!tenantId),
+      take(1),
+      map((tenantId) => ({ tenantId }))
     );
   }
+
 
   /**
    * Solicita una URL pre-firmada para subir una imagen
    */
   getUploadUrl(filename: string, contentType: string): Observable<{ upload_url: string; object_key: string }> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) =>
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) =>
         this.http.post<{ upload_url: string; object_key: string }>(
           `${this.apiUrlProduct}${tenantId}/api/products/upload-url`,
-          { filename, content_type: contentType },
-          { headers }
+          { filename, content_type: contentType }
         )
       )
     );
@@ -76,12 +57,11 @@ export class ProductService {
    * Actualiza la foto del producto con el object_key
    */
   updateProductPhoto(productId: string, objectKey: string): Observable<any> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) =>
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) =>
         this.http.put(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}/photo`,
           { object_key: objectKey },
-          { headers }
         )
       )
     );
@@ -98,15 +78,14 @@ export class ProductService {
       error => console.error('❌ Error al obtener tenant:', error)
     );
     
-    return this.getTenantAndHeaders().pipe(
-      tap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      tap(({ tenantId }) => {
         console.log('🌐 Tenant ID obtenido:', tenantId);
-        console.log('🔐 Headers construidos:', headers.keys());
       }),
-      switchMap(({ tenantId, headers }) => {
+      switchMap(({ tenantId }) => {
         const url = `${this.apiUrlProduct}${tenantId}/api/products`;
         console.log('🌐 URL completa construida:', url);
-        return this.http.post<Product>(url, product, { headers }).pipe(
+        return this.http.post<Product>(url, product).pipe(
           tap(response => console.log('✅ Respuesta del servidor:', response)),
           catchError(error => {
             console.error('❌ Error en POST request:', error);
@@ -125,11 +104,10 @@ export class ProductService {
    * Obtiene productos con paginación - VERSIÓN REACTIVA
    */
   getProducts(page: number, pageSize: number): Observable<Product[]> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => 
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) => 
         this.http.get<Product[]>(
-          `${this.apiUrlProduct}${tenantId}/api/products?page=${page}&pag_size=${pageSize}`,
-          { headers }
+          `${this.apiUrlProduct}${tenantId}/api/products?page=${page}&pag_size=${pageSize}`
         )
       )
     );
@@ -139,11 +117,10 @@ export class ProductService {
    * Obtiene un producto por ID - VERSIÓN REACTIVA
    */
   getProductById(productId: string): Observable<Product> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) =>
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) =>
         this.http.get<Product>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
-          { headers }
         )
       )
     );
@@ -154,25 +131,20 @@ export class ProductService {
    * @param idTenant ID del tenant específico
    */
   getProductTenantById(productId: string, idTenant: string): Observable<Product> {
-    return this.getAuthHeaders().pipe(  
-      switchMap((headers) =>
-        this.http.get<Product>(
-          `${this.apiUrlProduct}${idTenant}/api/products/${productId}`,
-          { headers }
-        )
-      )
+    return this.http.get<Product>(
+      `${this.apiUrlProduct}${idTenant}/api/products/${productId}`
     );
   }
+
   /**
    * Actualiza un producto existente
    */
   updateProduct(productId: string, product: ProductPeticion): Observable<Product> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) =>
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) =>
         this.http.put<Product>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
           product,
-          { headers }
         )
       )
     );
@@ -182,21 +154,19 @@ export class ProductService {
    * Elimina un producto
    */
   deleteProduct(productId: string): Observable<void> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) =>
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) =>
         this.http.delete<void>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
-          { headers }
         )
       )
     );
   }
   getCategories(): Observable<string[]> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) =>
+    return this.getTenant().pipe(
+      switchMap(({ tenantId}) =>
         this.http.get<string[]>(
           `${this.apiUrlProduct}${tenantId}/api/products/categories`,
-          { headers }
         )
       )
     );

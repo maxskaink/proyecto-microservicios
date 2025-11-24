@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
@@ -7,14 +7,15 @@ import { CartItem } from '../../../Models/Cart';
 import { OrderPeticion, OrderResponse } from '../../../Models/OrderPeticion';
 import { catchError, of } from 'rxjs';
 import { Header } from '../../templates/header/header';
+import { ProductViewBuy } from '../../templates/product-view-buy/product-view-buy';
 
 @Component({
   selector: 'app-shopping-cart',
-  imports: [CommonModule, RouterModule, FormsModule, Header],
+  imports: [CommonModule, RouterModule, FormsModule, Header, ProductViewBuy],
   templateUrl: './shopping-cart.html',
   styleUrl: './shopping-cart.css',
 })
-export class ShoppingCart implements OnInit {
+export class ShoppingCart implements OnChanges {
 
   cartItems: CartItem[] = [];
   isLoading = true;
@@ -27,12 +28,16 @@ export class ShoppingCart implements OnInit {
   createdOrderResponse: OrderResponse | null = null;
 
   constructor(private shoppingCartService: ShoppingCartService, private cdr: ChangeDetectorRef) {}
+  ngOnChanges(changes: SimpleChanges): void {
+    throw new Error('Method not implemented.');
+  }
 
   ngOnInit() {
     this.loadCart();
   }
 
   loadCart() {
+  console.log("iniciando carrito")
   this.isLoading = true;
   this.error = null;
 
@@ -44,7 +49,7 @@ export class ShoppingCart implements OnInit {
       return of([]);
     })
   ).subscribe(cartItems => {
-
+    console.log("Guardando informacion", cartItems);
     // 🔥 Asignamos dentro del siguiente microtask
     Promise.resolve().then(() => {
       this.cartItems = cartItems || [];
@@ -54,34 +59,6 @@ export class ShoppingCart implements OnInit {
 
   });
 }
-
-  /** Actualizar cantidad */
-  updateQuantity(item: CartItem, newQuantity: number) {
-    if (newQuantity <= 0) {
-      this.removeItem(item);
-      return;
-    }
-
-    this.shoppingCartService.updateCartItem(item.id, newQuantity)
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          return of(null);
-        })
-      )
-      .subscribe(result => {
-        if (result) this.loadCart();
-      });
-  }
-
-  incrementQuantity(item: CartItem) {
-    this.updateQuantity(item, item.quantity + 1);
-  }
-
-  decrementQuantity(item: CartItem) {
-    this.updateQuantity(item, item.quantity - 1);
-  }
-
   /** Eliminar un item */
   removeItem(item: CartItem) {
     if (!confirm('¿Eliminar este producto del carrito?')) return;

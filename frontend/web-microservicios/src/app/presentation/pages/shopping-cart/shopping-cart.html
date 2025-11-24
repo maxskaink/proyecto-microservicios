@@ -6,39 +6,11 @@
 
   <!-- Cart items -->
   <div  class="cart-content">
-    <div class="cart-items">
-      <div *ngFor="let item of cartItems" class="cart-item">
-        <div class="item-info">
-          <h3>{{ item.product.name }}</h3>
-          <p class="description">{{ item.product.description }}</p>
-          <p class="price">{{ formatPrice(item.product.price) }}</p>
-          <p class="stock">Stock disponible: {{ item.product.stock }}</p>
-        </div>
-
-        <div class="quantity-controls">
-          <button 
-            (click)="decrementQuantity(item)"
-            [disabled]="item.quantity <= 1"
-            class="quantity-button">
-            -
-          </button>
-          <span class="quantity">{{ item.quantity }}</span>
-          <button 
-            (click)="incrementQuantity(item)"
-            [disabled]="item.quantity >= item.product.stock"
-            class="quantity-button">
-            +
-          </button>
-        </div>
-
-        <div class="item-total">
-          <p class="subtotal">{{ formatPrice(item.product.price * item.quantity) }}</p>
-          <button (click)="removeItem(item)" class="remove-button">
-            Eliminar
-          </button>
-        </div>
-      </div>
-    </div>
+    <app-product-view-buy
+      *ngFor="let item of cartItems" 
+      [item]="item"
+      (remove)="removeItem($event)">
+    </app-product-view-buy>
 
     <div class="cart-summary">
       <div class="summary-content">

@@ -18,58 +18,46 @@ export class ShoppingCartService {
     private authService: AuthService
   ) {}
 
-  /**
-   * Método privado para obtener headers con autenticación
-   */
-  private getAuthHeaders(): Observable<HttpHeaders> {
-    return from(this.authService.getToken()).pipe(
-      map(token => {
-        if (!token) {
-          throw new Error('No se pudo obtener el token de autenticación');
-        }
-        return new HttpHeaders({
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        });
-      })
-    );
-  }
 
   /**
    * Combina tenant ID y headers de autenticación
    */
-  private getTenantAndHeaders(): Observable<{ tenantId: string; headers: HttpHeaders }> {
-    return combineLatest([
-      this.authService.idTenant$.pipe(
-        filter((tenantId): tenantId is string => !!tenantId),
-        take(1)
-      ),
-      this.getAuthHeaders()
-    ]).pipe(
-      map(([tenantId, headers]) => ({ tenantId, headers }))
+  private getTenant(): Observable<{ tenantId: string }> {
+    return this.authService.idTenant$.pipe(
+      filter((tenantId): tenantId is string => !!tenantId),
+      take(1),
+      map((tenantId) => ({ tenantId }))
     );
   }
+
 
   /**
    * Obtiene el carrito de compras del usuario actual
    */
-  getShoppingCart(): Observable<CartItem[]> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
-        const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart`;
-        return this.http.get<CartItem[]>(url, { headers });
-      })
-    );
-  }
+getShoppingCart(): Observable<CartItem[]> {
+  console.log("llamando getShoppingcart()");
+  return combineLatest([
+    this.authService.authReady$,
+    this.authService.idTenant$.pipe(filter((t): t is string => !!t))
+  ]).pipe(
+    take(1),
+    switchMap(([ready, tenantId]) => {
+      console.log("Pidiendo carrito para tenant:", tenantId);
+      const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart`;
+      return this.http.get<CartItem[]>(url);
+    })
+  );
+}
+
 
   /**
    * Agrega un producto al carrito de compras
    */
   addProductToCart(shoppingItem: ShoppingPeticion): Observable<CartItem> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      switchMap(({ tenantId}) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items`;
-        return this.http.post<CartItem>(url, shoppingItem, { headers });
+        return this.http.post<CartItem>(url, shoppingItem);
       })
     );
   }
@@ -78,11 +66,11 @@ export class ShoppingCartService {
    * Actualiza la cantidad de un producto en el carrito
    */
   updateCartItem(itemId: string, quantity: number): Observable<CartItem> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
-        const url = `${this.apiUrlShoppingCart}${tenantId}/api/users/me/cart/${itemId}`;
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) => {
+        const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items/${itemId}`;
         const updateData = { quantity };
-        return this.http.put<CartItem>(url, updateData, { headers });
+        return this.http.put<CartItem>(url, updateData);
       })
     );
   }
@@ -91,10 +79,10 @@ export class ShoppingCartService {
    * Elimina un producto del carrito
    */
   removeFromCart(itemId: string): Observable<any> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/users/me/cart/${itemId}`;
-        return this.http.delete<any>(url, { headers });
+        return this.http.delete<any>(url);
       })
     );
   }
@@ -103,10 +91,10 @@ export class ShoppingCartService {
    * Vacía completamente el carrito de compras
    */
   clearCart(): Observable<any> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/users/me/cart`;
-        return this.http.delete<any>(url, { headers });
+        return this.http.delete<any>(url);
       })
     );
   }
@@ -140,10 +128,10 @@ export class ShoppingCartService {
    * orderData is a plain object (e.g. { shipping_address: '...' })
    */
   createOrder(orderData: any): Observable<OrderResponse> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      switchMap(({ tenantId}) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
-        return this.http.post<OrderResponse>(url, orderData, { headers });
+        return this.http.post<OrderResponse>(url, orderData);
       })
     );
   }
@@ -152,10 +140,10 @@ export class ShoppingCartService {
    * Obtiene las órdenes del usuario actual
    */
   getUserOrders(): Observable<any[]> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
-        return this.http.get<any[]>(url, { headers });
+        return this.http.get<any[]>(url,);
       })
     );
   }
@@ -164,10 +152,10 @@ export class ShoppingCartService {
    * Obtiene una orden específica por su ID
    */
   getOrderById(orderId: string): Observable<any> {
-    return this.getTenantAndHeaders().pipe(
-      switchMap(({ tenantId, headers }) => {
+    return this.getTenant().pipe(
+      switchMap(({ tenantId }) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}`;
-        return this.http.get<any>(url, { headers });
+        return this.http.get<any>(url);
       })
     );
   }

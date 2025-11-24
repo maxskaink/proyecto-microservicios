@@ -1,0 +1,25 @@
+<div class="cart-items">
+  <div  class="cart-item">
+
+    <div class="item-info">
+      <h3>{{ item.product.name }}</h3>
+      <p class="description">{{ item.product.description }}</p>
+      <p class="price">{{ formatPrice(item.product.price) }}</p>
+      <p class="stock">Stock disponible: {{ item.product.stock }}</p>
+    </div>
+
+    <div class="quantity-controls">
+      <span class="quantity">{{ item.quantity }}</span>
+
+
+    </div>
+
+    <div class="item-total">
+      <p class="subtotal">{{ formatPrice(item.product.price * item.quantity) }}</p>
+      <button (click)="onRemove(item)" class="remove-button">
+        Eliminar
+      </button>
+    </div>
+
+  </div>
+</div>

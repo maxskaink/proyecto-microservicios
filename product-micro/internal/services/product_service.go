@@ -107,7 +107,7 @@ func (p *productService) ListProduct(page int, pageSize int, tenantID string) (*
 		return nil, domain.BadRequestError{Message: "El tamanio de la pagina debe ser entre 2 y 100"}
 	}
 
-	products, err := p.productRepo.ListProducts(1, 10, tenantID)
+	products, err := p.productRepo.ListProducts(page, pageSize, tenantID)
 	if err != nil {
 		return nil, err
 	}

@@ -33,6 +33,7 @@ type ProductDB struct {
 	Description string
 	Price       float64 `gorm:"not null"`
 	Stock       int     `gorm:"not null;default:0"`
+	PhotoUrl    string  `gorm:"type:text" json:"photo_url"`
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

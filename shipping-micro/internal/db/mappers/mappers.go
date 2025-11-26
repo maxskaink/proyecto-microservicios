@@ -17,6 +17,7 @@ func ProductDBToDTO(p *models.ProductDB) *dto.ProductDTO {
 		Price:       p.Price,
 		Stock:       p.Stock,
 		CreatedAt:   p.CreatedAt,
+		PhotoUrl:    p.PhotoUrl,
 		UpdatedAt:   p.UpdatedAt,
 	}
 }

@@ -85,7 +85,8 @@ private groupProductsByCategory(products: Product[]): void {
    * Carga los productos para el tenant actual
    */
 loadProductsForTenant(): void {
-  this.productService.getProducts(1, 10).subscribe((products: Product[]) => {
+  //TODO cambiar el mil por una paginacion real
+  this.productService.getProducts(1, 1000).subscribe((products: Product[]) => {
     console.log('📦 Productos recibidos:', products);
 
     this.products = products;

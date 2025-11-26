@@ -1,11 +1,14 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpContextToken, HttpHeaders } from '@angular/common/http';
 import { Observable, from, switchMap, combineLatest, throwError } from 'rxjs';
 import { map, filter, take, tap, catchError } from 'rxjs/operators';
 import { Product } from '../Models/Product';
 import { ProductPeticion } from '../Models/PrdocutPeticion';
 import { AuthService } from './Authser.vice';
 import { TenantService } from './TenantService';
+
+export const SKIP_INTERCEPTOR = new HttpContextToken<boolean>(() => false);
+
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
@@ -34,6 +37,7 @@ export class ProductService {
    * Solicita una URL pre-firmada para subir una imagen
    */
   getUploadUrl(filename: string, contentType: string): Observable<{ upload_url: string; object_key: string }> {
+    
     return this.getTenant().pipe(
       switchMap(({ tenantId }) =>
         this.http.post<{ upload_url: string; object_key: string }>(
@@ -51,7 +55,10 @@ export class ProductService {
     const headers = new HttpHeaders({
       'Content-Type': file.type
     });
-    return this.http.put(uploadUrl, file, { headers });
+    
+    const context = new HttpContext().set(SKIP_INTERCEPTOR, true);
+
+    return this.http.put(uploadUrl, file, { headers, context });
   }
 
   /**

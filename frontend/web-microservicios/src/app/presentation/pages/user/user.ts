@@ -201,7 +201,7 @@ private loadUserData(): void {
     // Mapear roles técnicos a nombres amigables
     const roleNames: {[key: string]: string} = {
       'admin': 'Administrador',
-      'vendedor': 'Vendedor',
+      'producer': 'Productor',
       'comprador': 'Comprador',
       'usuario': 'Usuario'
     };

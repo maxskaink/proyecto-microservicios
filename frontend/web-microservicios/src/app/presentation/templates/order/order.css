@@ -1,0 +1,17 @@
+.order-modal{
+    
+}
+.divider{
+    height: 0.5px;
+    background-color: rgb(232, 232, 233);
+    width: 100%;
+}
+.title{
+    color: var(--color-success);
+    font-weight: 800;
+}
+#price{
+    color: rgb(14, 112, 116);
+    font-size: 1.5rem;
+    font-weight: 900;
+}

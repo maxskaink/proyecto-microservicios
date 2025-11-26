@@ -11,7 +11,13 @@
         (remove)="removeItem($event)">
       </app-product-view-buy>
     </div>
-
+    <!-- Order success modal -->
+    <div *ngIf="orderSuccess" class="order-success-modal">
+          <app-order
+            [createdOrderResponse]="createdOrderResponse"
+            (close)="closeOrderSuccess()">
+          </app-order>
+    </div>
     <!-- Resumen del carrito -->
     <div class="col-12 col-lg-4">
       <div class="cart-item sticky-summary p-4">
@@ -57,46 +63,10 @@
         </div>
       </div>
     </div>
+    
   </div>
 
 
-<!-- Order success modal -->
-  <div *ngIf="orderSuccess" class="order-success-modal">
-    <div class="modal-content">
-      <h2>¡Orden creada exitosamente!</h2>
-      <div *ngIf="createdOrderResponse" class="order-details">
-        <!-- Información de la orden -->
-        <div class="order-info">
-          <h3>Información de la Orden</h3>
-          <p><strong>ID de la orden:</strong> {{ createdOrderResponse.order.id }}</p>
-          <p><strong>Estado:</strong> {{ createdOrderResponse.order.status }}</p>
-          <p><strong>Total:</strong> {{ formatPrice(createdOrderResponse.order.total_price) }}</p>
-          <p><strong>Fecha de creación:</strong> {{ createdOrderResponse.order.created_at | date:'medium' }}</p>
-          
-          <!-- Items de la orden -->
-          <div class="order-items">
-            <h4>Productos ordenados:</h4>
-            <div *ngFor="let item of createdOrderResponse.order.items" class="order-item">
-              <p>Producto ID: {{ item.product_id }}</p>
-              <p>Cantidad: {{ item.quantity }}</p>
-              <p>Precio: {{ formatPrice(item.price) }}</p>
-            </div>
-          </div>
-        </div>
 
-        <!-- Información del envío -->
-        <div class="shipping-info">
-          <h3>Información de Envío</h3>
-          <p><strong>Número de seguimiento:</strong> {{ createdOrderResponse.shipping.tracking_number }}</p>
-          <p><strong>Dirección de envío:</strong> {{ createdOrderResponse.shipping.shipping_address }}</p>
-          <p><strong>Estado del envío:</strong> {{ createdOrderResponse.shipping.status }}</p>
-          <p><strong>Fecha de envío:</strong> {{ createdOrderResponse.shipping.created_at | date:'medium' }}</p>
-        </div>
-      </div>
-      <button (click)="closeOrderSuccess()" class="close-modal-button">
-        Cerrar
-      </button>
-    </div>
-  </div>
 
 </div>

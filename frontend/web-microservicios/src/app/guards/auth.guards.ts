@@ -6,7 +6,7 @@ import { AuthService } from '../service/Authser.vice';
 import { TenantService } from '../service/TenantService';
 
 @Injectable({ providedIn: 'root' })
-export class roleGuard implements CanActivate {
+export class authGuard implements CanActivate {
 
   constructor(
     private authService: AuthService, 

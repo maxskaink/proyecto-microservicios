@@ -1,59 +1,66 @@
 <app-header></app-header>   
-<div class="shopping-cart-container">
-  <div class="header">
-    <h1>Mi Carrito de Compras</h1>
-  </div>
+<div class="shopping-cart-container container ">
 
-  <!-- Cart items -->
-  <div  class="cart-content">
-    <app-product-view-buy
-      *ngFor="let item of cartItems" 
-      [item]="item"
-      (remove)="removeItem($event)">
-    </app-product-view-buy>
 
-    <div class="cart-summary">
-      <div class="summary-content">
-        <h3>Resumen del pedido</h3>
-        <div class="total-items">
-          <span>Total de items: {{ cartItems.length }}</span>
-        </div>
-        <div class="total-price">
-          <span class="total-label">Total: </span>
-          <span class="total-amount">{{ formattedTotal }}</span>
-        </div>
+  <div class="row cart-content">
+    <!-- Items del carrito -->
+    <div class="col-12 col-lg-8">
+      <app-product-view-buy
+        *ngFor="let item of cartItems" 
+        [item]="item"
+        (remove)="removeItem($event)">
+      </app-product-view-buy>
+    </div>
 
-        <button (click)="clearCart()" class="clear-cart-button">
-          Vaciar carrito
-        </button>
-      </div>
-
-      <!-- Checkout section -->
-      <div class="checkout-section">
-        <h4>Información de envío</h4>
-        <div class="form-group">
-          <label for="shippingAddress">Dirección de envío:</label>
-          <textarea
-            id="shippingAddress"
-            [(ngModel)]="shippingAddress"
-            placeholder="Ingresa tu dirección completa"
-            rows="3"
-            class="address-input">
-          </textarea>
+    <!-- Resumen del carrito -->
+    <div class="col-12 col-lg-4">
+      <div class="cart-item sticky-summary p-4">
+        <div class="summary-content mb-3">
+          <h3 class="p-2">Resumen del pedido</h3>
+          <div class="divider"></div>
+          <div class="total-price p-3 d-flex justify-content-between align-items-center">
+            <span class="label-text">Total de items:</span>
+            <span><strong> {{ cartItems.length }}</strong></span>
+          </div>
+          <div class="divider"></div>
+          <div class="total-price p-3 d-flex justify-content-between align-items-center">
+            <span class="label-text">Total: </span>
+            <span class="total-amount"> <strong> {{ formattedTotal }}</strong></span>
+          </div>
+          <div class="divider"></div>
+          <button (click)="clearCart()" class="clear-cart-button btn w-100 mt-2">
+            Vaciar carrito
+          </button>
         </div>
 
-        <button 
-          (click)="createOrder()"
-          [disabled]="!canCheckout || isCreatingOrder"
-          class="checkout-button">
-          <span *ngIf="!isCreatingOrder">Crear orden</span>
-          <span *ngIf="isCreatingOrder">Creando orden...</span>
-        </button>
+        <!-- Checkout -->
+        <div class="checkout-section">
+          <h4 class="p-2">Información de envío</h4>
+          <div class="form-group mb-3">
+            <label for="shippingAddress" class="p-2 label-text">Dirección de envío:</label>
+            <textarea
+              id="shippingAddress"
+              [(ngModel)]="shippingAddress"
+              placeholder="Ingresa tu dirección completa"
+              rows="3"
+              class="form-control p-2">
+            </textarea>
+          </div>
+
+          <button 
+            (click)="createOrder()"
+            [disabled]="!canCheckout || isCreatingOrder"
+            class=" btn-primary w-100">
+            <span *ngIf="!isCreatingOrder">Crear orden</span>
+            <span *ngIf="isCreatingOrder">Creando orden...</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
 
-  <!-- Order success modal -->
+
+<!-- Order success modal -->
   <div *ngIf="orderSuccess" class="order-success-modal">
     <div class="modal-content">
       <h2>¡Orden creada exitosamente!</h2>

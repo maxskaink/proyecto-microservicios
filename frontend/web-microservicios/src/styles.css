@@ -9,3 +9,19 @@
   --color-light: #F5F5DC;
   --color-dark: #1e293b;
 }
+.btn-danger{
+  background-color: #e7cfcf;
+  color: #ef4444;
+  font-weight: 800;
+}
+.btn-primary{
+  background-color: #83c083;
+  color: #ffffff;
+  font-weight: 800;
+  border-radius: 20px;
+  border: none;
+  height: 3rem;
+}
+.btn-primary:hover{
+  background-color: var(--color-success);
+}

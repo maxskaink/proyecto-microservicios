@@ -1,25 +1,54 @@
-<div class="cart-items">
-  <div  class="cart-item">
-
-    <div class="item-info">
-      <h3>{{ item.product.name }}</h3>
-      <p class="description">{{ item.product.description }}</p>
-      <p class="price">{{ formatPrice(item.product.price) }}</p>
-      <p class="stock">Stock disponible: {{ item.product.stock }}</p>
+<div class="cart-item p-4 ">
+  <div class="row align-items-center">
+    <!-- Columna para la imagen -->
+    <div class="col-4 col-md-3 col-lg-2">
+      <div class="image-container">
+        <img [src]="item.product.photo_url || 'https://www.elespectador.com/resizer/v2/VFI4DE3THVHDLHM2KGVMZTGC44.jpg?auth=da8e65007a3138e40b936f96af9d533b054019e25cbf372b7eb8a3c899059380&width=920&height=613&smart=true&quality=60'" 
+             alt="{{ item.product.name }}" 
+             class="product-image">
+      </div>
     </div>
 
-    <div class="quantity-controls">
-      <span class="quantity">{{ item.quantity }}</span>
-
-
+    <!-- Columna para la información del producto -->
+    <div class="col-8 col-md-6 col-lg-7">
+      <div class="item-info">
+        <h3 class="product-name">{{ item.product.name }}</h3>
+        <p class="description">{{ item.product.description }}</p>
+      </div>
     </div>
 
-    <div class="item-total">
-      <p class="subtotal">{{ formatPrice(item.product.price * item.quantity) }}</p>
-      <button (click)="onRemove(item)" class="remove-button">
-        Eliminar
-      </button>
-    </div>
+    <!-- Columna para controles de cantidad y total - RESPONSIVE -->
+    <div class="col-12 col-md-3 col-lg-3">
+      <div class="item-controls">
+        <!-- En móvil: disposición horizontal -->
+        <div class="d-flex d-md-block justify-content-between align-items-center">
+          
+          <!-- Control de cantidad -->
+          <div class="quantity-section">
+            <div class="quantity-controls d-flex align-items-center">
+              <span class="quantity-value mx-2">{{ item.quantity }}</span>
 
+            </div>
+            <small class="quantity-label d-none d-md-block text-muted">Cantidad</small>
+          </div>
+
+          <!-- Subtotal -->
+          <div class="subtotal-section">
+            <p class="subtotal mb-0">{{ formatPrice(item.product.price * item.quantity) }}</p>
+            <small class="text-muted d-none d-md-block">Subtotal</small>
+          </div>
+
+          <!-- Botón eliminar -->
+          <div class="remove-section">
+            <button (click)="onRemove(item)" 
+                    class="btn btn-danger btn-sm remove-button">
+              <i class="bi bi-trash"></i>
+              <span class="d-none d-lg-inline ms-1">Eliminar</span>
+            </button>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </div>

@@ -89,7 +89,7 @@
       <div class="divider"></div>
 
       <!-- Botones de acción -->
-      <div class="actions-section">
+      <div class="actions-section" *ngIf="showActions">
         <div class="d-flex flex-column flex-sm-row gap-3">
           <button class="btn btn-success flex-fill order-action-btn" (click)="onCompleteOrder()">
             <i class="bi bi-check-circle me-2"></i>

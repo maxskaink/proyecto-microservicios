@@ -117,7 +117,7 @@
                         class="form-control"
                         required
                         [(ngModel)]="product.unit"
-                        name="unidades"
+                        name="unit"
                         #category="ngModel">
 
                         <option value="" disabled selected>Seleccione una categoría</option>
@@ -126,9 +126,6 @@
                         </option>
                     </select>
 
-                    <div *ngIf="category.invalid && category.touched" class="text-danger">
-                        Las unidades  del producto es obligatoria.
-                    </div>
                 </div>
                 <div class="mb-3 mt-5 price-container">
                 <label for="productPrice" class="form-label">Precio</label>

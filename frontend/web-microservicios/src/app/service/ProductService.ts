@@ -8,17 +8,14 @@ import { AuthService } from './Authser.vice';
 
 export const SKIP_INTERCEPTOR = new HttpContextToken<boolean>(() => false);
 
-
 @Injectable({ providedIn: 'root' })
 export class ProductService {
   private apiUrlProduct = 'http://localhost:80/';
 
   constructor(
-    private http: HttpClient, 
-    private authService: AuthService
+    private http: HttpClient,
+    private authService: AuthService,
   ) {}
-
-  
 
   /**
    * Combina tenant ID y headers de autenticación
@@ -27,23 +24,24 @@ export class ProductService {
     return this.authService.idTenant$.pipe(
       filter((tenantId): tenantId is string => !!tenantId),
       take(1),
-      map((tenantId) => ({ tenantId }))
+      map((tenantId) => ({ tenantId })),
     );
   }
-
 
   /**
    * Solicita una URL pre-firmada para subir una imagen
    */
-  getUploadUrl(filename: string, contentType: string): Observable<{ upload_url: string; object_key: string }> {
-    
+  getUploadUrl(
+    filename: string,
+    contentType: string,
+  ): Observable<{ upload_url: string; object_key: string }> {
     return this.getTenant().pipe(
       switchMap(({ tenantId }) =>
         this.http.post<{ upload_url: string; object_key: string }>(
           `${this.apiUrlProduct}${tenantId}/api/products/upload-url`,
-          { filename, content_type: contentType }
-        )
-      )
+          { filename, content_type: contentType },
+        ),
+      ),
     );
   }
 
@@ -52,9 +50,9 @@ export class ProductService {
    */
   uploadImageToUrl(uploadUrl: string, file: File): Observable<any> {
     const headers = new HttpHeaders({
-      'Content-Type': file.type
+      'Content-Type': file.type,
     });
-    
+
     const context = new HttpContext().set(SKIP_INTERCEPTOR, true);
 
     return this.http.put(uploadUrl, file, { headers, context });
@@ -66,25 +64,24 @@ export class ProductService {
   updateProductPhoto(productId: string, objectKey: string): Observable<any> {
     return this.getTenant().pipe(
       switchMap(({ tenantId }) =>
-        this.http.put(
-          `${this.apiUrlProduct}${tenantId}/api/products/${productId}/photo`,
-          { object_key: objectKey },
-        )
-      )
+        this.http.put(`${this.apiUrlProduct}${tenantId}/api/products/${productId}/photo`, {
+          object_key: objectKey,
+        }),
+      ),
     );
   }
 
   /**
    * Crea un nuevo producto - VERSIÓN REACTIVA
    */
-   postProduct(product: ProductPeticion): Observable<Product> {    
+  postProduct(product: ProductPeticion): Observable<Product> {
     // Verificar estado actual del tenant antes de continuar
     console.log('🔍 Verificando estado del tenant...');
     this.authService.idTenant$.pipe(take(1)).subscribe(
-      tenantId => console.log('🏢 Estado actual del tenant en AuthService:', tenantId),
-      error => console.error('❌ Error al obtener tenant:', error)
+      (tenantId) => console.log('🏢 Estado actual del tenant en AuthService:', tenantId),
+      (error) => console.error('❌ Error al obtener tenant:', error),
     );
-    
+
     return this.getTenant().pipe(
       tap(({ tenantId }) => {
         console.log('🌐 Tenant ID obtenido:', tenantId);
@@ -93,17 +90,17 @@ export class ProductService {
         const url = `${this.apiUrlProduct}${tenantId}/api/products`;
         console.log('🌐 URL completa construida:', url);
         return this.http.post<Product>(url, product).pipe(
-          tap(response => console.log('✅ Respuesta del servidor:', response)),
-          catchError(error => {
+          tap((response) => console.log('✅ Respuesta del servidor:', response)),
+          catchError((error) => {
             console.error('❌ Error en POST request:', error);
             return throwError(error);
-          })
+          }),
         );
       }),
-      catchError(error => {
+      catchError((error) => {
         console.error('❌ Error general en postProduct:', error);
         return throwError(error);
-      })
+      }),
     );
   }
 
@@ -112,11 +109,11 @@ export class ProductService {
    */
   getProducts(page: number, pageSize: number): Observable<Product[]> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) => 
+      switchMap(({ tenantId }) =>
         this.http.get<Product[]>(
-          `${this.apiUrlProduct}${tenantId}/api/products?page=${page}&pag_size=${pageSize}`
-        )
-      )
+          `${this.apiUrlProduct}${tenantId}/api/products?page=${page}&page_size=${pageSize}`,
+        ),
+      ),
     );
   }
 
@@ -126,10 +123,8 @@ export class ProductService {
   getProductById(productId: string): Observable<Product> {
     return this.getTenant().pipe(
       switchMap(({ tenantId }) =>
-        this.http.get<Product>(
-          `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
-        )
-      )
+        this.http.get<Product>(`${this.apiUrlProduct}${tenantId}/api/products/${productId}`),
+      ),
     );
   }
   /**
@@ -138,9 +133,7 @@ export class ProductService {
    * @param idTenant ID del tenant específico
    */
   getProductTenantById(productId: string, idTenant: string): Observable<Product> {
-    return this.http.get<Product>(
-      `${this.apiUrlProduct}${idTenant}/api/products/${productId}`
-    );
+    return this.http.get<Product>(`${this.apiUrlProduct}${idTenant}/api/products/${productId}`);
   }
 
   /**
@@ -152,8 +145,8 @@ export class ProductService {
         this.http.put<Product>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
           product,
-        )
-      )
+        ),
+      ),
     );
   }
 
@@ -163,19 +156,15 @@ export class ProductService {
   deleteProduct(productId: string): Observable<void> {
     return this.getTenant().pipe(
       switchMap(({ tenantId }) =>
-        this.http.delete<void>(
-          `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
-        )
-      )
+        this.http.delete<void>(`${this.apiUrlProduct}${tenantId}/api/products/${productId}`),
+      ),
     );
   }
   getCategories(): Observable<string[]> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId}) =>
-        this.http.get<string[]>(
-          `${this.apiUrlProduct}${tenantId}/api/products/categories`,
-        )
-      )
+      switchMap(({ tenantId }) =>
+        this.http.get<string[]>(`${this.apiUrlProduct}${tenantId}/api/products/categories`),
+      ),
     );
   }
 }

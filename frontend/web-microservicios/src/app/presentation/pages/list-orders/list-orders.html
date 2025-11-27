@@ -1,13 +1,8 @@
 <app-header></app-header>
-<div class="orders-container">
+<div class="orders-container container-fluid">
   <div class="header">
     <button class="back-button" routerLink="/user">
       <app-arrow-left></app-arrow-left>
-      Volver
-    </button>
-    <h1>Mis Órdenes</h1>
-    <button (click)="refreshOrders()" class="refresh-button">
-      🔄 Actualizar
     </button>
   </div>
 
@@ -31,14 +26,13 @@
     </button>
   </div>
 
-  <!-- Orders list -->
-  <div *ngIf="!isLoading && !error && orders.length > 0" class="orders-list">
-    <div *ngFor="let order of orders" class="order-card">
-      <div class="order-header">
-        <app-item-order [order]="order"></app-item-order>
-      </div>
-      <div class="order-actions">
-      </div>
+<!-- Orders list -->
+<div *ngIf="!isLoading && !error && orders.length > 0" class="orders-list ">
+  <div class="row g-3">
+    <div *ngFor="let order of orders" class="col-12 col-md-6 col-lg-4">
+      <app-item-order [order]="order"></app-item-order>
     </div>
   </div>
+</div>
+
 </div>

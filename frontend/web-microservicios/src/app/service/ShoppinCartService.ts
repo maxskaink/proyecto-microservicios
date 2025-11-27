@@ -127,7 +127,6 @@ getShoppingCart(): Observable<CartItem[]> {
 
   getUserOrders(): Observable<Order[]> {
     const tenantId = this.tenantService.getTenant(); // ← Método síncrono
-    
     if (!tenantId) {
       console.error('No hay tenant disponible');
       return of([]);

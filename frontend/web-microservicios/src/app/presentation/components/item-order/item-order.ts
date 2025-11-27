@@ -62,16 +62,18 @@ export class ItemOrder implements OnInit{
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('es-CO', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit'
     });
   }
-  formatPrice(price: number): string {
-    return price.toLocaleString('es-CO', {
-      style: 'currency',
-      currency: 'COP'
-    });
-  }
+formatPrice(price: number): string {
+  return price.toLocaleString('es-CO', {
+    style: 'currency',
+    currency: 'COP',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+}
 }

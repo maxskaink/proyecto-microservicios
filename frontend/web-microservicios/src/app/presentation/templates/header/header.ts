@@ -41,7 +41,7 @@ export class Header implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.subscriptions.unsubscribe();
   }
-
+  
   // Inicializar autenticación
   private initializeAuth(): void {
     // Suscribirse al estado de autenticación

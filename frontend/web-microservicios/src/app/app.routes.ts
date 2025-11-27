@@ -8,6 +8,7 @@ import { RegisterTenant } from './presentation/pages/register-tenant/register-te
 import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
 import { ListOrders } from './presentation/pages/list-orders/list-orders';
 import { authGuard } from './guards/auth.guards';
+import { Order } from './presentation/templates/order/order';
 
 export const routes: Routes = [
     { 

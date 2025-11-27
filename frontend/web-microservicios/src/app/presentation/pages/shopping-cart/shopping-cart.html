@@ -1,5 +1,5 @@
 <app-header></app-header>   
-<div class="shopping-cart-container container ">
+<div class="shopping-cart-container container-fluid">
 
 
   <div class="row cart-content">
@@ -11,15 +11,9 @@
         (remove)="removeItem($event)">
       </app-product-view-buy>
     </div>
-    <!-- Order success modal -->
-    <div *ngIf="orderSuccess" class="order-success-modal">
-          <app-order
-            [createdOrderResponse]="createdOrderResponse"
-            (close)="closeOrderSuccess()">
-          </app-order>
-    </div>
+
     <!-- Resumen del carrito -->
-    <div class="col-12 col-lg-4">
+    <div class="col-12 col-lg-4" *ngIf="!orderSuccess && !createdOrderResponse">
       <div class="cart-item sticky-summary p-4">
         <div class="summary-content mb-3">
           <h3 class="p-2">Resumen del pedido</h3>
@@ -40,7 +34,7 @@
         </div>
 
         <!-- Checkout -->
-        <div class="checkout-section">
+        <div class="checkout-section" *ngIf="!orderSuccess && !createdOrderResponse">
           <h4 class="p-2">Información de envío</h4>
           <div class="form-group mb-3">
             <label for="shippingAddress" class="p-2 label-text">Dirección de envío:</label>
@@ -49,6 +43,7 @@
               [(ngModel)]="shippingAddress"
               placeholder="Ingresa tu dirección completa"
               rows="3"
+              maxlength="50"
               class="form-control p-2">
             </textarea>
           </div>
@@ -65,7 +60,21 @@
     </div>
     
   </div>
-
+    <!-- Order success modal -->
+<div 
+  class="d-flex justify-content-center align-items-center w-100"
+  style="min-height: 60vh;"
+>
+  <div 
+    *ngIf="orderSuccess && createdOrderResponse"
+    class="order-success-modal col-12 col-md-8 col-lg-6"
+  >
+    <app-order
+      [createdOrderResponse]="createdOrderResponse"
+      (close)="closeOrderSuccess()">
+    </app-order>
+  </div>    
+</div>
 
 
 

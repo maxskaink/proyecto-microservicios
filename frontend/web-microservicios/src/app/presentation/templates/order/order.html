@@ -1,50 +1,76 @@
 <div class="card p-4 order-modal ">
-      <h2 class=" mb-4 title">¡Orden creada exitosamente!</h2>
-      <div *ngIf="createdOrderResponse" class="order-details">
+      <h2 class=" mb-4 title p-3">¡Orden creada exitosamente!</h2>
+      <div *ngIf="createdOrderResponse" class="order-details p-3">
+                <!-- Información del envío -->
+        <div class="shipping-infop-4">
+          <h3 class="mb-4">Información de Envío</h3>
+          <div class="d-flex gap-2 justify-content-between">
+            <p class="text">Número de seguimiento:</p>
+            <p class="text"> {{ createdOrderResponse.shipping.tracking_number }}</p>
+          </div>
+          <div class="divider"></div>
+          <div class="d-flex gap-2 justify-content-between">
+            <p class="text">Direccion:</p>
+            <p class="text"> {{ createdOrderResponse.shipping.shipping_address }}</p>
+          </div >
+          <div class="divider"></div>
+          <div class="d-flex gap-2 justify-content-between">
+            <p class="text">Estado del envío:</p>
+            <p class="text"> {{ createdOrderResponse.shipping.status }}</p>
+          </div>
+          <div class="divider"></div>
+
+        </div>
+        <div class="order-items mb-4 mt-4">
+            <h4 class="title mb-4">Productos ordenados:</h4>
+            
+            <!-- Loading state -->
+            <div *ngIf="isLoadingProducts" class="text-center p-3">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando productos...</span>
+              </div>
+              <p class="mt-2">Cargando productos...</p>
+            </div>
+
+            <!-- Products loaded -->
+            <div class="divider"></div>
+            <div *ngIf="!isLoadingProducts && products.length > 0" class="products-container mt-4">
+              <div *ngFor="let product of products; let i = index" class="order-item mb-3">
+                <div class="d-flex align-items-center justify-content-between gap-3 p-2">
+                  <div class="product-info">
+                    <h5 class="product-name mb-1">{{ product.name }}</h5>
+                    <p class="product-price mb-0">Precio: {{ formatPrice(product.price) }}</p>
+                  </div>
+                <!-- Mostrar cantidad del item -->
+                <div *ngIf="createdOrderResponse.order.items[i]" class="item-quantity">
+                  <small>Unid: {{ createdOrderResponse.order.items[i].quantity }}</small>
+                </div>
+              </div>
+              <div class="divider"></div>
+            </div>
+          </div>
+        
         <!-- Información de la orden -->
+  
+        </div>
+      </div>
+      <div class="d-flex gap-2 justify-content-between p-2 align-items-center">
+        <p class="">Estado: </p>
+        <p class="estado">{{ createdOrderResponse.order.status }}</p>
+      </div>
+      <div class="divider"></div>
+      <div class="d-flex gap-2 justify-content-between p-2">
+        <p>Total: </p>
+          <p id="price"> {{ formatPrice(createdOrderResponse.order.total_price) }}</p>
+      </div>
+      <div class="divider"></div>   
+      <button (click)="closeOrder()" class="close-modal-button">
+        Cerrar
+      </button>
         <div class="divider"></div>
         <div class="order-info">
                            
           <!-- Items de la orden -->
-          <div class="order-items">
-            <h4 class="title">Productos ordenados:</h4>
-            <div *ngFor="let item of createdOrderResponse.order.items" class="order-item">
-              <p>Producto ID: {{ item.product_id }}</p>
-              <p>Cantidad: {{ item.quantity }}</p>
-              <p>Precio: {{ formatPrice(item.price) }}</p>
-            </div>
-          </div>
-          <div class="d-flex gap-2 justify-content-between p-2 align-items-center">
-            <p class="">Estado: </p>
-            <p class="estado">{{ createdOrderResponse.order.status }}</p>
-          </div>
-          <div class="divider"></div>
-          <div class="d-flex gap-2 justify-content-between p-2">
-            <p>Total: </p>
-             <p id="price"> {{ formatPrice(createdOrderResponse.order.total_price) }}</p>
-          </div>
-          <div class="divider"></div>   
-        </div>
+        
 
-        <!-- Información del envío -->
-        <div class="shipping-info card p-4">
-          <h3>Información de Envío</h3>
-          <div class="d-flex gap-2 justify-content-between">
-            <p>Número de seguimiento:</p>
-            <p> {{ createdOrderResponse.shipping.tracking_number }}</p>
-          </div>
-          <div class="d-flex gap-2 justify-content-between">
-            <p>Direccion:</p>
-            <p> {{ createdOrderResponse.shipping.shipping_address }}</p>
-          </div >
-          <div class="d-flex gap-2 justify-content-between">
-            <p>Estado del envío:</p>
-            <p> {{ createdOrderResponse.shipping.status }}</p>
-          </div>
-
-        </div>
-      </div>
-      <button (click)="closeOrder()" class="close-modal-button">
-        Cerrar
-      </button>
 </div>

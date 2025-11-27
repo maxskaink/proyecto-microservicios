@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Route, Router, RouterModule } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { CartItem } from '../../../Models/Cart';
@@ -26,9 +26,14 @@ export class ShoppingCart implements OnChanges {
   isCreatingOrder = false;
   shippingAddress = '';
   orderSuccess = false;
-  createdOrderResponse: OrderResponse | null = null;
+  createdOrderResponse!: OrderResponse ;
 
-  constructor(private shoppingCartService: ShoppingCartService, private cdr: ChangeDetectorRef) {}
+  constructor( 
+    private shoppingCartService: ShoppingCartService, 
+    private cdr: ChangeDetectorRef,
+    private router: Router,
+
+  ) {}
   ngOnChanges(changes: SimpleChanges): void {
     throw new Error('Method not implemented.');
   }
@@ -141,20 +146,24 @@ export class ShoppingCart implements OnChanges {
         this.isCreatingOrder = false;
 
         if (resp) {
+          console.log('✅ Orden creada exitosamente:', resp);
+          console.log('📦 Items en la orden:', resp.order.items);
+          
           this.createdOrderResponse = resp;
           this.orderSuccess = true;
 
           this.loadCart();
           this.shippingAddress = '';
+          
+          // Forzar detección de cambios
+          this.cdr.detectChanges();
         }
       });
   }
 
-  /** Cerrar modal */
-  closeOrderSuccess() {
-    this.orderSuccess = false;
-    this.createdOrderResponse = null;
-  }
+closeOrderSuccess(){
+  this.router.navigate(['/home']);
+}
 
   /** Validar checkout */
   get canCheckout(): boolean {

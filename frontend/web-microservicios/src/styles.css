@@ -22,6 +22,18 @@
   border: none;
   height: 3rem;
 }
+.btn-primary:disabled{
+  background-color: #e6f0ee;
+  border: 1px solid black;
+  border-color: #c8d2e0;
+  color: #8d9db6;
+}
+.btn-primary:disabled:hover{
+  background-color: #dbe7e5;
+  border: 1px solid black;
+  border-color: #c8d2e0;
+  color: #8d9db6;
+}
 .btn-primary:hover{
   background-color: var(--color-success);
 }

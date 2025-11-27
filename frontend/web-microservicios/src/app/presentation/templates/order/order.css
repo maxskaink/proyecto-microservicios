@@ -1,17 +1,87 @@
-.order-modal{
-    
+.order-modal {
+    max-width: 40rem;
+      box-shadow: 
+    0 12px 30px rgba(106, 209, 123, 0.35),   /* verde */
+    0 20px 45px rgba(233, 236, 239, 0.45);
 }
-.divider{
+
+.divider {
     height: 0.5px;
     background-color: rgb(232, 232, 233);
     width: 100%;
 }
-.title{
+
+.title {
     color: var(--color-success);
     font-weight: 800;
 }
-#price{
+
+.text{
+    font-size: 0.8rem;
+     white-space: nowrap;       /* No hacer múltiple línea */
+  overflow: hidden;          /* Ocultar el exceso */
+  text-overflow: ellipsis
+}
+
+#price {
     color: rgb(14, 112, 116);
     font-size: 1.5rem;
     font-weight: 900;
+}
+
+.order-items {
+    margin: 1rem 0;
+}
+.product-name {
+    font-size: 1rem;
+    font-weight: 600;
+}
+.product-price{
+    font-size: 0.8rem;
+ 
+}
+
+.products-container {
+    
+    
+    
+}
+
+.order-item {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 1rem;
+    background-color: #ebf0ec;
+    
+}
+
+.order-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.item-quantity {
+    margin-top: 0.5rem;
+    padding-left: 1rem;
+}
+
+.close-modal-button {
+    background-color: var(--color-success);
+    color: white;
+    border: none;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    font-weight: 600;
+    margin-top: 1rem;
+    width: 100%;
+    transition: background-color 0.2s ease;
+}
+
+.close-modal-button:hover {
+    background-color: #218838;
+}
+
+.estado {
+    font-weight: 600;
+    text-transform: uppercase;
+    color: var(--color-success);
 }

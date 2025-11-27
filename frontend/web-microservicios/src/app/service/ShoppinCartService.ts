@@ -133,7 +133,20 @@ getShoppingCart(): Observable<CartItem[]> {
     return this.http.get<Order[]>(url);
   }
 
-
+  getUserOrdersProducer(){
+    const idUser = this.authService.userCurrentData?.id;
+    if (!idUser) {
+      console.error('No hay usuario disponible');
+      return of([]);
+    }
+    const tenantId = this.tenantService.getTenant(); // ← Método síncrono
+    if (!tenantId) {
+      console.error('No hay tenant disponible');
+      return of([]);
+    }
+    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/producer/${idUser}`;
+    return this.http.get<Order[]>(url);
+  } 
   /**
    * Obtiene una orden específica por su ID
    */
@@ -142,6 +155,16 @@ getShoppingCart(): Observable<CartItem[]> {
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}`;
         return this.http.get<Order>(url);
+      })
+    );
+  }
+
+  updateStateOrder(status:any, orderId: string): Observable<any> {
+    return this.getTenant().pipe(
+      switchMap(( tenantId ) => {
+        const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}/status`;
+        const body = status ;
+        return this.http.put<any>(url, body);
       })
     );
   }

@@ -38,7 +38,7 @@ export class ListOrders implements OnInit {
     this.isLoading = true;
     this.error = null;
 
-    this.shoppingService.getUserOrders().pipe(
+    this.shoppingService.getUserOrdersProducer().pipe(
       catchError(error => {
         console.error('Error al cargar las órdenes:', error);
         this.error = 'Error al cargar las órdenes';
@@ -62,28 +62,7 @@ export class ListOrders implements OnInit {
     });
   }
 
-  /**
-   * Formatea el precio
-   */
-  formatPrice(price: number): string {
-    return price.toLocaleString('es-CO', {
-      style: 'currency',
-      currency: 'COP'
-    });
-  }
 
-  /**
-   * Formatea la fecha
-   */
-  formatDate(dateString: string): string {
-    return new Date(dateString).toLocaleDateString('es-CO', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
-  }
 
   /**
    * Obtiene la clase CSS para el estado
@@ -143,14 +122,14 @@ export class ListOrders implements OnInit {
 
   handlerOrderAction(event: { status: string; id: string }) {
     this.updateStatus.status = event.status;
-    /**this.shoppingService.updateStateOrder(this.updateStatus, event.id).subscribe({
+    this.shoppingService.updateStateOrder(this.updateStatus, event.id).subscribe({
       next: () => {
-        this.refreshOrders();
+        this.loadOrders();
       },
       error: (error) => {
         console.error('❌ Error al completar la orden:', error);
       }
-    });*/
+    });
   }
 
   

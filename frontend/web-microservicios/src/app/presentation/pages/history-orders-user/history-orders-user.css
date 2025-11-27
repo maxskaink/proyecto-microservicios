@@ -2,8 +2,31 @@
     height: 50rem;
 }
 .orders-container{
-    padding-top: 4rem;
+    padding: 0;
+    padding-top: 5rem;
 }
 .btn-primary{
     width: 10rem;
+}
+.section-title{
+    margin: 0;
+    padding: 2rem;
+    height: 13rem;
+    box-shadow: 0 25px 40px -15px rgba(0, 0, 0, 0.30);
+}
+.title{
+    font-size: 2rem;
+    font-weight: 700;
+}
+.text{
+    font-size: 0.8rem;
+}
+.section-current{
+    background: linear-gradient(20deg, #7dada3, #acc7ba);
+    padding: 1rem;
+}
+@media screen and (min-width: 1024px) {
+    .section-current {
+        padding: 10rem;
+    }
 }

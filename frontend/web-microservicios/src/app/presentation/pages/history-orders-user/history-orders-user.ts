@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 export class HistoryOrdersUser implements OnInit{ 
 
   public orders: Order[] = [];
+  public oldOrders: Order[] = [];
   public isLoading: boolean = true;
   constructor(
     private shoppingService: ShoppingCartService,
@@ -30,7 +31,7 @@ export class HistoryOrdersUser implements OnInit{
   }
 
   loadUserOrders() {
-    this.shoppingService.getUserOrders().subscribe({
+    this.shoppingService.getUserOrders('').subscribe({
       next: (orders) => {
         console.log('Órdenes del usuario:', orders);
         this.orders = orders;
@@ -40,6 +41,18 @@ export class HistoryOrdersUser implements OnInit{
       },
       error: (error) => {
         console.error('Error al cargar las órdenes del usuario:', error);
+      }
+    });
+    this.shoppingService.getUserOrders('paid').subscribe({
+      next: (ordersOld) => {
+        console.log('Órdenes antiguas del usuario:', ordersOld);
+        this.oldOrders = ordersOld;
+        this.isLoading = false;
+        this.cdr.detectChanges();
+        
+      },
+      error: (error) => {
+        console.error('Error al cargar las órdenes antiguas del usuario:', error);
       }
     });
   }

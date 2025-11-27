@@ -1,5 +1,5 @@
 <app-header></app-header>
-<div class="orders-container container-fluid">
+<div class="orders-container">
   <div class="header">
     <button class="back-button" routerLink="/user">
       <app-arrow-left></app-arrow-left>
@@ -25,11 +25,24 @@
 
   <!-- Orders list -->
   <div *ngIf="!isLoading  && orders.length > 0" class="orders-list ">
-    <div class="row g-3">
-      <div *ngFor="let order of orders" class="col-12 col-md-6 col-lg-4">
+    <section class="container-fluid section-title mb-4">
+        <h3 class=" mb-4 title">Pedidos pendientes</h3>
+        <p class="text">Revisa tus pedidos que tienes pendientes con nostoros</p>
+    </section>
+    <div class="row g-3 section-current">
+      <div *ngFor="let order of orders" class="col-12 col-md-12 col-lg-12">
         <app-item-order [order]="order" [showActions]="false"></app-item-order>
       </div>
     </div>
+    <section class="container-fluid section-title my-4 p-4">
+        <h3 class=" mb-4 title">Historial de pedidos</h3>
+        <p class="text">Revisa tus pedidos anteriores con nostoros</p>
+    </section>
+    <div class="row g-3 section-history">
+      <div *ngFor="let order of oldOrders" class="col-12 col-md-4 col-lg-6">
+        <app-item-order [order]="order" [showActions]="false"></app-item-order>
+      </div>
+    </div>    
   </div>
 
 </div>

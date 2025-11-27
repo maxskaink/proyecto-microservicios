@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, from, switchMap, combineLatest, of } from 'rxjs';
 import { map, filter, take } from 'rxjs/operators';
 import { ShoppingPeticion } from '../Models/ShoppingPeticion';
@@ -121,16 +121,24 @@ getShoppingCart(): Observable<CartItem[]> {
       })
     );
   }
+  /**
+   * trae las ordenes de un usuario por estado
+   * @param status estado de las ordenes a consultar
+   * @returns Ordenes del estado que desea consutlar
+   */
+  getUserOrders(status: string): Observable<Order[]> {
+    const tenantId = this.tenantService.getTenant();
 
-  getUserOrders(): Observable<Order[]> {
-    const tenantId = this.tenantService.getTenant(); // ← Método síncrono
     if (!tenantId) {
       console.error('No hay tenant disponible');
       return of([]);
     }
-    
+
     const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
-    return this.http.get<Order[]>(url);
+
+    const params = new HttpParams().set('status', status);
+
+    return this.http.get<Order[]>(url, { params });
   }
 
   getUserOrdersProducer(){

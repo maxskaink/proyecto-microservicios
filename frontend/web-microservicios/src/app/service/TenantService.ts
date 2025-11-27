@@ -31,7 +31,7 @@ export class TenantService {
     localStorage.removeItem('currentTenant');
   }
 
-  getTenant(): string | null {
+  public getTenant(): string | null {
     return this.tenantSubject.getValue();
   }
 

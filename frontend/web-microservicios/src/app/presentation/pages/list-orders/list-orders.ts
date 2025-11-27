@@ -1,25 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { Header } from '../../templates/header/header';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { catchError, of } from 'rxjs';
+import { ItemOrder } from '../../components/item-order/item-order';
+import { Order } from '../../../Models/OrderPeticion';
+
 
 @Component({
   selector: 'app-list-orders',
-  imports: [CommonModule, RouterModule, Header, ArrowLeft],
+  imports: [CommonModule, RouterModule, Header, ArrowLeft, ItemOrder],
   templateUrl: './list-orders.html',
   styleUrl: './list-orders.css',
 })
 export class ListOrders implements OnInit {
-  orders: any[] = [];
+  orders: Order[] = [];
   isLoading = true;
   error: string | null = null;
 
-  constructor(private shoppingService: ShoppingCartService) {}
+  constructor(private shoppingService: ShoppingCartService,
+    private cdr: ChangeDetectorRef
+  ) {}
 
   ngOnInit() {
+    console.log("iniciando componente");
     this.loadOrders();
   }
 
@@ -27,6 +33,7 @@ export class ListOrders implements OnInit {
    * Carga las órdenes del usuario
    */
   loadOrders() {
+    console.log("iniciando carga de ordenes");
     this.isLoading = true;
     this.error = null;
 
@@ -37,15 +44,19 @@ export class ListOrders implements OnInit {
         this.isLoading = false;
         // Forzar detección de cambios
         setTimeout(() => this.isLoading = false, 0);
+        this.cdr.detectChanges();
         return of([]);
       })
     ).subscribe(orders => {
-      this.orders = orders || [];
+      this.orders = orders;
       this.isLoading = false;
+      console.log("Órdenes cargadas:", orders);
       // Forzar detección de cambios
       setTimeout(() => {
         this.isLoading = false;
         this.orders = [...(orders || [])];
+        console.log("Órdenes actualizadas en el estado:", this.orders);
+        this.cdr.detectChanges();
       }, 0);
     });
   }

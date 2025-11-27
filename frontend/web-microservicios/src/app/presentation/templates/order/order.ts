@@ -55,13 +55,9 @@ export class Order implements OnChanges {
 
     forkJoin(productRequests).subscribe({
       next: (products: (Product | null)[]) => {
-        // Filtrar productos nulos (errores)
         this.products = products.filter(product => product !== null) as Product[];
         this.isLoadingProducts = false;
-        
         console.log('✅ Productos cargados:', this.products);
-        
-        // Forzar detección de cambios
         this.cdr.detectChanges();
       },
       error: (error) => {

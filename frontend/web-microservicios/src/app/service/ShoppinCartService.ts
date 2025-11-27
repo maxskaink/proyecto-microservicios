@@ -20,11 +20,16 @@ export class ShoppingCartService {
     private tenantService: TenantService
   ) {}
 
-
+  private getTenant(): Observable<{ tenantId: string }> {
+    return this.tenantService.getTenantId().pipe(
+      take(1),
+      map((tenantId) => ({ tenantId }))
+    );  
+  }
 
 
 getShoppingCart(): Observable<CartItem[]> {
-  return this.tenantService.getTenantId().pipe(
+  return this.getTenant().pipe(
     switchMap((tenantId) => {
       console.log("Pidiendo carrito para tenant:", tenantId);
       const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart`;
@@ -38,7 +43,7 @@ getShoppingCart(): Observable<CartItem[]> {
    * Agrega un producto al carrito de compras
    */
   addProductToCart(shoppingItem: ShoppingPeticion): Observable<CartItem> {
-    return this.tenantService.getTenantId().pipe(
+    return this.getTenant().pipe(
       switchMap(( tenantId) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items`;
         return this.http.post<CartItem>(url, shoppingItem);
@@ -50,7 +55,7 @@ getShoppingCart(): Observable<CartItem[]> {
    * Actualiza la cantidad de un producto en el carrito
    */
   updateCartItem(itemId: string, quantity: number): Observable<CartItem> {
-    return this.tenantService.getTenantId().pipe(
+    return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items/${itemId}`;
         const updateData = { quantity };
@@ -63,7 +68,7 @@ getShoppingCart(): Observable<CartItem[]> {
    * Elimina un producto del carrito
    */
   removeFromCart(itemId: string): Observable<any> {
-    return this.tenantService.getTenantId().pipe(
+    return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items/${itemId}`;
         return this.http.delete<any>(url);
@@ -75,7 +80,7 @@ getShoppingCart(): Observable<CartItem[]> {
    * Vacía completamente el carrito de compras
    */
   clearCart(): Observable<any> {
-    return this.tenantService.getTenantId().pipe(
+    return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/users/me/cart`;
         return this.http.delete<any>(url);
@@ -112,7 +117,7 @@ getShoppingCart(): Observable<CartItem[]> {
    * orderData is a plain object (e.g. { shipping_address: '...' })
    */
   createOrder(orderData: any): Observable<OrderResponse> {
-    return this.tenantService.getTenantId().pipe(
+    return this.getTenant().pipe(
       switchMap(( tenantId) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
         return this.http.post<OrderResponse>(url, orderData);
@@ -120,23 +125,24 @@ getShoppingCart(): Observable<CartItem[]> {
     );
   }
 
-  /**
-   * Obtiene las órdenes del usuario actual
-   */
-    getUserOrders(): Observable<Order[]> {
-      return this.tenantService.getTenantId().pipe(
-        switchMap((tenantId ) => {
-          const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
-          return this.http.get<Order[]>(url);
-        })
-      );
+  getUserOrders(): Observable<Order[]> {
+    const tenantId = this.tenantService.getTenant(); // ← Método síncrono
+    
+    if (!tenantId) {
+      console.error('No hay tenant disponible');
+      return of([]);
     }
+    
+    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
+    return this.http.get<Order[]>(url);
+  }
+
 
   /**
    * Obtiene una orden específica por su ID
    */
   getOrderById(orderId: string): Observable<Order> {
-    return this.tenantService.getTenantId().pipe(
+    return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}`;
         return this.http.get<Order>(url);

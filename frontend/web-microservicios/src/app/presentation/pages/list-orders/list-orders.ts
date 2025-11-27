@@ -7,6 +7,7 @@ import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { catchError, of } from 'rxjs';
 import { ItemOrder } from '../../components/item-order/item-order';
 import { Order } from '../../../Models/OrderPeticion';
+import { updateStatus } from '../../../Models/updateStatus';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class ListOrders implements OnInit {
   orders: Order[] = [];
   isLoading = true;
   error: string | null = null;
-
+  updateStatus: updateStatus = {status: ''};
   constructor(private shoppingService: ShoppingCartService,
     private cdr: ChangeDetectorRef
   ) {}
@@ -139,4 +140,18 @@ export class ListOrders implements OnInit {
     console.log('Ver detalles de la orden:', orderId);
     alert(`Detalles de la orden: ${orderId}`);
   }
+
+  handlerOrderAction(event: { status: string; id: string }) {
+    this.updateStatus.status = event.status;
+    /**this.shoppingService.updateStateOrder(this.updateStatus, event.id).subscribe({
+      next: () => {
+        this.refreshOrders();
+      },
+      error: (error) => {
+        console.error('❌ Error al completar la orden:', error);
+      }
+    });*/
+  }
+
+  
 }

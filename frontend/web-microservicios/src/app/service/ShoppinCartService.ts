@@ -20,11 +20,8 @@ export class ShoppingCartService {
     private tenantService: TenantService
   ) {}
 
-  private getTenant(): Observable<{ tenantId: string }> {
-    return this.tenantService.getTenantId().pipe(
-      take(1),
-      map((tenantId) => ({ tenantId }))
-    );  
+  private getTenant(): Observable<string> {
+    return this.tenantService.getTenantId().pipe(take(1));
   }
 
 

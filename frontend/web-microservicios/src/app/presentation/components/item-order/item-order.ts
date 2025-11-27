@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { Order } from '../../../Models/OrderPeticion';
 import { catchError, forkJoin, of } from 'rxjs';
 import { ProductService } from '../../../service/ProductService';
 import { Product } from '../../../Models/Product';
+import { AnyARecord } from 'dns';
 
 @Component({
   selector: 'app-item-order',
@@ -12,19 +13,28 @@ import { Product } from '../../../Models/Product';
   styleUrl: './item-order.css',
 })
 export class ItemOrder implements OnInit{
-
+  /**
+   * Orden a mostrar
+   * action: accion del boton indicado, manda estado a actualizar y el ide del itema a actualizar
+   */
   @Input() order!: Order;
+  @Output() action = new EventEmitter<{ status: string; id: string }>();
 
-    public products: Product[] = [];
-    public isLoadingProducts = false;
+  public products: Product[] = [];
+  public isLoadingProducts = false;
   
   ngOnInit(): void {
     this.loadProducts();
   }
-  constructor(private productService: ProductService,
+  constructor(
+    private productService: ProductService,
     private cdr: ChangeDetectorRef
   ) {}
-    private loadProducts(): void {
+
+  /**
+   * 
+   */
+  private loadProducts(): void {
       if (!this.order?.items?.length) {
         console.warn('⚠️ No hay items en la orden');
         return;
@@ -58,7 +68,9 @@ export class ItemOrder implements OnInit{
         }
       });
     }
-  
+  /**
+   * Formatea la hora
+   */
   formatDate(dateString: string): string {
     return new Date(dateString).toLocaleDateString('es-CO', {
       year: 'numeric',
@@ -68,12 +80,33 @@ export class ItemOrder implements OnInit{
       minute: '2-digit'
     });
   }
-formatPrice(price: number): string {
-  return price.toLocaleString('es-CO', {
-    style: 'currency',
-    currency: 'COP',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  });
-}
+  /**
+   * Formatea el precio
+   */
+  formatPrice(price: number): string {
+    return price.toLocaleString('es-CO', {
+      style: 'currency',
+      currency: 'COP',
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    });
+  }
+  /**
+   * emitir complete order
+   */
+  onCompleteOrder() {
+    this.action.emit({
+      status: "paid",
+      id: this.order.id
+    });
+  }
+  /**
+   * emitir complete order
+   */
+  onCancelOrder() {
+    this.action.emit({
+      status: "cancelled",
+      id: this.order.id
+    });
+  }
 }

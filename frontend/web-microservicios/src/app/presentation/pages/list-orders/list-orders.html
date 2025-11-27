@@ -26,13 +26,13 @@
     </button>
   </div>
 
-<!-- Orders list -->
-<div *ngIf="!isLoading && !error && orders.length > 0" class="orders-list ">
-  <div class="row g-3">
-    <div *ngFor="let order of orders" class="col-12 col-md-6 col-lg-4">
-      <app-item-order [order]="order"></app-item-order>
+  <!-- Orders list -->
+  <div *ngIf="!isLoading && !error && orders.length > 0" class="orders-list ">
+    <div class="row g-3">
+      <div *ngFor="let order of orders" class="col-12 col-md-6 col-lg-4">
+        <app-item-order [order]="order" (action)="handlerOrderAction($event)" ></app-item-order>
+      </div>
     </div>
   </div>
-</div>
 
 </div>

@@ -25,11 +25,8 @@ export class ProductService {
   /**
    * Combina tenant ID y headers de autenticación
    */
-  private getTenant(): Observable<{ tenantId: string }> {
-    return this.tenantService.getTenantId().pipe(
-      take(1),
-      map((tenantId) => ({ tenantId }))
-    );  
+    private getTenant(): Observable<string> {
+    return this.tenantService.getTenantId().pipe(take(1));
   }
 
 
@@ -39,7 +36,7 @@ export class ProductService {
   getUploadUrl(filename: string, contentType: string): Observable<{ upload_url: string; object_key: string }> {
     
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) =>
+      switchMap(( tenantId ) =>
         this.http.post<{ upload_url: string; object_key: string }>(
           `${this.apiUrlProduct}${tenantId}/api/products/upload-url`,
           { filename, content_type: contentType }
@@ -66,7 +63,7 @@ export class ProductService {
    */
   updateProductPhoto(productId: string, objectKey: string): Observable<any> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) =>
+      switchMap(( tenantId) =>
         this.http.put(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}/photo`,
           { object_key: objectKey },
@@ -82,10 +79,10 @@ export class ProductService {
 
     
     return this.getTenant().pipe(
-      tap(({ tenantId }) => {
+      tap(( tenantId ) => {
         console.log('🌐 Tenant ID obtenido:', tenantId);
       }),
-      switchMap(({ tenantId }) => {
+      switchMap((tenantId ) => {
         const url = `${this.apiUrlProduct}${tenantId}/api/products`;
         console.log('🌐 URL completa construida:', url);
         return this.http.post<Product>(url, product).pipe(
@@ -108,7 +105,7 @@ export class ProductService {
    */
   getProducts(page: number, pageSize: number): Observable<Product[]> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) => 
+      switchMap((tenantId ) => 
         this.http.get<Product[]>(
           `${this.apiUrlProduct}${tenantId}/api/products?page=${page}&pag_size=${pageSize}`
         )
@@ -121,7 +118,7 @@ export class ProductService {
    */
   getProductById(productId: string): Observable<Product> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) =>
+      switchMap((tenantId ) =>
         this.http.get<Product>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
         )
@@ -144,7 +141,7 @@ export class ProductService {
    */
   updateProduct(productId: string, product: ProductPeticion): Observable<Product> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) =>
+      switchMap(( tenantId ) =>
         this.http.put<Product>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
           product,
@@ -158,7 +155,7 @@ export class ProductService {
    */
   deleteProduct(productId: string): Observable<void> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) =>
+      switchMap((tenantId ) =>
         this.http.delete<void>(
           `${this.apiUrlProduct}${tenantId}/api/products/${productId}`,
         )
@@ -167,7 +164,7 @@ export class ProductService {
   }
   getCategories(): Observable<string[]> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId}) =>
+      switchMap((tenantId) =>
         this.http.get<string[]>(
           `${this.apiUrlProduct}${tenantId}/api/products/categories`,
         )

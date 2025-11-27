@@ -71,7 +71,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Mis Productos',
       description: 'Mira tus pedidos',
       icon: 'bi-box-seam',
-      route: '/list-order',
+      route: '',
       category: 'business'
     },
     {
@@ -87,7 +87,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Pedidos',
       description: 'Gestiona los pedidos de tus productos',
       icon: 'bi-clipboard-check',
-      route: '/orders',
+      route: '/list-order',
       category: 'business'
     },
     {
@@ -201,7 +201,7 @@ private loadUserData(): void {
     // Mapear roles técnicos a nombres amigables
     const roleNames: {[key: string]: string} = {
       'admin': 'Administrador',
-      'vendedor': 'Vendedor',
+      'producer': 'Productor',
       'comprador': 'Comprador',
       'usuario': 'Usuario'
     };

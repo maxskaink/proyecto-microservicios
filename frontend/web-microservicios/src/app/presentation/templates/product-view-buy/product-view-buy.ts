@@ -10,9 +10,10 @@ import { CartItem } from '../../../Models/Cart';
 })
 export class ProductViewBuy implements OnChanges{
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['cartItems']) {
-      // Solo detecta cambios, sin logs
-    }
+    if (changes['item']) {
+    console.log('Item recibido:', this.item);
+    console.log('URL de la imagen:', this.item.product.photo_url);
+  }
   }
 
   // Lista de items recibidos desde el padre

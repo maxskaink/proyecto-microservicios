@@ -1,95 +1,81 @@
 <app-header></app-header>   
-<div class="shopping-cart-container">
-  <div class="header">
-    <h1>Mi Carrito de Compras</h1>
-  </div>
+<div class="shopping-cart-container container-fluid">
 
-  <!-- Cart items -->
-  <div  class="cart-content">
-    <app-product-view-buy
-      *ngFor="let item of cartItems" 
-      [item]="item"
-      (remove)="removeItem($event)">
-    </app-product-view-buy>
 
-    <div class="cart-summary">
-      <div class="summary-content">
-        <h3>Resumen del pedido</h3>
-        <div class="total-items">
-          <span>Total de items: {{ cartItems.length }}</span>
-        </div>
-        <div class="total-price">
-          <span class="total-label">Total: </span>
-          <span class="total-amount">{{ formattedTotal }}</span>
-        </div>
-
-        <button (click)="clearCart()" class="clear-cart-button">
-          Vaciar carrito
-        </button>
-      </div>
-
-      <!-- Checkout section -->
-      <div class="checkout-section">
-        <h4>Información de envío</h4>
-        <div class="form-group">
-          <label for="shippingAddress">Dirección de envío:</label>
-          <textarea
-            id="shippingAddress"
-            [(ngModel)]="shippingAddress"
-            placeholder="Ingresa tu dirección completa"
-            rows="3"
-            class="address-input">
-          </textarea>
-        </div>
-
-        <button 
-          (click)="createOrder()"
-          [disabled]="!canCheckout || isCreatingOrder"
-          class="checkout-button">
-          <span *ngIf="!isCreatingOrder">Crear orden</span>
-          <span *ngIf="isCreatingOrder">Creando orden...</span>
-        </button>
-      </div>
+  <div class="row cart-content">
+    <!-- Items del carrito -->
+    <div class="col-12 col-lg-8">
+      <app-product-view-buy
+        *ngFor="let item of cartItems" 
+        [item]="item"
+        (remove)="removeItem($event)">
+      </app-product-view-buy>
     </div>
-  </div>
 
-  <!-- Order success modal -->
-  <div *ngIf="orderSuccess" class="order-success-modal">
-    <div class="modal-content">
-      <h2>¡Orden creada exitosamente!</h2>
-      <div *ngIf="createdOrderResponse" class="order-details">
-        <!-- Información de la orden -->
-        <div class="order-info">
-          <h3>Información de la Orden</h3>
-          <p><strong>ID de la orden:</strong> {{ createdOrderResponse.order.id }}</p>
-          <p><strong>Estado:</strong> {{ createdOrderResponse.order.status }}</p>
-          <p><strong>Total:</strong> {{ formatPrice(createdOrderResponse.order.total_price) }}</p>
-          <p><strong>Fecha de creación:</strong> {{ createdOrderResponse.order.created_at | date:'medium' }}</p>
-          
-          <!-- Items de la orden -->
-          <div class="order-items">
-            <h4>Productos ordenados:</h4>
-            <div *ngFor="let item of createdOrderResponse.order.items" class="order-item">
-              <p>Producto ID: {{ item.product_id }}</p>
-              <p>Cantidad: {{ item.quantity }}</p>
-              <p>Precio: {{ formatPrice(item.price) }}</p>
-            </div>
+    <!-- Resumen del carrito -->
+    <div class="col-12 col-lg-4" *ngIf="!orderSuccess && !createdOrderResponse">
+      <div class="cart-item sticky-summary p-4">
+        <div class="summary-content mb-3">
+          <h3 class="p-2">Resumen del pedido</h3>
+          <div class="divider"></div>
+          <div class="total-price p-3 d-flex justify-content-between align-items-center">
+            <span class="label-text">Total de items:</span>
+            <span><strong> {{ cartItems.length }}</strong></span>
           </div>
+          <div class="divider"></div>
+          <div class="total-price p-3 d-flex justify-content-between align-items-center">
+            <span class="label-text">Total: </span>
+            <span class="total-amount"> <strong> {{ formattedTotal }}</strong></span>
+          </div>
+          <div class="divider"></div>
+          <button (click)="clearCart()" class="clear-cart-button btn w-100 mt-2">
+            Vaciar carrito
+          </button>
         </div>
 
-        <!-- Información del envío -->
-        <div class="shipping-info">
-          <h3>Información de Envío</h3>
-          <p><strong>Número de seguimiento:</strong> {{ createdOrderResponse.shipping.tracking_number }}</p>
-          <p><strong>Dirección de envío:</strong> {{ createdOrderResponse.shipping.shipping_address }}</p>
-          <p><strong>Estado del envío:</strong> {{ createdOrderResponse.shipping.status }}</p>
-          <p><strong>Fecha de envío:</strong> {{ createdOrderResponse.shipping.created_at | date:'medium' }}</p>
+        <!-- Checkout -->
+        <div class="checkout-section" *ngIf="!orderSuccess && !createdOrderResponse">
+          <h4 class="p-2">Información de envío</h4>
+          <div class="form-group mb-3">
+            <label for="shippingAddress" class="p-2 label-text">Dirección de envío:</label>
+            <textarea
+              id="shippingAddress"
+              [(ngModel)]="shippingAddress"
+              placeholder="Ingresa tu dirección completa"
+              rows="3"
+              maxlength="50"
+              class="form-control p-2">
+            </textarea>
+          </div>
+
+          <button 
+            (click)="createOrder()"
+            [disabled]="!canCheckout || isCreatingOrder"
+            class=" btn-primary w-100">
+            <span *ngIf="!isCreatingOrder">Crear orden</span>
+            <span *ngIf="isCreatingOrder">Creando orden...</span>
+          </button>
         </div>
       </div>
-      <button (click)="closeOrderSuccess()" class="close-modal-button">
-        Cerrar
-      </button>
     </div>
+    
   </div>
+    <!-- Order success modal -->
+<div 
+  class="d-flex justify-content-center align-items-center w-100"
+  style="min-height: 60vh;"
+>
+  <div 
+    *ngIf="orderSuccess && createdOrderResponse"
+    class="order-success-modal col-12 col-md-8 col-lg-6"
+  >
+    <app-order
+      [createdOrderResponse]="createdOrderResponse"
+      (close)="closeOrderSuccess()">
+    </app-order>
+  </div>    
+</div>
+
+
 
 </div>

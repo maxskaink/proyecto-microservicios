@@ -1,9 +1,11 @@
 /* Estilos para la página de órdenes */
 .orders-container {
-  max-width: 1100px;
+
   margin: 24px auto;
   padding: 0 16px 40px;
+  padding-top: 10rem;
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    background: linear-gradient(20deg, #d1d2d3, #cfdfd8, #cbe7cf);
 }
 
 .header {
@@ -46,6 +48,7 @@
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding: 4rem;
 }
 
 .order-card {
@@ -151,4 +154,10 @@
     align-items: flex-start;
   }
   .order-total { align-self: flex-end; }
+  .orders-container{
+    padding: 0rem;
+  }
+  .orders-list{
+    padding: 1rem;
+  }
 }

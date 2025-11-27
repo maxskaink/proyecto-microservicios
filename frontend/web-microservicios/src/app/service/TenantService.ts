@@ -1,131 +1,78 @@
 import { Injectable, Injector } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, from, switchMap, map, combineLatest } from 'rxjs';
-import { filter, take } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { BehaviorSubject, Observable, map, filter, take, switchMap } from 'rxjs';
 import { Tenant } from '../Models/Tenant';
 import { TenantPeticion } from '../Models/TenantPeticion';
-import { AuthService } from './Authser.vice';
 
 @Injectable({ providedIn: 'root' })
 export class TenantService {
+  private tenantSubject = new BehaviorSubject<string | null>(null);
+  tenant$ = this.tenantSubject.asObservable();
 
-  private apiUrlTenant = 'http://localhost:80/api/'; 
+  private apiUrlTenant = 'http://localhost:80/api/';
 
   constructor(
-    private http: HttpClient, 
-    private authService: AuthService, 
+    private http: HttpClient,
     private injector: Injector
-  ) {}
+  ) {
+    const saved = localStorage.getItem('currentTenant');
+    if (saved) {
+      this.tenantSubject.next(saved);
+    }
+  }
 
-  /**
-   * Método privado para obtener headers con autenticación
-   */
-  private getAuthHeaders(): Observable<HttpHeaders> {
-    return from(this.authService.getToken()).pipe(
-      map(token => {
-        if (!token) {
-          throw new Error('No se pudo obtener el token de autenticación');
-        }
-        return new HttpHeaders({
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        });
-      })
+  setTenant(tenantId: string) {
+    this.tenantSubject.next(tenantId);
+    localStorage.setItem('currentTenant', tenantId);
+  }
+
+  clearTenant() {
+    this.tenantSubject.next(null);
+    localStorage.removeItem('currentTenant');
+  }
+
+  public getTenant(): string | null {
+    return this.tenantSubject.getValue();
+  }
+
+  /** 🔥 Devuelve el tenant SOLO cuando ya existe */
+  getTenantId(): Observable<string> {
+    return this.tenant$.pipe(
+      filter((t): t is string => !!t),
+      take(1)
     );
   }
 
-  /**
-   * Obtiene la lista de tenants desde el backend (sin autenticación requerida)
-   * @returns Un observable con un array de tenants
-   */
   getTenants(): Observable<Tenant[]> {
-    const url = `${this.apiUrlTenant}tenants`;
-    return this.http.get<Tenant[]>(url);
+    return this.http.get<Tenant[]>(`${this.apiUrlTenant}tenants`);
   }
 
-  /**
-   * Obtiene una lista de IDs de tenants.
-   */
   getIdTenants(): Observable<string[]> {
     return this.getTenants().pipe(
-      map((tenants: Tenant[]) => {
-        return tenants.map(tenant => tenant.tenant_id);
-      })
+      map(tenants => tenants.map(t => t.tenant_id))
     );
   }
 
-  /**
-   * Obtiene un tenant por su ID desde el backend.
-   */
-  getTenantByID(): Observable<Tenant> {
-    return this.getAuthHeaders().pipe(
-      switchMap(headers => {
-        const url = `${this.apiUrlTenant}tenants/id`;
-        return this.http.get<Tenant>(url, { headers });
-      })
-    );
+  getTenantByID(idTenant: string): Observable<Tenant> {
+    return this.http.get<Tenant>(`${this.apiUrlTenant}tenants/${idTenant}`);
   }
 
-  /**
-   * Crea un nuevo tenant en el backend.
-   */
   PostTenant(tenantPost: TenantPeticion): Observable<Tenant> {
-    return this.getAuthHeaders().pipe(
-      switchMap(headers => {
-        const url = `${this.apiUrlTenant}tenants`;
-        return this.http.post<Tenant>(url, tenantPost, { headers });
-      })
-    );
+    return this.http.post<Tenant>(`${this.apiUrlTenant}tenants`, tenantPost);
   }
 
-  /**
-   * Actualiza un tenant existente
-   */
   updateTenant(tenantId: string, tenantData: Partial<TenantPeticion>): Observable<Tenant> {
-    return this.getAuthHeaders().pipe(
-      switchMap(headers => {
-        const url = `${this.apiUrlTenant}tenants/${tenantId}`;
-        return this.http.put<Tenant>(url, tenantData, { headers });
-      })
-    );
+    return this.http.put<Tenant>(`${this.apiUrlTenant}tenants/${tenantId}`, tenantData);
   }
 
-  /**
-   * Elimina un tenant
-   */
   deleteTenant(tenantId: string): Observable<any> {
-    return this.getAuthHeaders().pipe(
-      switchMap(headers => {
-        const url = `${this.apiUrlTenant}tenants/${tenantId}`;
-        return this.http.delete(url, { headers });
-      })
-    );
+    return this.http.delete(`${this.apiUrlTenant}tenants/${tenantId}`);
   }
 
-  /**
-   * Obtiene el tenant del usuario actual
-   */
-  getCurrentUserTenant(): Observable<Tenant | null> {
-    return combineLatest([
-      this.authService.idTenant$.pipe(
-        filter((tenantId): tenantId is string => !!tenantId),
-        take(1)
-      ),
-      this.getAuthHeaders()
-    ]).pipe(
-      switchMap(([tenantId, headers]) => {
-        const url = `${this.apiUrlTenant}tenants/${tenantId}`;
-        return this.http.get<Tenant>(url, { headers });
-      })
-    );
-  }
-
-  /**
-   * Verifica si un tenant ID ya existe
-   */
-  checkTenantExists(tenantId: string): Observable<boolean> {
-    return this.getIdTenants().pipe(
-      map(tenantIds => tenantIds.includes(tenantId))
+  /** Obtiene los detalles del tenant actual */
+  getCurrentUserTenant(): Observable<Tenant> {
+    return this.getTenantId().pipe(
+      switchMap(id => this.getTenantByID(id))
     );
   }
 }

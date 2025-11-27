@@ -7,7 +7,8 @@ import { ViewProduct } from './presentation/pages/view-product/view-product';
 import { RegisterTenant } from './presentation/pages/register-tenant/register-tenant';
 import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
 import { ListOrders } from './presentation/pages/list-orders/list-orders';
-import { roleGuard } from './guards/role.guards';
+import { authGuard } from './guards/auth.guards';
+import { Order } from './presentation/templates/order/order';
 
 export const routes: Routes = [
     { 
@@ -17,19 +18,19 @@ export const routes: Routes = [
     { 
         path: 'user', 
         component: User,
-        canActivate: [roleGuard],
+        canActivate: [authGuard],
         data: {roles: ['admin', 'client', 'producer']}
     },
     {
         path: 'home',
         component: Home,
-        canActivate: [roleGuard],
+        canActivate: [authGuard],
         data: { roles: ['producer', 'admin', 'client'] }
     },
     {
         path: 'publishProduct',
         component: PublishProduct,
-        canActivate: [roleGuard],
+        canActivate: [authGuard],
         data: { roles: ['producer', 'admin'] }
     },
     {
@@ -39,7 +40,7 @@ export const routes: Routes = [
     {
         path: 'register-tenant',
         component: RegisterTenant,
-        canActivate: [roleGuard],
+        canActivate: [authGuard],
         data: { roles: ['producer', 'admin'] }
     },
     {

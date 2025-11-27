@@ -1,16 +1,10 @@
+import { Product } from "./Product";
+
 export interface CartItem {
   id: string;
   user_id: string;
   product_id: string;
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    stock: number;
-    created_at: string;
-    updated_at: string;
-  };
+  product: Product;
   quantity: number;
   created_at: string;
   updated_at: string;

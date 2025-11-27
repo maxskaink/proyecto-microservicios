@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable, from, switchMap, combineLatest } from 'rxjs';
+import { Observable, from, switchMap, combineLatest, of } from 'rxjs';
 import { map, filter, take } from 'rxjs/operators';
 import { ShoppingPeticion } from '../Models/ShoppingPeticion';
 import { AuthService } from './Authser.vice';
 import { CartItem, ShoppingCart } from '../Models/Cart';
-import { OrderResponse } from '../Models/OrderPeticion';
+import { Order, OrderResponse } from '../Models/OrderPeticion';
+import { TenantService } from './TenantService';
 
 @Injectable({
   providedIn: 'root'
@@ -15,33 +16,21 @@ export class ShoppingCartService {
 
   constructor(
     private http: HttpClient,
-    private authService: AuthService
+    private authService: AuthService,
+    private tenantService: TenantService
   ) {}
 
-
-  /**
-   * Combina tenant ID y headers de autenticación
-   */
   private getTenant(): Observable<{ tenantId: string }> {
-    return this.authService.idTenant$.pipe(
-      filter((tenantId): tenantId is string => !!tenantId),
+    return this.tenantService.getTenantId().pipe(
       take(1),
       map((tenantId) => ({ tenantId }))
-    );
+    );  
   }
 
 
-  /**
-   * Obtiene el carrito de compras del usuario actual
-   */
 getShoppingCart(): Observable<CartItem[]> {
-  console.log("llamando getShoppingcart()");
-  return combineLatest([
-    this.authService.authReady$,
-    this.authService.idTenant$.pipe(filter((t): t is string => !!t))
-  ]).pipe(
-    take(1),
-    switchMap(([ready, tenantId]) => {
+  return this.getTenant().pipe(
+    switchMap((tenantId) => {
       console.log("Pidiendo carrito para tenant:", tenantId);
       const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart`;
       return this.http.get<CartItem[]>(url);
@@ -55,7 +44,7 @@ getShoppingCart(): Observable<CartItem[]> {
    */
   addProductToCart(shoppingItem: ShoppingPeticion): Observable<CartItem> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId}) => {
+      switchMap(( tenantId) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items`;
         return this.http.post<CartItem>(url, shoppingItem);
       })
@@ -67,7 +56,7 @@ getShoppingCart(): Observable<CartItem[]> {
    */
   updateCartItem(itemId: string, quantity: number): Observable<CartItem> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) => {
+      switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items/${itemId}`;
         const updateData = { quantity };
         return this.http.put<CartItem>(url, updateData);
@@ -80,8 +69,8 @@ getShoppingCart(): Observable<CartItem[]> {
    */
   removeFromCart(itemId: string): Observable<any> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) => {
-        const url = `${this.apiUrlShoppingCart}${tenantId}/api/users/me/cart/${itemId}`;
+      switchMap(( tenantId ) => {
+        const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items/${itemId}`;
         return this.http.delete<any>(url);
       })
     );
@@ -92,7 +81,7 @@ getShoppingCart(): Observable<CartItem[]> {
    */
   clearCart(): Observable<any> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) => {
+      switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/users/me/cart`;
         return this.http.delete<any>(url);
       })
@@ -129,33 +118,33 @@ getShoppingCart(): Observable<CartItem[]> {
    */
   createOrder(orderData: any): Observable<OrderResponse> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId}) => {
+      switchMap(( tenantId) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
         return this.http.post<OrderResponse>(url, orderData);
       })
     );
   }
 
-  /**
-   * Obtiene las órdenes del usuario actual
-   */
-  getUserOrders(): Observable<any[]> {
-    return this.getTenant().pipe(
-      switchMap(({ tenantId }) => {
-        const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
-        return this.http.get<any[]>(url,);
-      })
-    );
+  getUserOrders(): Observable<Order[]> {
+    const tenantId = this.tenantService.getTenant(); // ← Método síncrono
+    if (!tenantId) {
+      console.error('No hay tenant disponible');
+      return of([]);
+    }
+    
+    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
+    return this.http.get<Order[]>(url);
   }
+
 
   /**
    * Obtiene una orden específica por su ID
    */
-  getOrderById(orderId: string): Observable<any> {
+  getOrderById(orderId: string): Observable<Order> {
     return this.getTenant().pipe(
-      switchMap(({ tenantId }) => {
+      switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}`;
-        return this.http.get<any>(url);
+        return this.http.get<Order>(url);
       })
     );
   }

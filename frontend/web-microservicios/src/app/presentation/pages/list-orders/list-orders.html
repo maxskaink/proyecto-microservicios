@@ -1,17 +1,21 @@
 <app-header></app-header>
-<div class="orders-container">
+<div class="orders-container container-fluid">
   <div class="header">
     <button class="back-button" routerLink="/user">
       <app-arrow-left></app-arrow-left>
-      Volver
-    </button>
-    <h1>Mis Órdenes</h1>
-    <button (click)="refreshOrders()" class="refresh-button">
-      🔄 Actualizar
     </button>
   </div>
 
-  
+  <!-- Loading state -->
+  <div *ngIf="isLoading" class="loading">
+    <p>Cargando órdenes...</p>
+  </div>
+
+  <!-- Error state -->
+  <div *ngIf="!isLoading && error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="refreshOrders()">Reintentar</button>
+  </div>
 
   <!-- Empty orders -->
   <div *ngIf="!isLoading && !error && orders.length === 0" class="empty-orders">
@@ -22,60 +26,13 @@
     </button>
   </div>
 
-  <!-- Orders list -->
-  <div  class="orders-list">
-    <div *ngFor="let order of orders" class="order-card">
-      <div class="order-header">
-        <div class="order-info">
-          <h3>Orden #{{ order.id.substring(0, 8) }}</h3>
-          <span class="order-status" [class]="getStatusClass(order.status)">
-            {{ translateStatus(order.status) }}
-          </span>
-        </div>
-        <div class="order-total">
-          {{ formatPrice(order.total_price) }}
-        </div>
-      </div>
-
-      <div class="order-details">
-        <div class="order-date">
-          <strong>Fecha:</strong> {{ formatDate(order.created_at) }}
-        </div>
-        
-        <div *ngIf="order.shipping_address" class="shipping-address">
-          <strong>Dirección de envío:</strong> {{ order.shipping_address }}
-        </div>
-
-        <!-- Items de la orden -->
-        <div *ngIf="order.items && order.items.length > 0" class="order-items">
-          <h4>Productos ({{ order.items.length }} items):</h4>
-          <div class="items-list">
-            <div *ngFor="let item of order.items" class="order-item">
-              <div class="item-details">
-                <span class="item-id">ID: {{ item.product_id.substring(0, 8) }}</span>
-                <span class="item-quantity">Cantidad: {{ item.quantity }}</span>
-                <span class="item-price">{{ formatPrice(item.price) }}</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Información de envío si existe -->
-        <div *ngIf="order.shipping" class="shipping-info">
-          <h4>Información de Envío:</h4>
-          <div class="shipping-details">
-            <p><strong>Número de seguimiento:</strong> {{ order.shipping.tracking_number }}</p>
-            <p><strong>Estado del envío:</strong> {{ translateStatus(order.shipping.status) }}</p>
-            <p><strong>Dirección:</strong> {{ order.shipping.shipping_address }}</p>
-          </div>
-        </div>
-      </div>
-
-      <div class="order-actions">
-        <button class="view-details-button" (click)="viewOrderDetails(order.id)">
-          Ver Detalles
-        </button>
-      </div>
+<!-- Orders list -->
+<div *ngIf="!isLoading && !error && orders.length > 0" class="orders-list ">
+  <div class="row g-3">
+    <div *ngFor="let order of orders" class="col-12 col-md-6 col-lg-4">
+      <app-item-order [order]="order"></app-item-order>
     </div>
   </div>
+</div>
+
 </div>

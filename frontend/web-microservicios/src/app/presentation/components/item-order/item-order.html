@@ -1,0 +1,72 @@
+<div class="card-header ">
+        <h2 class="  title-header p-3">Orden</h2>
+      </div>
+<div class="card p-4 order-modal ">
+      
+      <div  class="order-details p-3">
+        <div class="order-items mb-4 mt-4">
+            <h4 class="title mb-4">Productos ordenados:</h4>
+            
+            <!-- Loading state -->
+            <div *ngIf="isLoadingProducts" class="text-center p-3">
+              <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Cargando productos...</span>
+              </div>
+              <p class="mt-2">Cargando productos...</p>
+            </div>
+
+            <!-- Products loaded -->
+            <div class="divider"></div>
+            <div *ngIf="!isLoadingProducts && products.length > 0" class="products-container mt-4">
+              <div *ngFor="let product of products; let i = index" class="order-item mb-3">
+                <div class="d-flex align-items-center justify-content-between gap-3 p-2">
+                  <div class="product-info">
+                    <h5 class="product-name mb-1">{{ product.name }}</h5>
+                    <p class="product-price mb-0">Precio: {{ formatPrice(product.price) }}</p>
+                  </div>
+                <!-- Mostrar cantidad del item -->
+                <div class="item-quantity">
+                  <small>Unid: {{ order.items[i].quantity }}</small>
+                </div>
+              </div>
+              <div class="divider"></div>
+            </div>
+          </div>
+        
+        <!-- Información de la orden -->
+  
+        </div>
+      </div>
+      <div class="row gap-2 p-2 align-items-center container-estado-price">
+        <div class="container-estado-pending container-estado col-12 col-lg-6 col-md-6">
+          <p class="estado">{{order.status }}</p>
+        </div>
+        <div class="col-12 col-lg-6">
+          <p id="price" > {{ formatPrice(order.total_price) }}</p>
+        </div>
+        
+      </div>
+      <div class="divider"></div>
+      <div class="d-flex justify-content-between p-2  ">
+        <div class="p-2">
+            <p class="text-fecha mb-0" ><strong>Creación:</strong></p>
+            <p class="text-fecha"> {{ formatDate(order.updated_at) }}</p>
+        </div>
+        <div class="p-2">
+            <p class="text-fecha mb-0"><strong>Actualización:</strong></p>
+          <p class="text-fecha"> {{ formatDate(order.created_at) }}</p>
+        </div>
+      </div>
+      
+      <div class="divider"></div>   
+      <div>
+      <button  class="btn-primary">
+        Terminar pedido
+      </button>
+      <button  class="btn-outline-danger ms-3">
+        Terminar pedido
+      </button>
+      </div>
+
+        
+</div>

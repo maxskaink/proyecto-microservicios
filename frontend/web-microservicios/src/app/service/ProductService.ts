@@ -5,6 +5,7 @@ import { map, filter, take, tap, catchError } from 'rxjs/operators';
 import { Product } from '../Models/Product';
 import { ProductPeticion } from '../Models/PrdocutPeticion';
 import { AuthService } from './Authser.vice';
+import { TenantService } from './TenantService';
 
 export const SKIP_INTERCEPTOR = new HttpContextToken<boolean>(() => false);
 
@@ -15,14 +16,14 @@ export class ProductService {
   constructor(
     private http: HttpClient,
     private authService: AuthService,
+    private tenantService: TenantService,
   ) {}
 
   /**
    * Combina tenant ID y headers de autenticación
    */
   private getTenant(): Observable<{ tenantId: string }> {
-    return this.authService.idTenant$.pipe(
-      filter((tenantId): tenantId is string => !!tenantId),
+    return this.tenantService.getTenantId().pipe(
       take(1),
       map((tenantId) => ({ tenantId })),
     );
@@ -74,14 +75,8 @@ export class ProductService {
   /**
    * Crea un nuevo producto - VERSIÓN REACTIVA
    */
-  postProduct(product: ProductPeticion): Observable<Product> {
-    // Verificar estado actual del tenant antes de continuar
-    console.log('🔍 Verificando estado del tenant...');
-    this.authService.idTenant$.pipe(take(1)).subscribe(
-      (tenantId) => console.log('🏢 Estado actual del tenant en AuthService:', tenantId),
-      (error) => console.error('❌ Error al obtener tenant:', error),
-    );
 
+  postProduct(product: ProductPeticion): Observable<Product> {
     return this.getTenant().pipe(
       tap(({ tenantId }) => {
         console.log('🌐 Tenant ID obtenido:', tenantId);

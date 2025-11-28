@@ -2,9 +2,15 @@
   <div class="image-container">
       <img [src]="product.photo_url" [alt]="product.name" class="card-img-top">
   </div>
-
   <div class="card-body">
       <h5 class="title-name">{{ product.name }}</h5>
-      <p class="price">{{ product.price | currency:'COP':'symbol':'1.0-0' }}</p>
+      <p class="category"> {{product.category}}</p>
+      <p class="price">{{ product.price | currency:'':'symbol':'1.0-0' }}</p>
   </div>
+  <section class="section-button row p-4 pt-0 " *ngIf="showActions">
+      <button class="col-7 col-md-7 col-lg-7 btn btn-secondary ">Editar</button>
+      <button class=" col-4 col-lg-4 btn btn-danger">
+        <i class="bi bi-trash"></i>
+      </button>
+  </section>
 </div>

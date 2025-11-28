@@ -108,7 +108,15 @@ export class PublishProduct implements OnInit {
       next: (result) => {
         if (result !== null) {
           console.log('✅ Producto publicado con foto exitosamente');
-          alert('¡Producto publicado exitosamente con imagen!');
+          Swal.fire({
+            icon: 'success',
+            title: 'Éxito',
+            text: 'Producto publicado correctamente.',
+            buttonsStyling: false,
+            customClass: {
+              confirmButton: 'btn btn-success'
+            }
+          });
           this.imagePreview = null;
           this.selectedFile = null;
           this.cdr.detectChanges();

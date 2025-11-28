@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 })
 export class ViewMyProducts implements OnInit {
   public allProducts: Product[] = [];
-  public isLoading: boolean = true;
+  public isLoading: boolean = false;
   
   constructor(
     private serviceProduct: ProductService,
@@ -25,19 +25,25 @@ export class ViewMyProducts implements OnInit {
     private router: Router
   ) { }
   ngOnInit(): void {
-    this.loadMyProducts();
-  }
-loadMyProducts() {
-  const userId = this.authService.userCurrentData?.id;
-  if (!userId) {
-    console.error('No hay usuario actual');
-    return;
+    this.authService.userData.subscribe(userData => {
+      if (userData) {
+        this.loadMyProducts();
+      }
+    });
   }
 
+loadMyProducts() {
+  const userId = this.authService.userCurrentData?.id;
+
+  if (!userId) {
+    console.warn("UserData aún no está listo. Reintentando...");
+    setTimeout(() => this.loadMyProducts(), 150);
+    return;
+  }
   this.serviceProduct.getProducts(1, 100).subscribe({
     next: (products) => {
       console.log('Todos los productos:', products);
-      this.allProducts = products.filter(p => p.producer_id === userId);
+      this.allProducts = products.filter(p => String(p.producer_id) === String(userId));
       console.log('Productos del usuario:', this.allProducts);
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -71,7 +77,6 @@ loadMyProducts() {
       next: () => {
         console.log('Producto eliminado con éxito:', productId);
         this.loadMyProducts();
-        this.cdr.detectChanges();
       },
       error: (error) => {
         console.error('Error al eliminar el producto:', error);

@@ -97,9 +97,6 @@
             (input)="onInputChange()"
             [disabled]="isLoading"
           />
-          <div *ngIf="(passwordInput.invalid && (passwordInput.dirty || passwordInput.touched || loginForm.submitted)) && !passwordError" class="text-danger small">
-            La contraseña es obligatoria y debe tener al menos 6 caracteres.
-          </div>
           <div *ngIf="passwordError" class="text-danger small">
             la contraseña es incorrecta
           </div>

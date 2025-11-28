@@ -9,36 +9,41 @@ import { TenantService } from '../service/TenantService';
 export class authGuard implements CanActivate {
 
   constructor(
-    private authService: AuthService, 
+    private authService: AuthService,
     private tenantService: TenantService,
     private router: Router
   ) {}
 
   canActivate(): Observable<boolean | UrlTree> {
+
     return combineLatest([
-      this.authService.isLoggedIn$,
-      this.tenantService.tenant$
+      this.authService.authReady$,          // 🚀 Espera a que Firebase termine
+      this.authService.currentUser,         // Usuario real
+      this.tenantService.tenant$            // Tenant
     ]).pipe(
+      // SOLO avanzar cuando authReady$ === true
+      filter(([ready]) => ready === true),
+
       take(1),
-      map(([isLoggedIn, tenantId]) => {
-        
-        // Verificar si está autenticado
-        if (!isLoggedIn) {
-          console.log('❌ Usuario no autenticado, redirigiendo a login');
+
+      map(([_, user, tenantId]) => {
+
+        if (!user) {
+          console.log("❌ Usuario NO autenticado → login");
           return this.router.createUrlTree(['/login']);
         }
 
-        // Verificar si tiene tenant seleccionado
         if (!tenantId) {
-          console.log('⚠️ Usuario sin tenant, redirigiendo a selección de tenant');
+          console.log("⚠ Usuario autenticado pero SIN tenant → register-tenant");
           return this.router.createUrlTree(['/register-tenant']);
         }
 
-        console.log('✅ Usuario autenticado y con tenant:', tenantId);
+        console.log("✔ Usuario y tenant OK:", tenantId);
         return true;
       }),
-      catchError((error) => {
-        console.error('❌ Error en roleGuard:', error);
+
+      catchError((err) => {
+        console.error("❌ Error en authGuard:", err);
         return of(this.router.createUrlTree(['/login']));
       })
     );

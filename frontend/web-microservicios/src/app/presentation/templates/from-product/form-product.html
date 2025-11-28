@@ -84,7 +84,7 @@
       [(ngModel)]="product.description" 
       name="description" 
       minlength="4"
-      maxlength="100"
+      maxlength="200"
       #description="ngModel">
     </textarea>
     <div *ngIf="description.invalid && description.touched" class="text-danger">

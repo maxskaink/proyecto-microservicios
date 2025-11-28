@@ -6,6 +6,7 @@ import { Product } from '../../../Models/Product';
 import { ListProductTenantPreview } from '../../templates/list-product-tenant-preview/list-product-tenant-preview';
 import { ProductService } from '../../../service/ProductService';
 import { TenantService } from '../../../service/TenantService';
+import { LoadingService } from '../../../service/loading-service';
 
 @Component({
   selector: 'app-home',
@@ -46,6 +47,7 @@ export class Home implements OnInit {
     private cdr: ChangeDetectorRef,
     private router: Router,
     private tenantService: TenantService,
+    private loadingService: LoadingService,
   ) {}
 
   ngOnInit(): void {
@@ -61,16 +63,15 @@ export class Home implements OnInit {
 
     this.tenantService.getCurrentUserTenant().subscribe((tenant) => {
       if (!tenant) {
-        console.error('❌ No se encontró el tenant actual');
+        console.error('No se encontró el tenant actual desde home.');
         return;
       }
 
       const route = ['product', tenant.tenant_id, product.id];
-      console.log('🚀 Navegando a:', route);
 
       this.router.navigate(route).then(
-        (success) => console.log('✅ Navegación exitosa:', success),
-        (error) => console.error('❌ Error en navegación:', error),
+        (success) => console.log(' Navegación exitosa:', success),
+        (error) => console.error(' Error en navegación:', error),
       );
     });
   }
@@ -99,16 +100,18 @@ export class Home implements OnInit {
    */
   loadProductsForTenant(): void {
     //TODO cambiar el mil por una paginacion real
+    this.loadingService.show('Cargando productos...');
     this.productService.getProducts(1, 100).subscribe((products: Product[]) => {
       console.log('📦 Productos recibidos:', products);
 
       this.products = products;
       this.allProducts = products; // Guarda todos los productos
       this.groupProductsByCategory(products);
-
+      this.loadingService.hide();
       this.cdr.detectChanges(); // 🔥 Fuerza actualización de la vista
     });
   }
+
   scrollToSection(sectionId: string, event?: Event) {
     if (event) {
       event.preventDefault();

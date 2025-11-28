@@ -19,7 +19,7 @@ export class FormProduct {
   @ViewChild('productForm') productForm?: NgForm;
 
   
-  product: ProductPeticion = {
+  @Input() product: ProductPeticion = {
     name: '',
     category: '',
     price: 100,

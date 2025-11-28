@@ -49,8 +49,13 @@ loadMyProducts() {
     }
   });
 }
+/**
+ * si la persona hace click en un producto, lo redirige a la pagina de detalle del producto
+ * @param product Producto seleccionado
+ */
   onProductClick( product: Product ) {
     console.log('Producto seleccionado en view-my-products:', product);
+    this.router.navigate(['/edit-pruduct', product.id]);
   }
   onAction(action: {state:string, id:string}) {
     console.log('Acción recibida en view-my-products:', action.state, action.id);

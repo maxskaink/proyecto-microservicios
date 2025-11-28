@@ -1,1 +1,18 @@
-<p>edit-item works!</p>
+<app-header></app-header>
+<div class="container-page">
+    <div *ngIf="isLoading" class="text-center mt-5">
+        <p>Cargando producto...</p>
+    </div>
+    <div class="publish-product-container py-5">
+           <h2 class="container p-4">Publicar Nuevo Producto</h2>
+        <div class="container container-form">
+            <app-form-product
+                *ngIf="!isLoading" 
+                [categories]="categories"
+                [product]="productData"
+                [action]="'edit'"
+                (productCreated)="handleProduct($event)">
+            </app-form-product>
+        </div>
+    </div>
+</div>

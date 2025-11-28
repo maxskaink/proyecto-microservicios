@@ -100,33 +100,23 @@ func (s *Service) GetByID(orderID string, tenantID string) (*dto.OrderDTO, error
 
 func (s *Service) GetByUserID(userID string, status domain.OrderStatus, tenantID string) ([]dto.OrderDTO, error) {
 
-	user, err := s.userRepo.GetByID(userID, tenantID)
+	_, err := s.userRepo.GetByID(userID, tenantID)
 	if err != nil {
 		return nil, err
 	}
-	if user.Rol == "user" {
-		response_raw, err := s.orderRepo.GetByUserID(userID, tenantID)
-		if err != nil {
-			return nil, err
-		}
-
-		//Filtrar por estado
-		var response []dto.OrderDTO
-		for _, order := range response_raw {
-			if order.Status == string(status) {
-				response = append(response, order)
-			}
-		}
-
-		return response, nil
-	}
-
-	//TODO falta validar si es productor
-
-	response, err := s.orderRepo.GetByStatus(string(status), tenantID)
+	response_raw, err := s.orderRepo.GetByUserID(userID, tenantID)
 	if err != nil {
 		return nil, err
 	}
+
+	//Filtrar por estado
+	var response []dto.OrderDTO
+	for _, order := range response_raw {
+		if order.Status == string(status) {
+			response = append(response, order)
+		}
+	}
+
 	return response, nil
 
 }

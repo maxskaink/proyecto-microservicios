@@ -78,7 +78,7 @@ func (oc *OrderController) listUserOrders(c *gin.Context) {
 		return
 	}
 
-	statusStr := c.Param("status")
+	statusStr := c.Query("status")
 
 	if statusStr == "" {
 		statusStr = string(domain.OrderStatusPending)

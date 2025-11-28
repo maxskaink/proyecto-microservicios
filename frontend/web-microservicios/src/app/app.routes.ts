@@ -10,6 +10,7 @@ import { ListOrders } from './presentation/pages/list-orders/list-orders';
 import { authGuard } from './guards/auth.guards';
 import { Order } from './presentation/templates/order/order';
 import { HistoryOrdersUser } from './presentation/pages/history-orders-user/history-orders-user';
+import { ViewMyProducts } from './presentation/pages/view-my-products/view-my-products';
 
 export const routes: Routes = [
     { 
@@ -55,6 +56,10 @@ export const routes: Routes = [
     {
       path: 'history-orders-user',
       component: HistoryOrdersUser  
+    },
+    {
+      path: 'admin-panel',
+      component: ViewMyProducts  
     },
     {
         path: '',

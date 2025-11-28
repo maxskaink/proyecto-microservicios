@@ -12,6 +12,7 @@ import { Product } from '../../../Models/Product';
 })
 export class ListProductTenantPreview {
   @Input() public products: Product[] = [];
+  @Input() showActions: boolean = false;
   @Output() productClick = new EventEmitter<Product>();
   
   constructor() {}

@@ -71,7 +71,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Mis Productos',
       description: 'Mira tus pedidos',
       icon: 'bi-box-seam',
-      route: '',
+      route: 'admin-panel',
       category: 'business'
     },
     {

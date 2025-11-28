@@ -6,7 +6,7 @@
   box-shadow: 0 2px 8px rgba(0,0,0,0.1);
   display: flex;
   flex-direction: column;
-  background-color: rgb(252, 253, 240);
+  background: linear-gradient(10deg, #fff1f1,   #bce9e9);
 }
 
 /* Contenedor que controla la altura de la imagen */
@@ -29,16 +29,26 @@
   
   flex: 1;  /* Se ajusta a lo que queda del card */
 }
-
-.title-name {
+.category{
+  font-size: 13px;
   font-weight: 300;
+  margin-bottom: 0.2rem;
+}
+.title-name {
+  font-weight: 700;
   font-size: medium;
-  height: 2rem;
+  height: 1rem;
   overflow: hidden;
+  margin-bottom: 0;
+
 }
 
 .price {
   font-size: 1rem;
   font-weight: 600;
   color: var(--color-success);
+}
+.btn{
+  height: 3rem;
+  margin: 2px;
 }

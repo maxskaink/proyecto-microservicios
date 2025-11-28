@@ -2,7 +2,7 @@
     height: 50rem;
 }
 .orders-container{
-    padding: 0;
+    padding: 0.5rem;
     padding-top: 5rem;
 }
 .btn-primary{
@@ -27,6 +27,7 @@
 }
 @media screen and (min-width: 1024px) {
     .section-current {
-        padding: 10rem;
+        padding:  5rem  30rem 5rem;
+
     }
 }

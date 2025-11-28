@@ -12,6 +12,7 @@ import { Console } from 'console';
 })
 export class ProductBox {
   @Input() product!: Product;
+  @Input() showActions: boolean = false;
   @Output() productClick = new EventEmitter<Product>();
   constructor() {
     console.log("ProductBox creado para producto:", this.product);  

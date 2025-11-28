@@ -9,6 +9,7 @@
   --color-light: #F5F5DC;
   --color-dark: #1e293b;
 }
+
 .btn-danger{
   background-color: #e7cfcf;
   color: #ef4444;
@@ -20,6 +21,14 @@
   font-weight: 800;
   border-radius: 20px;
   border: none;
+  height: 3rem;
+}
+.btn-secondary{
+  background-color: #eff1f0;
+  color: #066d2e;
+  font-weight: 800;
+  border-radius: 20px;
+  border: 1px solid #066d2e;
   height: 3rem;
 }
 .btn-primary:disabled{

@@ -9,6 +9,7 @@ import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
 import { ListOrders } from './presentation/pages/list-orders/list-orders';
 import { authGuard } from './guards/auth.guards';
 import { Order } from './presentation/templates/order/order';
+import { HistoryOrdersUser } from './presentation/pages/history-orders-user/history-orders-user';
 
 export const routes: Routes = [
     { 
@@ -52,8 +53,14 @@ export const routes: Routes = [
         component: ListOrders
     },
     {
+      path: 'history-orders-user',
+      component: HistoryOrdersUser  
+    },
+    {
         path: '',
         redirectTo: '/login',
         pathMatch: 'full'
-    }
+    },
+    
+
 ];

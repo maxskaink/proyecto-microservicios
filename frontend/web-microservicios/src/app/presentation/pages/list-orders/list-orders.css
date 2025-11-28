@@ -1,3 +1,17 @@
+/**estilos para la carga*/
+.loading{
+  height: 50rem;
+
+}
+
+.empty-orders{
+  height: 50rem;
+  display: flex;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
 /* Estilos para la página de órdenes */
 .orders-container {
 
@@ -35,7 +49,7 @@
   background: #0056b3;
 }
 
-.loading, .error, .empty-orders {
+.loading, .error {
   background: #fff;
   border-radius: 8px;
   padding: 20px;
@@ -161,3 +175,4 @@
     padding: 1rem;
   }
 }
+

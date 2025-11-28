@@ -20,7 +20,7 @@ export class AuthService {
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private userDataSubject = new BehaviorSubject<UserData | null>(null);
-
+  public userCurrentData: UserData | null = null;
   url: string = 'http://localhost:80/';
 
   private cachedToken: string | null = null;
@@ -77,7 +77,7 @@ export class AuthService {
           headers: { Authorization: `Bearer ${token}` }
         })
       );
-
+      this.userCurrentData = backendUserData;
       this.userDataSubject.next(backendUserData);
       console.log('✅ userData cargado:', backendUserData);
 
@@ -118,7 +118,9 @@ export class AuthService {
   get currentUser(): Observable<User | null> {
     return this.currentUserSubject.asObservable();
   }
-
+  getCurrentUser(): BehaviorSubject<User | null> {
+    return this.currentUserSubject;
+  }
   get userData(): Observable<UserData | null> {
     return this.userDataSubject.asObservable();
   }

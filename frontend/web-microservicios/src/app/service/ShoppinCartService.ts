@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, from, switchMap, combineLatest, of } from 'rxjs';
 import { map, filter, take } from 'rxjs/operators';
 import { ShoppingPeticion } from '../Models/ShoppingPeticion';
@@ -121,19 +121,40 @@ getShoppingCart(): Observable<CartItem[]> {
       })
     );
   }
+  /**
+   * trae las ordenes de un usuario por estado
+   * @param status estado de las ordenes a consultar
+   * @returns Ordenes del estado que desea consutlar
+   */
+  getUserOrders(status: string): Observable<Order[]> {
+    const tenantId = this.tenantService.getTenant();
 
-  getUserOrders(): Observable<Order[]> {
+    if (!tenantId) {
+      console.error('No hay tenant disponible');
+      return of([]);
+    }
+
+    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
+
+    const params = new HttpParams().set('status', status);
+
+    return this.http.get<Order[]>(url, { params });
+  }
+
+  getUserOrdersProducer(){
+    const idUser = this.authService.userCurrentData?.id;
+    if (!idUser) {
+      console.error('No hay usuario disponible');
+      return of([]);
+    }
     const tenantId = this.tenantService.getTenant(); // ← Método síncrono
     if (!tenantId) {
       console.error('No hay tenant disponible');
       return of([]);
     }
-    
-    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
+    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/producer/${idUser}`;
     return this.http.get<Order[]>(url);
-  }
-
-
+  } 
   /**
    * Obtiene una orden específica por su ID
    */
@@ -142,6 +163,16 @@ getShoppingCart(): Observable<CartItem[]> {
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}`;
         return this.http.get<Order>(url);
+      })
+    );
+  }
+
+  updateStateOrder(status:any, orderId: string): Observable<any> {
+    return this.getTenant().pipe(
+      switchMap(( tenantId ) => {
+        const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}/status`;
+        const body = status ;
+        return this.http.put<any>(url, body);
       })
     );
   }

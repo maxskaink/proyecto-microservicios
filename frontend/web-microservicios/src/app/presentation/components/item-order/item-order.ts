@@ -18,6 +18,7 @@ export class ItemOrder implements OnInit{
    * action: accion del boton indicado, manda estado a actualizar y el ide del itema a actualizar
    */
   @Input() order!: Order;
+  @Input() showActions: boolean = true;
   @Output() action = new EventEmitter<{ status: string; id: string }>();
 
   public products: Product[] = [];

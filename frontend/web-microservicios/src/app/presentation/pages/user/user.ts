@@ -53,7 +53,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Historial de Compras',
       description: 'Revisa tus compras anteriores',
       icon: 'bi-clock-history',
-      route: '/purchase-history',
+      route: '/history-orders-user',
       category: 'shopping'
     },
     // Sección de Perfil

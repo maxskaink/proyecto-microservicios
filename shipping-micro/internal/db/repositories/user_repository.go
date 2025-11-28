@@ -26,6 +26,7 @@ func (r *UserRepository) Create(user *dto.UserDTO, tenantID string) error {
 		UUID:  user.FirebaseUID,
 		Email: user.Email,
 		Name:  user.Name,
+		Rol:   user.Rol,
 	}
 
 	err := r.tenantDB.ExecuteInSchema(tenantID, func(tx *gorm.DB) error {

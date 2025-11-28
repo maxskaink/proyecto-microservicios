@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -43,6 +44,7 @@ func (sc *ShippingController) list(c *gin.Context) {
 		handleUserError(c, err)
 		return
 	}
+	fmt.Println(user)
 
 	if user.Rol != "admin" {
 		handleUserError(c, domain.UnauthorizedError{Message: "only admins can access"})

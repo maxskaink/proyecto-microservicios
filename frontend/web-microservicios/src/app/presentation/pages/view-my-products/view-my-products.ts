@@ -6,6 +6,7 @@ import { ProductService } from '../../../service/ProductService';
 import { AuthService } from '../../../service/Authser.vice';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { ListProductTenantPreview } from '../../templates/list-product-tenant-preview/list-product-tenant-preview';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-my-products',
@@ -21,6 +22,7 @@ export class ViewMyProducts implements OnInit {
     private serviceProduct: ProductService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private router: Router
   ) { }
   ngOnInit(): void {
     this.loadMyProducts();
@@ -47,8 +49,30 @@ loadMyProducts() {
     }
   });
 }
-onProductClick( product: Product ) {
-  // Lógica para manejar el clic en un producto
-}
+  onProductClick( product: Product ) {
+    console.log('Producto seleccionado en view-my-products:', product);
+  }
+  onAction(action: {state:string, id:string}) {
+    console.log('Acción recibida en view-my-products:', action.state, action.id);
+    if (action.state === 'delete') {
+      this.deleteProduct(action.id);
+    }else if (action.state === 'edit') {
+      this.router.navigate(['/edit-product', action.id]);
+    }
+  }
+
+  deleteProduct(productId: string) {
+    this.serviceProduct.deleteProduct(productId).subscribe({
+      next: () => {
+        console.log('Producto eliminado con éxito:', productId);
+        this.loadMyProducts();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error al eliminar el producto:', error);
+      }
+    });
+  }
+
 
 }

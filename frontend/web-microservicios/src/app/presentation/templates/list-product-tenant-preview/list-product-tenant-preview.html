@@ -7,7 +7,8 @@
         <app-product-box 
           [product]="product"
           [showActions]="showActions"
-          (productClick)="onProductClick($event)">
+          (productClick)="onProductClick($event)"
+          (action)="onAction($event)">
         </app-product-box>
 
       </div>

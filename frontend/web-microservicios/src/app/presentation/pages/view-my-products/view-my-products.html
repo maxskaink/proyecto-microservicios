@@ -5,6 +5,10 @@
       <app-arrow-left></app-arrow-left>
     </button>
   </div>
+  <section class="section-title container-fluid d-flex flex-column justify-content-center align-items-center mb-4">
+    <h1 class="title">Mis Productos</h1>
+    <p class="subtitle">Administra tus productos publicados</p>
+  </section>
   <div *ngIf="!allProducts || allProducts.length === 0" class="container-fluid d-flex flex-column justify-content-center align-items-center" style="height: 80vh;">
     <h1>No tiense productos publicados aun</h1>
     <button class="btn btn-secondary">Publicar mi primer producto</button>

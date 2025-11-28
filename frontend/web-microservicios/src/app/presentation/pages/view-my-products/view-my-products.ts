@@ -32,7 +32,7 @@ loadMyProducts() {
     return;
   }
 
-  this.serviceProduct.getProducts(1, 19999).subscribe({
+  this.serviceProduct.getProducts(1, 100).subscribe({
     next: (products) => {
       console.log('Todos los productos:', products);
       this.allProducts = products.filter(p => p.producer_id === userId);

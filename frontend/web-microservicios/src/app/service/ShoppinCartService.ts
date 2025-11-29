@@ -166,7 +166,12 @@ getShoppingCart(): Observable<CartItem[]> {
       })
     );
   }
-
+  /**
+   * 
+   * @param status  etado al que desea actualizar la orden
+   * @param orderId id de la orden a actualizar
+   * @returns orden actualizada
+   */
   updateStateOrder(status:any, orderId: string): Observable<any> {
     return this.getTenant().pipe(
       switchMap(( tenantId ) => {

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { Header } from '../../templates/header/header';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
@@ -23,7 +23,9 @@ export class ListOrders implements OnInit {
   isLoading = true;
   error: string | null = null;
   updateStatus: updateStatus = {status: ''};
-  constructor(private shoppingService: ShoppingCartService,
+  constructor(
+    private router: Router,
+    private shoppingService: ShoppingCartService,
     private cdr: ChangeDetectorRef,
     private loadingService: LoadingService,
   ) {}
@@ -123,7 +125,7 @@ export class ListOrders implements OnInit {
   viewOrderDetails(orderId: string) {
     // Por ahora solo mostramos un alert, después se puede navegar a una página de detalles
     console.log('Ver detalles de la orden:', orderId);
-    alert(`Detalles de la orden: ${orderId}`);
+    this.router.navigate(['list-order/view-order', orderId]);
   }
 
   handlerOrderAction(event: { status: string; id: string }) {
@@ -137,6 +139,6 @@ export class ListOrders implements OnInit {
       }
     });
   }
-
+  
   
 }

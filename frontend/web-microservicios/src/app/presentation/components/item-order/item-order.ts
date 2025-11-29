@@ -20,6 +20,7 @@ export class ItemOrder implements OnInit{
   @Input() order!: Order;
   @Input() showActions: boolean = true;
   @Output() action = new EventEmitter<{ status: string; id: string }>();
+  @Output() details = new EventEmitter<string>();
 
   public products: Product[] = [];
   public isLoadingProducts = false;
@@ -109,5 +110,8 @@ export class ItemOrder implements OnInit{
       status: "cancelled",
       id: this.order.id
     });
+  }
+  onClickDetails() {
+    this.details.emit(this.order.id);
   }
 }

@@ -1,4 +1,4 @@
-export interface Shipping {
+export interface ShippingResponse {
       id: string;
   order_id: string;
   tracking_number: string;

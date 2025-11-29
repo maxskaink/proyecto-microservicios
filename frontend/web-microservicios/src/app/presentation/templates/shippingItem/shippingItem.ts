@@ -6,10 +6,10 @@ import { Shipping } from '../../../Models/OrderPeticion';
 @Component({
   selector: 'app-shipping',
   imports: [CommonModule],
-  templateUrl: './shipping.html',
-  styleUrl: './shipping.css',
+  templateUrl: './shippingItem.html',
+  styleUrl: './shippingItem.css',
 })
-export class ShippingPage {
+export class shippingItem {
   @Input() showActions: boolean = true;
   @Input() shipping!: Shipping;
   constructor(

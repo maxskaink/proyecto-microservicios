@@ -12,6 +12,7 @@ import { Order } from './presentation/templates/order/order';
 import { HistoryOrdersUser } from './presentation/pages/history-orders-user/history-orders-user';
 import { ViewMyProducts } from './presentation/pages/view-my-products/view-my-products';
 import { EditItem } from './presentation/pages/edit-item/edit-item';
+import { ShippingOrderPage } from './presentation/pages/shipping-order-page/shipping-order-page';
 
 export const routes: Routes = [
     { 
@@ -65,6 +66,10 @@ export const routes: Routes = [
     {
       path: 'edit-product/:id',
       component: EditItem
+    },
+    {
+      path: 'list-order/view-order/:id',
+      component: ShippingOrderPage
     },
     {
         path: '',

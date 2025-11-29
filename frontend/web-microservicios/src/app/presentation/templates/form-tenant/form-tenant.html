@@ -1,0 +1,83 @@
+<form [formGroup]="tenantForm" (ngSubmit)="onSubmit()" class="p-3">
+
+  <!-- Tenant ID -->
+  <div class="mb-3">
+    <label for="tenant_id" class="form-label">Tenant ID</label>
+    <input
+      type="text"
+      id="tenant_id"
+      class="form-control"
+      formControlName="tenant_id"
+      placeholder="Enter tenant ID"
+    />
+
+    <div *ngIf="tenantForm.get('tenant_id')?.invalid && tenantForm.get('tenant_id')?.touched"
+         class="invalid-feedback d-block">
+      El Tenant ID es requerido.
+    </div>
+  </div>
+
+  <!-- Tenant Name -->
+  <div class="mb-3">
+    <label for="tenant_name" class="form-label">Nombre del Tenant</label>
+    <input
+      type="text"
+      id="tenant_name"
+      class="form-control"
+      formControlName="tenant_name"
+      placeholder="Ingresa el nombre del tenant"
+    />
+
+    <div *ngIf="tenantForm.get('tenant_name')?.invalid && tenantForm.get('tenant_name')?.touched"
+         class="invalid-feedback d-block">
+      El nombre es requerido.
+    </div>
+  </div>
+
+  <!-- Descripción -->
+  <div class="mb-3">
+    <label for="description" class="form-label">Descripción</label>
+    <p class="text-muted small">Cuéntanos un poco sobre tu agrupación.</p>
+
+    <textarea
+      id="description"
+      class="form-control"
+      formControlName="description"
+      rows="3"
+      placeholder="Describe tu tenant"
+    ></textarea>
+
+    <div *ngIf="tenantForm.get('description')?.invalid && tenantForm.get('description')?.touched"
+         class="invalid-feedback d-block">
+      La descripción es requerida.
+    </div>
+  </div>
+
+  <!-- Locación -->
+  <div class="mb-3">
+    <label for="location" class="form-label">Locación</label>
+    <p class="text-muted small">Comparte la ubicación del tenant.</p>
+
+    <textarea
+      id="location"
+      class="form-control"
+      formControlName="location"
+      rows="3"
+      placeholder="Ingresa la locación del tenant"
+    ></textarea>
+
+    <div *ngIf="tenantForm.get('location')?.invalid && tenantForm.get('location')?.touched"
+         class="invalid-feedback d-block">
+      La locación es requerida.
+    </div>
+  </div>
+
+  <!-- Botón -->
+  <button
+    type="submit"
+    class="btn btn-primary w-100"
+    [disabled]="tenantForm.invalid"
+  >
+    Registrar mi tenant
+  </button>
+</form>

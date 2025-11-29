@@ -40,6 +40,10 @@
             <h2 class="product-name">{{ product.name }}</h2>
             <p class="">{{product.category}}</p>
             <p class="product-description">{{ product.description }}</p>
+            <div class="container-stock d-flex ">
+                <p><strong>Stock: {{product.stock}} </strong></p>
+                <p></p>
+            </div>
             <div class="container-price">
                 <p class="product-price">{{ product.price | currency:'$':'symbol':'1.0-0' }} / {{ product.unit }}</p>
             </div>
@@ -59,6 +63,11 @@
             </button>
           </div>
         </div>
+        <div class="col-12 mt-4">
+          <app-view-info-producer *ngIf="producer" [producer]="producer"></app-view-info-producer>
+
+        </div>
+
       </div>
       
     </div>

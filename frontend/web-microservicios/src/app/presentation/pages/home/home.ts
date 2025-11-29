@@ -7,10 +7,11 @@ import { ListProductTenantPreview } from '../../templates/list-product-tenant-pr
 import { ProductService } from '../../../service/ProductService';
 import { TenantService } from '../../../service/TenantService';
 import { LoadingService } from '../../../service/loading-service';
+import { IsLoading } from '../../components/is-loading/is-loading';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Header, ListProductTenantPreview],
+  imports: [CommonModule, Header, ListProductTenantPreview, IsLoading],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -99,18 +100,28 @@ export class Home implements OnInit {
    * Carga los productos para el tenant actual
    */
   loadProductsForTenant(): void {
-    //TODO cambiar el mil por una paginacion real
     this.loadingService.show('Cargando productos...');
-    this.productService.getProducts(1, 100).subscribe((products: Product[]) => {
-      console.log('📦 Productos recibidos:', products);
 
-      this.products = products;
-      this.allProducts = products; // Guarda todos los productos
-      this.groupProductsByCategory(products);
-      this.loadingService.hide();
-      this.cdr.detectChanges(); // 🔥 Fuerza actualización de la vista
+    this.productService.getProducts(1, 100).subscribe({
+      next: (products: Product[]) => {
+
+        this.products = products;
+        this.allProducts = products; // Guarda todos los productos
+        this.groupProductsByCategory(products);
+
+        this.cdr.detectChanges(); // 🔥 Fuerza actualización de la vista
+        this.loadingService.hide();
+      },
+      error: (error) => {
+        console.error('Error al cargar productos:', error);
+        this.products = [];
+        this.allProducts = [];
+        this.loadingService.hide();
+        this.cdr.detectChanges(); // Actualiza la UI incluso si hay error
+      }
     });
   }
+
 
   scrollToSection(sectionId: string, event?: Event) {
     if (event) {

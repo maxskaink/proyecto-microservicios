@@ -14,6 +14,9 @@
     height: 13rem;
     box-shadow: 0 25px 40px -15px rgba(0, 0, 0, 0.30);
 }
+.order{
+    height: 4rem;
+}
 .title{
     font-size: 2rem;
     font-weight: 700;
@@ -25,9 +28,9 @@
     background: linear-gradient(20deg, #7dada3, #acc7ba);
     padding: 1rem;
 }
-@media screen and (min-width: 1024px) {
+@media screen and (min-width: 1200px) {
     .section-current {
-        padding:  5rem  30rem 5rem;
+        padding:  5rem 5rem;
 
     }
 }

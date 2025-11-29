@@ -1,0 +1,62 @@
+<app-is-loading></app-is-loading>
+<app-header></app-header>
+<div class="container container-users p-1 mb-">
+    <div class="d-flex align-items-center flex-column mb-4 p-3" >
+        <h2 class="title">Administra tus usuarios</h2>
+        <p>Gestiona todos los usuarios</p>
+    </div>
+    <section  class="list-users p-3" >
+        <section class="row mb-4">
+        <h3 class="subtitle">Adinistradores: </h3>
+            <div *ngIf="admins.length === 0"
+                class="d-flex justify-content-center align-items-center w-100">
+                <p class="empty-user ">
+                No tienes Administrador hasta el momento
+                </p>
+            </div>
+            <app-user-box
+                *ngFor="let admin of admins"
+                [user]="admin"
+                (action)="onAction($event)"
+            ></app-user-box>
+        </section>
+        <section class="mb-4">
+            <h3 class="subtitle">Productores: </h3>
+            <div *ngIf="producers.length === 0"
+                class="d-flex justify-content-center align-items-center w-100">
+                <p class="empty-user ">
+                No tienes Productores hasta el momento
+                </p>
+            </div>
+
+            <app-user-box
+                *ngFor="let producer of producers"
+                [user]="producer"
+                (action)="onAction($event)"
+            ></app-user-box>
+        </section>
+        <section class="row mb-4 ">
+
+        <h3 class="subtitle ">
+            Clientes:
+        </h3>
+
+        <div *ngIf="clients.length === 0"
+            class="d-flex justify-content-center align-items-center w-100">
+            <p class="empty-user ">
+            No tienes clientes hasta el momento
+            </p>
+        </div>
+
+        <app-user-box
+            *ngFor="let user of clients"
+            [user]="user"
+            (action)="onAction($event)"
+            class="d-flex justify-content-center"
+        ></app-user-box>
+
+        </section>
+
+    </section>
+    
+</div>

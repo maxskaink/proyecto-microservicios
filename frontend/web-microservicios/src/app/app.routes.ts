@@ -8,10 +8,13 @@ import { RegisterTenant } from './presentation/pages/register-tenant/register-te
 import { ShoppingCart } from './presentation/pages/shopping-cart/shopping-cart';
 import { ListOrders } from './presentation/pages/list-orders/list-orders';
 import { authGuard } from './guards/auth.guards';
-import { Order } from './presentation/templates/order/order';
 import { HistoryOrdersUser } from './presentation/pages/history-orders-user/history-orders-user';
 import { ViewMyProducts } from './presentation/pages/view-my-products/view-my-products';
 import { EditItem } from './presentation/pages/edit-item/edit-item';
+import { ShippingOrderPage } from './presentation/pages/shipping-order-page/shipping-order-page';
+import { RoleGuard } from './guards/role.guards';
+import { ViewPanelUsers } from './presentation/pages/view-panel-users/view-panel-users';
+import { ViewUserInfoPage } from './presentation/pages/view-user-info-page/view-user-info-page';
 
 export const routes: Routes = [
     { 
@@ -21,56 +24,81 @@ export const routes: Routes = [
     { 
         path: 'user', 
         component: User,
-        canActivate: [authGuard],
-        data: {roles: ['admin', 'client', 'producer']}
+        canActivate: [authGuard], // Cualquier usuario autenticado
+        
     },
     {
         path: 'home',
         component: Home,
-        canActivate: [authGuard],
-        data: { roles: ['producer', 'admin', 'client'] }
+        canActivate: [authGuard], // Todos los usuarios autenticados
+        
     },
     {
         path: 'publishProduct',
         component: PublishProduct,
-        canActivate: [authGuard],
-        data: { roles: ['producer', 'admin'] }
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin', 'producer'] } // Solo productores y administradores
+        
     },
     {
         path: 'product/:tenantid/:id',
-        component: ViewProduct
+        component: ViewProduct,
+        canActivate: [authGuard] // Cualquier usuario autenticado puede ver productos
     }, 
     {
         path: 'register-tenant',
         component: RegisterTenant,
-        canActivate: [authGuard],
-        data: { roles: ['producer', 'admin'] }
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin', 'producer'] } // Solo productores y administradores // Solo productores y administradores
     },
     {
         path: 'shopping-cart',
-        component: ShoppingCart
+        component: ShoppingCart,
+        canActivate: [authGuard] // Solo clientes y administradores
     },
     {
         path: 'list-order',
-        component: ListOrders
+        component: ListOrders,
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin', 'producer'] } // Solo productores y administradoresz // Solo productores y administradores ven órdenes
     },
     {
       path: 'history-orders-user',
-      component: HistoryOrdersUser  
+      component: HistoryOrdersUser,
+      canActivate: [authGuard] // Solo clientes y administradores ven historial
     },
     {
       path: 'admin-panel',
-      component: ViewMyProducts  
+      component: ViewMyProducts,
+      canActivate: [authGuard, RoleGuard],
+      data: { roles: ['admin', 'producer'] } // Solo productores y administradores // Panel de productos para productores y admin
     },
     {
       path: 'edit-product/:id',
-      component: EditItem
+      component: EditItem,
+      canActivate: [authGuard, RoleGuard],
+      data: { roles: ['admin', 'producer'] } // Solo productores y administradores // Solo productores y admin pueden editar
+    },
+    {
+      path: 'list-order/view-order/:id',
+      component: ShippingOrderPage,
+      canActivate: [authGuard] // Cualquier usuario autenticado puede ver detalles de orden
+    },
+    {
+        path: 'user/list-users',
+        component: ViewPanelUsers,
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin'] } // Solo administradores pueden ver el panel de usuarios
+    },
+    {
+        path: 'user/view-user-info/:id',
+        component: ViewUserInfoPage,
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin'] } // Solo administradores pueden ver información de usuarios
     },
     {
         path: '',
         redirectTo: '/login',
         pathMatch: 'full'
     },
-    
-
 ];

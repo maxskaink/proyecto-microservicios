@@ -5,7 +5,7 @@ import { FormsModule } from '@angular/forms';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { CartItem } from '../../../Models/Cart';
 import { OrderPeticion, OrderResponse } from '../../../Models/OrderPeticion';
-import { catchError, of } from 'rxjs';
+import { catchError, map, of, switchMap } from 'rxjs';
 import { Header } from '../../templates/header/header';
 import { ProductViewBuy } from '../../templates/product-view-buy/product-view-buy';
 import { Order } from '../../templates/order/order';
@@ -32,7 +32,6 @@ export class ShoppingCart implements OnChanges {
     private shoppingCartService: ShoppingCartService, 
     private cdr: ChangeDetectorRef,
     private router: Router,
-
   ) {}
   ngOnChanges(changes: SimpleChanges): void {
     throw new Error('Method not implemented.');
@@ -80,7 +79,6 @@ export class ShoppingCart implements OnChanges {
   /** Vaciar carrito */
   clearCart() {
     if (!confirm('¿Vaciar todo el carrito?')) return;
-
     this.shoppingCartService.clearCart()
       .pipe(catchError(err => {
         console.error(err);
@@ -115,51 +113,69 @@ export class ShoppingCart implements OnChanges {
   }
 
   /** Crear una orden */
-  createOrder() {
-    if (!this.shippingAddress.trim()) {
-      alert('Por favor ingresa una dirección de envío');
-      return;
-    }
-
-    if (this.isCartEmpty) {
-      alert('No puedes crear una orden con el carrito vacío');
-      return;
-    }
-
-    this.isCreatingOrder = true;
-    this.error = null;
-
-    const data: OrderPeticion = {
-      shipping_address: this.shippingAddress.trim()
-    };
-
-    this.shoppingCartService.createOrder(data)
-      .pipe(
-        catchError(err => {
-          console.error(err);
-          this.error = 'Error al crear la orden, inténtalo de nuevo.';
-          this.isCreatingOrder = false;
-          return of(null);
-        })
-      )
-      .subscribe(resp => {
-        this.isCreatingOrder = false;
-
-        if (resp) {
-          console.log('✅ Orden creada exitosamente:', resp);
-          console.log('📦 Items en la orden:', resp.order.items);
-          
-          this.createdOrderResponse = resp;
-          this.orderSuccess = true;
-
-          this.loadCart();
-          this.shippingAddress = '';
-          
-          // Forzar detección de cambios
-          this.cdr.detectChanges();
-        }
-      });
+createOrder() {
+  if (!this.shippingAddress.trim()) {
+    alert('Por favor ingresa una dirección de envío');
+    return;
   }
+
+  if (this.isCartEmpty) {
+    alert('No puedes crear una orden con el carrito vacío');
+    return;
+  }
+
+  this.isCreatingOrder = true;
+  this.error = null;
+
+  const data: OrderPeticion = {
+    shipping_address: this.shippingAddress.trim()
+  };
+
+  this.shoppingCartService.createOrder(data).pipe(
+
+    catchError(err => {
+      console.error(err);
+      this.error = 'Error al crear la orden, inténtalo de nuevo.';
+      this.isCreatingOrder = false;
+      return of(null);
+    }),
+
+    // Si creó la orden, encadenar al updateStateOrder
+    switchMap(resp => {
+      if (!resp) return of(null); // si hubo error
+
+      this.createdOrderResponse = resp;
+
+      return this.shoppingCartService.updateStateOrder("paid", resp.order.id).pipe(
+        map(() => resp) // devolver resp para usar después
+      );
+    })
+
+  ).subscribe({
+
+    next: (resp) => {
+      this.isCreatingOrder = false;
+
+      if (!resp) return;
+
+      console.log("Orden creada:", resp);
+      console.log("Estado actualizado a paid");
+
+      this.orderSuccess = true;
+      this.loadCart();
+      this.shippingAddress = '';
+
+      this.cdr.detectChanges();
+    },
+
+    error: (error) => {
+      console.error("Error inesperado:", error);
+      this.error = "Ocurrió un error, inténtalo de nuevo.";
+      this.isCreatingOrder = false;
+    }
+
+  });
+}
 
 closeOrderSuccess(){
   this.router.navigate(['/home']);

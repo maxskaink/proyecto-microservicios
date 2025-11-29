@@ -1,48 +1,9 @@
 <app-header></app-header>   
 
-<div class="container mt-5">
-  <h2 class="mb-4">Register Tenant</h2>
-
-  <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()">
-
-    <!-- ID -->
-    <div class="mb-3">
-      <label for="tenant_id" class="form-label">Tenant ID</label>
-      <input 
-        type="text" 
-        id="tenant_id" 
-        class="form-control" 
-        formControlName="tenant_id" 
-        placeholder="Enter tenant ID"
-      />
-      <div *ngIf="tenantForm.get('tenant_id')?.invalid && tenantForm.get('tenant_id')?.touched" class="text-danger">
-        Tenant ID es requerido.
-      </div>
-    </div>
-
-    <!-- Nombre -->
-    <div class="mb-3">
-      <label for="tenant_name" class="form-label">Nombre del Tenant</label>
-      <input 
-        type="text" 
-        id="tenant_name" 
-        class="form-control" 
-        formControlName="tenant_name" 
-        placeholder="Enter tenant name"
-      />
-      <div *ngIf="tenantForm.get('tenant_name')?.invalid && tenantForm.get('tenant_name')?.touched" class="text-danger">
-        Nombre del tenant es requerido.
-      </div>
-    </div>
-
-
-    <!-- Botón de envío -->
-    <button 
-      type="submit" 
-      class="btn btn-primary"
-      [disabled]="tenantForm.invalid"
-    >
-      Registrar mi tenant
-    </button>
-  </form>
+<div class="container section-form">
+  <h2 class="mb-4 title p-4">Register Tenant</h2>
+  <app-form-tenant  class="card p-4 shadow-sm"
+    
+  (tenant)="onRegisterTenant($event)"
+  ></app-form-tenant>
 </div>

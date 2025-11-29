@@ -8,6 +8,7 @@ import { switchMap, catchError } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { FormProduct } from '../../templates/from-product/form-product';
 import Swal from 'sweetalert2';
+import { LoadingService } from '../../../service/loading-service';
 
 
 
@@ -33,6 +34,7 @@ export class PublishProduct implements OnInit {
   constructor(
     private productService: ProductService,
     private cdr: ChangeDetectorRef,
+    private loadingService: LoadingService,
     @Inject(PLATFORM_ID) private platformId: Object
   ) { }
 
@@ -51,6 +53,7 @@ export class PublishProduct implements OnInit {
   }
   
   publishProduct( productData: ProductPeticion ): void {
+
     if (!this.selectedFile) {
       alert('No hay imagen seleccionada.');
       this.isSubmitting = false;
@@ -58,7 +61,7 @@ export class PublishProduct implements OnInit {
     }
 
     let createdProductId: string;
-
+    this.loadingService.show('Cargando categorías...');
     // PASO 1: Crear el producto sin la foto
     this.productService.postProduct(productData).pipe(
       switchMap((createdProduct) => {
@@ -92,6 +95,7 @@ export class PublishProduct implements OnInit {
       }),
       catchError((error) => {
         console.error('❌ Error en el proceso de publicación:', error);
+        this.loadingService.hide();
         Swal.fire({
           icon: 'error',
           title: 'Error',
@@ -102,10 +106,12 @@ export class PublishProduct implements OnInit {
           }
         });
         this.isSubmitting = false;
+        
         return of(null);
       })
     ).subscribe({
       next: (result) => {
+        this.loadingService.hide();
         if (result !== null) {
           console.log('✅ Producto publicado con foto exitosamente');
           Swal.fire({
@@ -124,6 +130,7 @@ export class PublishProduct implements OnInit {
         this.isSubmitting = false;
       },
       error: (err) => {
+        
         console.error('❌ Error final:', err);
         Swal.fire({
           icon: 'error',
@@ -140,6 +147,7 @@ export class PublishProduct implements OnInit {
   }
 
   private loadCategories(): void { 
+    
     this.productService.getCategories().subscribe({
       next: (categories: string[]) => {
         this.categories = categories;

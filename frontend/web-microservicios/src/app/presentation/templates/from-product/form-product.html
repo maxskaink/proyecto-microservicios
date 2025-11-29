@@ -1,11 +1,17 @@
 <form (ngSubmit)="onSubmit(productForm)" #productForm="ngForm" novalidate>
 
-  <!-- Imagen del producto -->
+    <!-- Imagen del producto -->
   <div class="mb-3 mt-5">
-    <label for="productImage" class="image-upload-box d-flex flex-column justify-content-center align-items-center">
+
+    <!-- Cuadro con cámara (solo si NO hay imagen cargada o previa) -->
+    <label *ngIf="!imagePreview"
+          for="productImage"
+          class="image-upload-box d-flex flex-column justify-content-center align-items-center">
       <i class="bi bi-camera-fill camera-icon"></i>
       <span class="small text-muted">Seleccionar imagen</span>
     </label>
+
+    <!-- Input de archivo (siempre existe, solo oculto) -->
     <input 
       type="file"
       id="productImage"
@@ -16,9 +22,13 @@
       required
       #fileInput
     />
+
+    <!-- Errores -->
     <div *ngIf="isImageInvalid" class="text-danger small mt-2">
       {{ imageError }}
     </div>
+
+    <!-- Vista previa (ya sea de editar o nueva) -->
     <div *ngIf="imagePreview" class="mt-3">
       <label class="form-label small">Vista previa:</label>
       <div class="preview-container">
@@ -30,7 +40,9 @@
         />
       </div>
     </div>
+
   </div>
+
 
   <!-- Nombre del producto -->
   <div class="mb-3 mt-5">

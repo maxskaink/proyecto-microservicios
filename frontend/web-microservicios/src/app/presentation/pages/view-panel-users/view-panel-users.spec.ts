@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { HistoryOrdersUser } from './history-orders-user';
+import { ViewPanelUsers } from './view-panel-users';
 
-describe('HistoryOrdersUser', () => {
-  let component: HistoryOrdersUser;
-  let fixture: ComponentFixture<HistoryOrdersUser>;
+describe('ViewPanelUsers', () => {
+  let component: ViewPanelUsers;
+  let fixture: ComponentFixture<ViewPanelUsers>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [HistoryOrdersUser]
+      imports: [ViewPanelUsers]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(HistoryOrdersUser);
+    fixture = TestBed.createComponent(ViewPanelUsers);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

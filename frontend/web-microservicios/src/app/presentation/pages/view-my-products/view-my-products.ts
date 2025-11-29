@@ -7,6 +7,7 @@ import { AuthService } from '../../../service/Authser.vice';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { ListProductTenantPreview } from '../../templates/list-product-tenant-preview/list-product-tenant-preview';
 import { Router } from '@angular/router';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-view-my-products',
@@ -66,7 +67,27 @@ loadMyProducts() {
   onAction(action: {state:string, id:string}) {
     console.log('Acción recibida en view-my-products:', action.state, action.id);
     if (action.state === 'delete') {
-      this.deleteProduct(action.id);
+      Swal.fire({
+        title: '¿Estás seguro?',
+        text: "¡No podrás revertir esto!",
+        icon: 'warning',
+        showCancelButton: true,
+        buttonsStyling: false,
+        customClass: {
+          confirmButton: ' btn btn-danger mx-2',
+          cancelButton: ' btn btn-secondary mx-2'
+        },
+        confirmButtonText: 'Sí, eliminarlo!'
+      }).then((result) => {
+        if (result.isConfirmed) {
+          this.deleteProduct(action.id);
+          Swal.fire(
+            '¡Eliminado!',
+            'Tu producto ha sido eliminado.',
+            'success'
+          );
+        }
+      });
     }else if (action.state === 'edit') {
       this.router.navigate(['/edit-product', action.id]);
     }

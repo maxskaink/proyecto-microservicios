@@ -11,6 +11,8 @@ interface MenuOption {
   icon: string;
   route: string;
   category: 'shopping' | 'profile' | 'business';
+  rol: string[ ];
+  
 }
 
 
@@ -38,7 +40,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Explora todos los productos disponibles',
       icon: 'bi-grid-3x3-gap',
       route: '/home',
-      category: 'shopping'
+      category: 'shopping',
+      rol: ['producer', 'admin', 'client']
     },
     {
       id: 'cart',
@@ -46,7 +49,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Ver productos en tu carrito',
       icon: 'bi-cart3',
       route: '/shopping-cart',
-      category: 'shopping'
+      category: 'shopping',
+      rol: ['producer', 'admin', 'client']
     },
     {
       id: 'purchase-history',
@@ -54,7 +58,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Revisa tus compras anteriores',
       icon: 'bi-clock-history',
       route: '/history-orders-user',
-      category: 'shopping'
+      category: 'shopping',
+      rol: ['producer', 'admin', 'client']
     },
     // Sección de Perfil
     {
@@ -63,7 +68,17 @@ export class User implements OnInit, OnDestroy {
       description: 'Actualiza tu información personal',
       icon: 'bi-person-gear',
       route: '/edit-profile',
-      category: 'profile'
+      category: 'profile',
+      rol: ['producer', 'admin', 'client']
+    },
+    {
+      id: 'users-panel',
+      title: 'Administrar usuarios',
+      description: 'Gestiona los usuarios de la plataforma',
+      icon: 'bi-person-gear',
+      route: '/user/list-users',
+      category: 'profile',
+      rol: [ 'admin']
     },
     // Sección de Negocio
     {
@@ -72,7 +87,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Mira tus pedidos',
       icon: 'bi-box-seam',
       route: 'admin-panel',
-      category: 'business'
+      category: 'business',
+      rol: [ 'admin', 'producer']
     },
     {
       id: 'publish-product',
@@ -80,7 +96,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Añade un nuevo producto a la venta',
       icon: 'bi-plus-circle',
       route: '/publishProduct',
-      category: 'business'
+      category: 'business',
+      rol: [ 'admin', 'producer']
     },
     {
       id: 'orders',
@@ -88,7 +105,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Gestiona los pedidos de tus productos',
       icon: 'bi-clipboard-check',
       route: '/list-order',
-      category: 'business'
+      category: 'business',
+      rol: [ 'admin', 'producer']
     },
     {
       id: 'register',
@@ -96,7 +114,8 @@ export class User implements OnInit, OnDestroy {
       description: 'Registra tu zona veredal',
       icon: 'bi-clipboard-check',
       route: '/register-tenant',
-      category: 'business'
+      category: 'business',
+      rol: [ 'admin', 'producer']
     }
   ];
 
@@ -158,10 +177,12 @@ private loadUserData(): void {
   onLogin(): void {
     this.router.navigate(['/login']);
   }
-
+  get role(): string {
+    return this.authService.getUserRole() ?? '';
+  }
   // Obtener opciones por categoría
   getOptionsByCategory(category: string): MenuOption[] {
-    return this.menuOptions.filter(option => option.category === category);
+    return this.menuOptions.filter(option => option.category === category).filter(option => option.rol.includes(this.role));
   }
 
   // Navegar a una opción

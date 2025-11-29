@@ -1,0 +1,28 @@
+.container-users{
+    margin-top: 10rem;
+}
+.title{
+    font-weight:200 ;
+}
+
+.subtitle{
+    font-weight:800;
+    font-size: 1rem;
+}
+.list-users{
+    background: linear-gradient(20deg, #e7f1f0, #d6dfe4,#a3c1e7);
+    
+}
+.empty-user {
+    background-color: #ffffff;
+    padding: 1rem;
+    font-weight: 900;
+    font-size: 1rem;
+    border-radius: 20px;              /* Texto grande */
+    text-align: center;
+}
+
+.empty-user:hover {
+    transform: translateY(-3px);
+}
+

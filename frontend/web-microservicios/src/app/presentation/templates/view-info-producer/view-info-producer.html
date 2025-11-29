@@ -112,25 +112,34 @@
           
         </div>
       </div>
-
+      <div class="actions-section" *ngIf="showActions && isEditable">
+        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+          <button 
+            type="button" 
+            class="btn btn-primary"
+            (click)="action.emit('edit')"
+          >
+            Editar
+          </button>
+        </div>
+      </div>
       <!-- Action Buttons -->
-      <div class="actions-section" *ngIf="showActions">
+      <div class="actions-section" *ngIf="showActions && producer.rol === 'admin'">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button 
             type="button" 
             class="btn btn-outline-primary"
-            (click)="action.emit('contact')"
+            (click)="action.emit('client')"
           >
-            <i class="bi bi-chat-dots me-2"></i>
-            Contactar
+            Hacer cliente
           </button>
           <button 
             type="button" 
             class="btn btn-primary"
-            (click)="action.emit('view-products')"
+            (click)="action.emit('producer')"
           >
             <i class="bi bi-box me-2"></i>
-            Ver productos
+            Hacer productor
           </button>
         </div>
       </div>

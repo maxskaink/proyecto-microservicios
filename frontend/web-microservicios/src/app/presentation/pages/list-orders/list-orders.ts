@@ -130,7 +130,7 @@ export class ListOrders implements OnInit {
 
   handlerOrderAction(event: { status: string; id: string }) {
     this.updateStatus.status = event.status;
-    this.shoppingService.updateStateOrder(this.updateStatus, event.id).subscribe({
+    this.shoppingService.updateStateOrder(event.status, event.id).subscribe({
       next: () => {
         this.loadOrders();
       },

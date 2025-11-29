@@ -146,7 +146,7 @@ createOrder() {
 
       this.createdOrderResponse = resp;
 
-      return this.shoppingCartService.updateStateOrder({status: "paid"}, resp.order.id).pipe(
+      return this.shoppingCartService.updateStateOrder("paid", resp.order.id).pipe(
         map(() => resp) // devolver resp para usar después
       );
     })

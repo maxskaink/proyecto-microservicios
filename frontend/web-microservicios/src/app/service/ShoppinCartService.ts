@@ -189,7 +189,7 @@ getUserOrders(status: string): Observable<Order[]> {
    * @param orderId id de la orden a actualizar
    * @returns orden actualizada
    */
-  updateStateOrder(status:any, orderId: string): Observable<any> {
+  updateStateOrder(status:string, orderId: string): Observable<any> {
     return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}/status`;

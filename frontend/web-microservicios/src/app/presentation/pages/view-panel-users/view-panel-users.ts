@@ -29,15 +29,13 @@ export class ViewPanelUsers implements OnInit{
   ngOnInit(): void {
     this.loadUsers();
   }
-  ngOnChanges(changes: SimpleChanges): void {
-    
-  }
+
   /**
    * cargar usuarios desde el servicio, todos los usuarios existentes del tenant
    */
   loadUsers() {
     this.isLoading.show('Cargando usuarios...');
-  this.userService.getAllUsers().subscribe({
+    this.userService.getAllUsers().subscribe({
     next: (data: UserResponseBack[]) => {
       this.users = data.filter(user => user.rol !== 'client');
       this.clients = this.users.filter(user => user.rol === 'client');

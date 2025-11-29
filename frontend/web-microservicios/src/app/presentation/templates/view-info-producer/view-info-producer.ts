@@ -1,4 +1,4 @@
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserResponseBack } from '../../../Models/UserReponseBack';
 
@@ -9,12 +9,14 @@ import { UserResponseBack } from '../../../Models/UserReponseBack';
   styleUrl: './view-info-producer.css',
 })
 export class ViewInfoProducer {
+  
   @Input() producer?: UserResponseBack;
   @Input() showActions: boolean = false;
+  @Input() isEditable: boolean = false;
   @Output() action = new EventEmitter<string>();
 
   clickAction() {
-    // Implementar según necesidad
+    this.action.emit('some-action');
   }
 
   /**

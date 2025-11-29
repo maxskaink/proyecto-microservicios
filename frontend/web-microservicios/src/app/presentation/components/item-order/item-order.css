@@ -95,10 +95,10 @@
 
 /* Products container */
 .products-container {
-    background: linear-gradient(135deg, rgba(106, 209, 123, 0.05) 0%, rgba(233, 236, 239, 0.1) 100%);
+    
     border-radius: 15px;
-    padding: 1.5rem;
-    border: 1px solid rgba(106, 209, 123, 0.2);
+    
+    
     overflow: auto;
     max-height: 20rem;
     min-height: 10rem;
@@ -189,20 +189,19 @@
 /* Status badges */
 .status-badge {
     display: inline-block;
-    padding: 0.6rem 1.5rem;
+    padding: 0.5rem ;
     border-radius: 25px;
-    font-size: 0.85rem;
-    font-weight: 700;
+    font-size: 0.75rem;
+    font-weight: 900;
     text-transform: uppercase;
     letter-spacing: 0.8px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
     border: 2px solid transparent;
     transition: all 0.3s ease;
 }
 
 .status-pending {
-    background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
-    color: white;
+    
+    color: #f59e0b;
     border-color: rgba(251, 191, 36, 0.3);
 }
 
@@ -213,8 +212,7 @@
 }
 
 .status-cancelled {
-    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-    color: white;
+    color: #dc2626 ;
     border-color: rgba(239, 68, 68, 0.3);
 }
 
@@ -236,7 +234,7 @@
 
 .total-price {
     color: rgb(14, 112, 116);
-    font-size: 1.8rem;
+    font-size: 1.2rem;
     font-weight: 900;
     margin-bottom: 0;
     text-shadow: 0 2px 4px rgba(14, 112, 116, 0.1);

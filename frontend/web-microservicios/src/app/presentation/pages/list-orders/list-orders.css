@@ -3,7 +3,17 @@
   height: 50rem;
 
 }
-
+.title{
+ color: #0e3a3a;  
+ font-weight: 800;
+}
+.section-title{
+  margin-top: 8rem;
+  height: 10rem;
+  background-color: white;
+  padding: 3rem;
+  
+}
 .empty-orders{
   height: 50rem;
   display: flex;

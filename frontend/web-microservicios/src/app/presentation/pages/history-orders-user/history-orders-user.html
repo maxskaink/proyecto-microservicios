@@ -1,11 +1,6 @@
 <app-header></app-header>
-<div class="orders-container">
-  <div class="header">
-    <button class="back-button" routerLink="/user">
-      <app-arrow-left></app-arrow-left>
-    </button>
-  </div>
-
+<div class="orders-container container">
+  
   <!-- Loading state -->
   <div *ngIf="isLoading" class="loading d-flex justify-content-center align-items-center w-100">
     <p class="text-center">Cargando órdenes...</p>
@@ -25,16 +20,16 @@
 
   <!-- Orders list -->
   <div *ngIf="!isLoading  && orders !== null" class="orders-list ">
-    <section class="container-fluid section-title mb-4">
+    <section class="container section-title mb-4">
         <h3 class=" mb-4 title">Pedidos pendientes</h3>
         <p class="text">Revisa tus pedidos que tienes pendientes con nostoros</p>
     </section>
     <div class="row g-3 section-current">
       <div *ngFor="let order of orders" class="col-12 col-md-12 col-lg-12">
-        <app-item-order [order]="order" [showActions]="false"></app-item-order>
+        <app-item-order [order]="order" class="order" ></app-item-order>
       </div>
     </div>
-    <section class="container-fluid section-title my-4 p-4">
+    <section class="container section-title my-4 p-4">
         <h3 class=" mb-4 title">Historial de pedidos</h3>
         <p class="text">Revisa tus pedidos anteriores con nostoros</p>
     </section>

@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-history-orders-user',
-  imports: [CommonModule, ItemOrder, Header, ArrowLeft],
+  imports: [CommonModule, ItemOrder, Header],
   templateUrl: './history-orders-user.html',
   styleUrl: './history-orders-user.css',
 })

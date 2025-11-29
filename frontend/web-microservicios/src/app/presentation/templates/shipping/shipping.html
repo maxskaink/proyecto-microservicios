@@ -1,0 +1,81 @@
+<div class="order-card">
+  <!-- Header de la orden -->
+  <div class="card-header">
+    <h3 class="title-header">Orden </h3>
+  </div>
+
+  <!-- Contenido principal -->
+  <div class="card-body">
+    
+    <!-- Sección de productos -->
+    <div class="order-details">
+
+      <div class="divider"></div>
+
+      <!-- Estado y Precio - Responsive -->
+      <div class="status-price-section">
+        <div class="row g-3">
+          <!-- Estado -->
+          <div class="col-12 ">
+            <div class="status-container">
+              <label class="field-label">Estado del envio</label>
+              <span class="status-badge status-{{ shipping.status.toLowerCase() }}">
+                {{ shipping.status }}
+              </span>
+              <div>
+                <label class="field-label">Numero de trackeo</label>
+                <span>
+                    {{ shipping.tracking_number }}
+                </span>
+              </div>
+              <div>
+                <label> Direccion: </label>
+                <p>{{ shipping.shipping_address }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Fechas - Responsive -->
+      <div class="dates-section">
+        <div class="row g-3">
+          <div class="col-12 col-md-6">
+            <div class="date-container">
+              <label class="field-label">Fecha de creación</label>
+              <p class="date-text">{{ formatDate(shipping.created_at) }}</p>
+            </div>
+          </div>
+          <div class="col-12 col-md-6">
+            <div class="date-container">
+              <label class="field-label">Última actualización</label>
+              <p class="date-text">{{ formatDate(shipping.updated_at) }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Botones de acción -->
+      <div class="actions-section" *ngIf="showActions">
+        <div class="d-flex flex-column flex-sm-row gap-3">
+          <button class="btn btn-outline-danger flex-fill order-action-btn" (click)="updateSatus('cancelled')">
+            <i class=" me-2"></i>
+            Cancelar envio
+          </button>
+          <button class="btn btn-primary flex-fill order-action-btn" (click)="updateSatus('delivered')">
+            <i class=" me-2"></i>
+            Colocar entregado
+          </button>
+          <button class="btn btn-outline-primary flex-fill order-action-btn" (click)="updateSatus('pending')">
+            <i class=" me-2"></i>
+            Colocar Pendiente
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

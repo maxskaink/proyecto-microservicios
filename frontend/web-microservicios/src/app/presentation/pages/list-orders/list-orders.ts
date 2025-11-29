@@ -14,7 +14,7 @@ import { IsLoading } from '../../components/is-loading/is-loading';
 
 @Component({
   selector: 'app-list-orders',
-  imports: [CommonModule, RouterModule, Header, ArrowLeft, ItemOrder, IsLoading],
+  imports: [CommonModule, RouterModule, Header, ItemOrder, IsLoading],
   templateUrl: './list-orders.html',
   styleUrl: './list-orders.css',
 })

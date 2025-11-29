@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 })
 export class ViewPanelUsers implements OnInit{
   public users!: UserResponseBack[];
+  public clients!: UserResponseBack[];
   public producers!: UserResponseBack[];
   public admins!: UserResponseBack[];
   constructor(
@@ -39,6 +40,7 @@ export class ViewPanelUsers implements OnInit{
   this.userService.getAllUsers().subscribe({
     next: (data: UserResponseBack[]) => {
       this.users = data.filter(user => user.rol !== 'client');
+      this.clients = this.users.filter(user => user.rol === 'client');
       this.producers = this.users.filter(user => user.rol === 'producer');
       this.admins = this.users.filter(user => user.rol === 'admin');
       this.cdr.detectChanges();

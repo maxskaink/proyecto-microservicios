@@ -6,6 +6,8 @@
   transition: all 0.3s ease;
   border-radius: 15px;
   overflow: hidden;
+  border: 2px solid #139664;
+  margin-bottom: 1rem;
 }
 
 .user-card:hover {
@@ -28,6 +30,7 @@
 .card-body {
   padding: 1rem !important;
   min-height: 80px;
+  
 }
 
 /* =================== AVATAR SECTION =================== */

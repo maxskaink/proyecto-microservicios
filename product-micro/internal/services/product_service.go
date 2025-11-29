@@ -166,6 +166,48 @@ func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest,
 	return result, nil
 }
 
+// DeleteProduct implements IProductService.
+func (p *productService) DeleteProduct(id string, idProducer string, tenantID string) error {
+
+	// Validate id Productr / must be admin or owner of the product
+	if tenantID == "" {
+		return domain.BadRequestError{Message: "Tenant requerido"}
+	}
+
+	// Validar que el usuario existe
+	user, err := p.userService.GetUserByUUID(idProducer, tenantID)
+	if err != nil {
+		return domain.NotFoundError{Message: fmt.Sprintf("Usuario con id %s no se ha encontrado", idProducer)}
+	}
+
+	// Obtener el producto actual
+	currentProduct, err := p.productRepo.GetByIdProduct(id, tenantID)
+	if err != nil || currentProduct == nil {
+		return domain.NotFoundError{Message: fmt.Sprintf("Producto con id %s no fue encontrado", id)}
+	}
+
+	// Validar que el usuario es el dueño del producto o es administrador
+	if currentProduct.ProducerID != user.ID && user.Rol != domain.UserRoleAdmin {
+		return domain.UnauthorizedError{Message: "No tiene permisos para eliminar el producto (tiene que ser duenio o admin)"}
+	}
+
+	// Delete product
+	err = p.productRepo.DeleteProduct(id, tenantID)
+	if err != nil {
+		return err
+	}
+
+	//Take off the stock to simulate deleting
+
+	currentProduct.Stock = 0
+
+	if p.publisher != nil {
+		_ = p.publisher.PublishProductStockUpdated(*currentProduct, tenantID)
+	}
+
+	return nil
+}
+
 // CompletePhotoUpload implements IProductService.
 func (p *productService) CompletePhotoUpload(productID string, objectKey string, tenantID string, userUID string) (*dto.ProductDTOResponse, error) {
 	if tenantID == "" {

@@ -8,6 +8,7 @@ type IProductRepository interface {
 	ListProducts(page int, pageSize int, tenantID string) (*[]dto.ProductDTOResponse, error)
 	CreateProduct(product *dto.ProductDTORequest, tenantID string) (*dto.ProductDTOResponse, error)
 	UpdateProduct(id string, product *dto.ProductDTORequest, tenantID string) (*dto.ProductDTOResponse, error)
+	DeleteProduct(id string, tenantID string) error
 }
 
 type IUserRepository interface {

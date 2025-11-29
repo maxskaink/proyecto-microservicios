@@ -35,6 +35,7 @@ func (pc *ProductController) RegisterRoutes(rg *gin.RouterGroup, auth gin.Handle
 		products.GET("/:id", auth, pc.GetProductByID)
 		products.POST("", auth, pc.CreateProduct)
 		products.PUT("/:id", auth, pc.UpdateProduct)
+		products.DELETE("/:id", auth, pc.DeleteProduct)
 
 		//for uploads photos
 		products.POST("/upload-url", auth, pc.GetUploadURL)
@@ -221,6 +222,48 @@ func (pc *ProductController) UpdateProduct(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, result)
+}
+
+// DeleteProduct maneja DELETE /products/:id
+// @Summary Eliminar un producto
+// @Description Elimina un producto. Solo el productor propietario o administradores pueden eliminar.
+// @Tags products
+// @Param id path string true "ID del producto"
+// @Success 204 "No Content"
+// @Failure 400 {object} dto.ErrorDTO
+// @Failure 401 {object} dto.ErrorDTO
+// @Failure 404 {object} dto.ErrorDTO
+// @Router /products/{id} [delete]
+// @Security Bearer
+func (pc *ProductController) DeleteProduct(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
+	productID := c.Param("id")
+
+	if productID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "ID de producto requerido"})
+		return
+	}
+	// Obtener el UID del usuario del contexto (asignado por middleware)
+	userUID := c.GetString("uid")
+	if userUID == "" {
+		handleUserError(c, domain.InternalServerError{Message: "UID de usuario no encontrado"})
+		return
+	}
+
+	// Llamar al servicio
+	err := pc.productService.DeleteProduct(productID, userUID, tenantID)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+
+	c.Status(http.StatusNoContent)
 }
 
 // GetCategories maneja GET /products/categories

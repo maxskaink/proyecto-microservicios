@@ -7,10 +7,11 @@ import { ListProductTenantPreview } from '../../templates/list-product-tenant-pr
 import { ProductService } from '../../../service/ProductService';
 import { TenantService } from '../../../service/TenantService';
 import { LoadingService } from '../../../service/loading-service';
+import { IsLoading } from '../../components/is-loading/is-loading';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Header, ListProductTenantPreview],
+  imports: [CommonModule, Header, ListProductTenantPreview, IsLoading],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })

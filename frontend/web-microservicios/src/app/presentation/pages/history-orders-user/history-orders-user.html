@@ -9,7 +9,7 @@
   
 
   <!-- Empty orders -->
-  <div *ngIf="!isLoading && orders === null && oldOrders === null " class="empty-orders  d-flex flex-column justify-content-center align-items-center w-100">
+  <div *ngIf="!isLoading && orders?.length === 0 && oldOrders?.length === 0 " class="empty-orders  d-flex flex-column justify-content-center align-items-center w-100">
     <h2 class="">No tienes órdenes aún</h2>
     <p class="text-center">Cuando realices pedidos aparecerán aquí</p>
     <button  (click)="goToHome()" class="btn btn-primary mb-3">
@@ -19,25 +19,17 @@
   </div>
 
   <!-- Orders list -->
-  <div *ngIf="!isLoading && (orders?.length || oldOrders?.length)" class="orders-list">
-    <section class="container section-title mb-4">
+  <div *ngIf="!isLoading && (orders?.length !== 0 || oldOrders?.length) !== 0" class="orders-list">
+    <section class="d-flex justify-content-center flex-column align-items-center mb-4">
         <h3 class=" mb-4 title">Pedidos pendientes</h3>
         <p class="text">Revisa tus pedidos que tienes pendientes con nostoros</p>
     </section>
     <div class="row g-3 section-current">
-      <div *ngFor="let order of orders" class="col-12 col-md-12 col-lg-12">
-        <app-item-order [order]="order" class="order" (details)="viewOrderDetails($event)"></app-item-order>
+      <div *ngFor="let order of orders" class="col-12 col-md-4 col-lg-6">
+        <app-item-order [order]="order" class="order" (details)="viewOrderDetails($event)" (action)="handlerOrderAction($event)"></app-item-order>
       </div>
     </div>
-    <section class="container section-title my-4 p-4">
-        <h3 class=" mb-4 title">Historial de pedidos</h3>
-        <p class="text">Revisa tus pedidos anteriores con nostoros</p>
-    </section>
-    <div class="row g-3 section-history">
-      <div *ngFor="let order of oldOrders" class="col-12 col-md-4 col-lg-6">
-        <app-item-order [order]="order" [showActions]="false" (details)="viewOrderDetails($event)"></app-item-order>
-      </div>
-    </div>    
+
   </div>
 
 </div>

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Observable, from, switchMap, combineLatest, of } from 'rxjs';
-import { map, filter, take } from 'rxjs/operators';
+import { Observable, from, switchMap, combineLatest, of, forkJoin } from 'rxjs';
+import { map, filter, take, catchError } from 'rxjs/operators';
 import { ShoppingPeticion } from '../Models/ShoppingPeticion';
 import { AuthService } from './Authser.vice';
 import { CartItem, ShoppingCart } from '../Models/Cart';
@@ -126,20 +126,37 @@ getShoppingCart(): Observable<CartItem[]> {
    * @param status estado de las ordenes a consultar
    * @returns Ordenes del estado que desea consutlar
    */
-  getUserOrders(status: string): Observable<Order[]> {
-    const tenantId = this.tenantService.getTenant();
+getUserOrders(status: string): Observable<Order[]> {
+  const tenantId = this.tenantService.getTenant();
 
-    if (!tenantId) {
-      console.error('No hay tenant disponible');
-      return of([]);
-    }
-
-    const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
-
-    const params = new HttpParams().set('status', status);
-
-    return this.http.get<Order[]>(url, { params });
+  if (!tenantId) {
+    console.error('No hay tenant disponible');
+    return of([]);
   }
+
+  const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders`;
+
+  // Si no se pasa status, hacemos peticiones para "paid" y "cancelled"
+  const statuses = status ? [status] : ['paid', 'cancelled'];
+
+  // Creamos un array de peticiones http para cada status
+  const requests = statuses.map(s =>
+    this.http.get<Order[]>(url, { params: new HttpParams().set('status', s) }).pipe(
+      // Si la petición devuelve null, la convertimos en array vacío
+      catchError(err => {
+        console.error(`Error al cargar órdenes con status "${s}":`, err);
+        return of([] as Order[]);
+      })
+    )
+  );
+
+  // Ejecutamos todas las peticiones en paralelo y combinamos los resultados
+  return forkJoin(requests).pipe(
+    map(results => results.map(r => r ?? []).flat()) // flatten y normalizamos null
+  );
+}
+
+
 
   getUserOrdersProducer(){
     const idUser = this.authService.userCurrentData?.id;
@@ -176,8 +193,8 @@ getShoppingCart(): Observable<CartItem[]> {
     return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}/status`;
-        const body = status ;
-        return this.http.put<any>(url, body);
+        console.log("Cuerpo a enviar para actualizar estado de orden:", status);
+        return this.http.put<any>(url, {status});
       })
     );
   }

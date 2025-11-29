@@ -5,6 +5,7 @@ import { LoadingService } from '../../../service/loading-service';
 
 @Component({
   selector: 'app-is-loading',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './is-loading.html',
   styleUrl: './is-loading.css',
@@ -20,9 +21,11 @@ export class IsLoading implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     // Componente inicializado
+    console.log('IsLoading component initialized');
   }
 
   ngOnDestroy(): void {
     // Cleanup si es necesario
+    console.log('IsLoading component destroyed');
   }
 }

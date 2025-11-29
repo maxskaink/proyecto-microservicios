@@ -9,7 +9,15 @@
   --color-light: #F5F5DC;
   --color-dark: #1e293b;
 }
-
+body {
+  font-family: "Rubik", sans-serif;
+  font-optical-sizing: auto;
+ 
+}
+.btn-outline-primary{
+  border: 2px solid #b8c6d9;
+  border-radius: 20px;
+}
 .btn-danger{
   background-color: #e7cfcf;
   color: #ef4444;

@@ -5,9 +5,11 @@ import {
   signOut,
   User,
   onAuthStateChanged,
-  getIdTokenResult
+  getIdTokenResult,
+  authState,
+  getIdToken
 } from '@angular/fire/auth';
-import { BehaviorSubject, Observable, from, firstValueFrom } from 'rxjs';
+import { BehaviorSubject, Observable, from, firstValueFrom, combineLatest } from 'rxjs';
 import { map, filter, switchMap } from 'rxjs/operators';
 import { Firestore } from '@angular/fire/firestore';
 import { HttpClient } from '@angular/common/http';
@@ -15,12 +17,16 @@ import { HttpClient } from '@angular/common/http';
 import { UserData } from '../Models/UserData';
 import { TenantService } from './TenantService';
 
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
 
   private currentUserSubject = new BehaviorSubject<User | null>(null);
   private userDataSubject = new BehaviorSubject<UserData | null>(null);
   public userCurrentData: UserData | null = null;
+  private authReadySubject = new BehaviorSubject<boolean>(false);
+  authReady$ = this.authReadySubject.asObservable();
+
   url: string = 'http://localhost:80/';
 
   private cachedToken: string | null = null;
@@ -34,27 +40,30 @@ export class AuthService {
     private injector: Injector,
     private tenantService: TenantService
   ) {
+      onAuthStateChanged(this.afAuth, async (user) => {
+        console.log('🔄 Auth state changed:', user?.email || 'no user');
 
-    onAuthStateChanged(this.afAuth, async (user) => {
-      console.log('🔄 Auth state changed:', user?.email || 'no user');
+        this.currentUserSubject.next(user);
 
-      this.currentUserSubject.next(user);
+        
+        this.cachedToken = null;
+        this.tokenExpiry = null;
+        this.tokenPromise = null;
 
-      this.cachedToken = null;
-      this.tokenExpiry = null;
-      this.tokenPromise = null;
+        
+        this.authReadySubject.next(true);
 
-      if (user) {
-        const savedTenant = this.tenantService.getTenant();
-        if (savedTenant) {
-          this.tenantService.setTenant(savedTenant);
-          await this.loadUserData(savedTenant);
+        if (user) {
+          const savedTenant = this.tenantService.getTenant();
+          if (savedTenant) {
+            this.tenantService.setTenant(savedTenant);
+            await this.loadUserData(savedTenant);
+          }
+        } else {
+          this.userDataSubject.next(null);
+          this.tenantService.clearTenant();
         }
-      } else {
-        this.userDataSubject.next(null);
-        this.tenantService.clearTenant();
-      }
-    });
+      });
   }
 
   async login(email: string, password: string, idTenant: string) {
@@ -79,6 +88,7 @@ export class AuthService {
       );
       this.userCurrentData = backendUserData;
       this.userDataSubject.next(backendUserData);
+      localStorage.setItem('user_data', JSON.stringify(backendUserData));
       console.log('✅ userData cargado:', backendUserData);
 
     } catch (error) {
@@ -86,34 +96,32 @@ export class AuthService {
     }
   }
 
+
   async getToken(): Promise<string | null> {
-    const user = this.afAuth.currentUser;
+    // Espera a que Firebase emita el usuario autenticado
+    const user = await firstValueFrom(authState(this.afAuth));
+
     if (!user) return null;
 
-    const now = Date.now();
+    // Obtener token usando función modular
+    const token = await getIdToken(user);
 
-    if (this.cachedToken && this.tokenExpiry && now < this.tokenExpiry) {
-      return this.cachedToken;
-    }
+    // Opcional: guardar token para acelerar carga
+    localStorage.setItem('auth_token', token);
 
-    if (this.tokenPromise) {
-      return this.tokenPromise;
-    }
-
-    this.tokenPromise = user.getIdTokenResult(true)
-      .then(res => {
-        this.cachedToken = res.token;
-        this.tokenExpiry = new Date(res.expirationTime).getTime();
-        return this.cachedToken;
-      })
-      .finally(() => this.tokenPromise = null);
-
-    return this.tokenPromise;
+    return token;
   }
 
   get isLoggedIn$(): Observable<boolean> {
-    return this.currentUserSubject.pipe(map(user => !!user));
+    return combineLatest([
+      this.currentUserSubject,
+      this.authReady$
+    ]).pipe(
+      filter(([_, ready]) => ready),   // 👈 esperar a que Firebase responda
+      map(([user]) => !!user)
+    );
   }
+
 
   get currentUser(): Observable<User | null> {
     return this.currentUserSubject.asObservable();

@@ -6,6 +6,7 @@ import { ProductService } from '../../../service/ProductService';
 import { AuthService } from '../../../service/Authser.vice';
 import { ArrowLeft } from '../../components/arrow-left/arrow-left';
 import { ListProductTenantPreview } from '../../templates/list-product-tenant-preview/list-product-tenant-preview';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-view-my-products',
@@ -15,27 +16,34 @@ import { ListProductTenantPreview } from '../../templates/list-product-tenant-pr
 })
 export class ViewMyProducts implements OnInit {
   public allProducts: Product[] = [];
-  public isLoading: boolean = true;
+  public isLoading: boolean = false;
   
   constructor(
     private serviceProduct: ProductService,
     private authService: AuthService,
     private cdr: ChangeDetectorRef,
+    private router: Router
   ) { }
   ngOnInit(): void {
-    this.loadMyProducts();
-  }
-loadMyProducts() {
-  const userId = this.authService.userCurrentData?.id;
-  if (!userId) {
-    console.error('No hay usuario actual');
-    return;
+    this.authService.userData.subscribe(userData => {
+      if (userData) {
+        this.loadMyProducts();
+      }
+    });
   }
 
+loadMyProducts() {
+  const userId = this.authService.userCurrentData?.id;
+
+  if (!userId) {
+    console.warn("UserData aún no está listo. Reintentando...");
+    setTimeout(() => this.loadMyProducts(), 150);
+    return;
+  }
   this.serviceProduct.getProducts(1, 100).subscribe({
     next: (products) => {
       console.log('Todos los productos:', products);
-      this.allProducts = products.filter(p => p.producer_id === userId);
+      this.allProducts = products.filter(p => String(p.producer_id) === String(userId));
       console.log('Productos del usuario:', this.allProducts);
       this.isLoading = false;
       this.cdr.detectChanges();
@@ -47,8 +55,34 @@ loadMyProducts() {
     }
   });
 }
-onProductClick( product: Product ) {
-  // Lógica para manejar el clic en un producto
-}
+/**
+ * si la persona hace click en un producto, lo redirige a la pagina de detalle del producto
+ * @param product Producto seleccionado
+ */
+  onProductClick( product: Product ) {
+    console.log('Producto seleccionado en view-my-products:', product);
+    this.router.navigate(['/edit-pruduct', product.id]);
+  }
+  onAction(action: {state:string, id:string}) {
+    console.log('Acción recibida en view-my-products:', action.state, action.id);
+    if (action.state === 'delete') {
+      this.deleteProduct(action.id);
+    }else if (action.state === 'edit') {
+      this.router.navigate(['/edit-product', action.id]);
+    }
+  }
+
+  deleteProduct(productId: string) {
+    this.serviceProduct.deleteProduct(productId).subscribe({
+      next: () => {
+        console.log('Producto eliminado con éxito:', productId);
+        this.loadMyProducts();
+      },
+      error: (error) => {
+        console.error('Error al eliminar el producto:', error);
+      }
+    });
+  }
+
 
 }

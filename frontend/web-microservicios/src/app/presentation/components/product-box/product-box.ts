@@ -14,6 +14,7 @@ export class ProductBox {
   @Input() product!: Product;
   @Input() showActions: boolean = false;
   @Output() productClick = new EventEmitter<Product>();
+  @Output() action = new EventEmitter<{state:string, id:string}>();
   constructor() {
     console.log("ProductBox creado para producto:", this.product);  
     
@@ -21,5 +22,10 @@ export class ProductBox {
   onProductClick(): void {
     console.log('🎯 Click en ProductBox para producto:', this.product.id, this.product.name);
     this.productClick.emit(this.product);
+  }
+  onAction(actionType: string): void {
+    console.log(`🚀 Acción "${actionType}" en ProductBox para producto:`, this.product.id, this.product.name);
+    const action = {state: actionType, id: this.product.id};
+    this.action.emit(action);
   }
 }

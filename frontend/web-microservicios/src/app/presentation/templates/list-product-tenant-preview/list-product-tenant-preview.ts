@@ -14,6 +14,7 @@ export class ListProductTenantPreview {
   @Input() public products: Product[] = [];
   @Input() showActions: boolean = false;
   @Output() productClick = new EventEmitter<Product>();
+  @Output() action = new EventEmitter<{state:string, id:string}>();
   
   constructor() {}
   
@@ -23,5 +24,9 @@ export class ListProductTenantPreview {
   onProductClick(product: Product): void {
     console.log('📤 Emitiendo evento desde list-product-tenant-preview:', product.id);
     this.productClick.emit(product);
+  }
+  onAction(action: {state:string, id:string}): void {
+    console.log('📤 Emitiendo acción desde list-product-tenant-preview:', action.state, action.id);
+    this.action.emit(action);
   }
 }

@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges } from '@angular/core';
 import { Order } from '../../../Models/OrderPeticion';
 import { catchError, forkJoin, of } from 'rxjs';
 import { ProductService } from '../../../service/ProductService';
@@ -12,7 +12,7 @@ import { AnyARecord } from 'dns';
   templateUrl: './item-order.html',
   styleUrl: './item-order.css',
 })
-export class ItemOrder implements OnInit{
+export class ItemOrder implements OnChanges{
   /**
    * Orden a mostrar
    * action: accion del boton indicado, manda estado a actualizar y el ide del itema a actualizar
@@ -25,13 +25,16 @@ export class ItemOrder implements OnInit{
   public products: Product[] = [];
   public isLoadingProducts = false;
   
-  ngOnInit(): void {
-    this.loadProducts();
-  }
+  
   constructor(
     private productService: ProductService,
     private cdr: ChangeDetectorRef
   ) {}
+  ngOnChanges(changes: SimpleChanges): void {
+     if (this.order && this.order.items?.length) {
+      this.loadProducts();
+    }
+  }
 
   /**
    * 

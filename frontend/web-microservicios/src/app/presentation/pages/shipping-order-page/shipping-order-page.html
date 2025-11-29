@@ -6,6 +6,7 @@
     </section>
     <div class="row g-3">
         <app-item-order class="col-12 col-md-6 col-lg-6"
+            *ngIf="orderInfo?.items?.length"
             [order]="orderInfo"
             [showActions]="false"
             (action)="onActionEvent($event)"

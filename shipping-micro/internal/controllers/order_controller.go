@@ -123,12 +123,19 @@ func (oc *OrderController) updateStatus(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid id"})
 		return
 	}
+
+	userID, err := middleware.GetUserIDFromContext(c)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+
 	var req dto.UpdateOrderStatusRequest
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: "invalid body"})
 		return
 	}
-	if err := oc.svc.UpdateStatus(id, req.Status, tenantID); err != nil {
+	if err := oc.svc.UpdateStatus(id, req.Status, userID, tenantID); err != nil {
 		c.JSON(http.StatusBadRequest, dto.ErrorResponse{Error: err.Error()})
 		return
 	}

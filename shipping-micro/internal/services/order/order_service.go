@@ -121,10 +121,26 @@ func (s *Service) GetByUserID(userID string, status domain.OrderStatus, tenantID
 
 }
 
-func (s *Service) UpdateStatus(orderID string, status string, tenantID string) error {
+func (s *Service) UpdateStatus(orderID string, status string, requester string, tenantID string) error {
+	fmt.Println("Actualizanod la orden con id", orderID)
 	if status != "pending" && status != "paid" && status != "cancelled" {
 		return fmt.Errorf("invalid status")
 	}
+	//Validate permisiones
+	user, err := s.userRepo.GetByID(requester, tenantID)
+	if err != nil {
+		return err
+	}
+	order, err := s.orderRepo.GetByID(orderID, tenantID)
+	if err != nil {
+		return err
+	}
+	if user.Rol != "admin" && user.ID != order.UserID {
+		return domain.UnauthorizedError{Message: "no permission to update order status"}
+	}
+
+	// Actualizar estado de la orden
+
 	if err := s.orderRepo.UpdateStatus(orderID, status, tenantID); err != nil {
 		return err
 	}
@@ -132,6 +148,12 @@ func (s *Service) UpdateStatus(orderID string, status string, tenantID string) e
 	if status == "paid" {
 		if sh, err := s.shippingRepo.GetByOrderID(orderID, tenantID); err == nil && sh != nil {
 			_ = s.shippingRepo.UpdateStatus(sh.ID, "in_transit", tenantID)
+		}
+	}
+	//Si la orden es cancelada, actualizar el shipping a cancelled si existe
+	if status == "cancelled" {
+		if sh, err := s.shippingRepo.GetByOrderID(orderID, tenantID); err == nil && sh != nil {
+			_ = s.shippingRepo.UpdateStatus(sh.ID, "cancelled", tenantID)
 		}
 	}
 

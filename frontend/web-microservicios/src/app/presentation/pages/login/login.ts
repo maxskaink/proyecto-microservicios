@@ -1,4 +1,4 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule, NgForm } from '@angular/forms';
 import { AuthService } from '../../../service/Authser.vice';
@@ -33,7 +33,8 @@ export class Login implements OnInit {
   constructor(
     private authService: AuthService, 
     private router: Router, 
-    private tenantService: TenantService
+    private tenantService: TenantService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -152,5 +153,43 @@ export class Login implements OnInit {
     this.tenantError = false;
     this.emailError = false;
     this.passwordError = false;
+  }
+
+  /**
+   * Inicia sesión con Google
+   */
+  async loginWithGoogle(): Promise<void> {
+    // Verificar que se haya seleccionado un tenant
+    if (!this.tenantId) {
+      this.tenantError = true;
+      this.showError = true;
+      this.errorType = 'tenant';
+      setTimeout(() => this.hideMessages(), 5000);
+      return;
+    }
+
+    this.hideMessages();
+    this.clearFieldErrors();
+    this.isLoading = true;
+    this.cdr.detectChanges();
+    
+
+    try {
+      await this.authService.loginWithGoogle(this.tenantId);
+      
+      this.showSuccess = true;
+      
+      setTimeout(() => {
+        this.router.navigate(['/home']);
+      }, 1000);
+
+    } catch (error: any) {
+      console.error('Error de login con Google:', error);
+      this.handleLoginError(error);
+      
+    } finally {
+      this.isLoading = false;
+      this.cdr.detectChanges();
+    }
   }
 }

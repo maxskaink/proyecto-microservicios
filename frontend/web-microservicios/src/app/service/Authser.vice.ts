@@ -2,6 +2,8 @@ import { Injectable, Injector, runInInjectionContext } from '@angular/core';
 import {
   Auth,
   signInWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
   signOut,
   User,
   onAuthStateChanged,
@@ -73,6 +75,30 @@ export class AuthService {
       this.tenantService.setTenant(idTenant);
 
       await this.loadUserData(idTenant);
+    });
+  }
+
+  async loginWithGoogle(idTenant: string) {
+    await runInInjectionContext(this.injector, async () => {
+      const provider = new GoogleAuthProvider();
+      
+      // Configurar el provider para forzar la selección de cuenta
+      provider.setCustomParameters({
+        prompt: 'select_account'
+      });
+
+      // Realizar login con popup
+      const result = await signInWithPopup(this.afAuth, provider);
+      
+      if (result.user) {
+        this.tenantService.setTenant(idTenant);
+        await this.loadUserData(idTenant);
+        
+        console.log('✅ Login con Google exitoso:', result.user.email);
+        return result.user;
+      }
+      
+      throw new Error('No se pudo completar el login con Google');
     });
   }
 

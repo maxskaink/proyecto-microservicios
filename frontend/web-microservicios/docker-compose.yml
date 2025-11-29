@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: web-microservicios/v2:latest
+    ports:
+      - "4200:4200"
+    environment:
+      API_URL: "${API_URL:-http://localhost:80}"
+    restart: unless-stopped
+    # Uncomment for development to mount source and avoid rebuilding
+    # volumes:
+    #   - ./:/app:rw
+

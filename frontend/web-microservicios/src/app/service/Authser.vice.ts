@@ -15,6 +15,7 @@ import { BehaviorSubject, Observable, from, firstValueFrom, combineLatest } from
 import { map, filter, switchMap } from 'rxjs/operators';
 import { Firestore } from '@angular/fire/firestore';
 import { HttpClient } from '@angular/common/http';
+import { API_BASE } from '../config';
 
 import { UserData } from '../Models/UserData';
 import { TenantService } from './TenantService';
@@ -29,7 +30,7 @@ export class AuthService {
   private authReadySubject = new BehaviorSubject<boolean>(false);
   authReady$ = this.authReadySubject.asObservable();
 
-  url: string = 'http://localhost:80/';
+  url: string = `${API_BASE}/`;
 
   private cachedToken: string | null = null;
   private tokenExpiry: number | null = null;

@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AuthService } from './Authser.vice';
+import { API_BASE } from '../config';
 import { TenantService } from './TenantService';
 import { Observable, switchMap, take } from 'rxjs';
 import { ShippingResponse } from '../Models/ShippingResponse';
@@ -10,7 +11,7 @@ import { ShippingResponse } from '../Models/ShippingResponse';
   providedIn: 'root',
 })
 export class ShippingService {
-  private apiUrlShippingCart = 'http://localhost:80/';
+  private apiUrlShippingCart = `${API_BASE}/`;
 
   constructor(
     private http: HttpClient,

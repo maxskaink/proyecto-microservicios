@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, switchMap, take } from 'rxjs';
 import { AuthService } from './Authser.vice';
+import { API_BASE } from '../config';
 import { TenantService } from './TenantService';
 import { UserResponseBack } from '../Models/UserReponseBack';
 import { userPeticion } from '../Models/UserPeticion';
@@ -10,7 +11,7 @@ import { userPeticion } from '../Models/UserPeticion';
   providedIn: 'root',
 })
 export class UsersService {
-  private apiUrlShippingCart = 'http://localhost:80/';
+  private apiUrlShippingCart = `${API_BASE}/`;
 
   constructor(
     private http: HttpClient,

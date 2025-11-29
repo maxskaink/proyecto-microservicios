@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { BehaviorSubject, Observable, map, filter, take, switchMap } from 'rxjs';
 import { Tenant } from '../Models/Tenant';
 import { TenantPeticion } from '../Models/TenantPeticion';
+import { API_BASE } from '../config';
 
 @Injectable({ providedIn: 'root' })
 export class TenantService {
   private tenantSubject = new BehaviorSubject<string | null>(null);
   tenant$ = this.tenantSubject.asObservable();
 
-  private apiUrlTenant = 'http://localhost:80/api/';
+  private apiUrlTenant = `${API_BASE}/api/`;
 
   constructor(
     private http: HttpClient,

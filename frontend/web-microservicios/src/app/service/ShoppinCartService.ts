@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { API_BASE } from '../config';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Observable, from, switchMap, combineLatest, of, forkJoin } from 'rxjs';
 import { map, filter, take, catchError } from 'rxjs/operators';
@@ -12,7 +13,7 @@ import { TenantService } from './TenantService';
   providedIn: 'root'
 })
 export class ShoppingCartService {
-  private apiUrlShoppingCart = 'http://localhost:80/';
+  private apiUrlShoppingCart = `${API_BASE}/`;
 
   constructor(
     private http: HttpClient,

@@ -5,13 +5,14 @@ import { map, filter, take, tap, catchError } from 'rxjs/operators';
 import { Product } from '../Models/Product';
 import { ProductPeticion } from '../Models/PrdocutPeticion';
 import { AuthService } from './Authser.vice';
+import { API_BASE } from '../config';
 import { TenantService } from './TenantService';
 
 export const SKIP_INTERCEPTOR = new HttpContextToken<boolean>(() => false);
 
 @Injectable({ providedIn: 'root' })
 export class ProductService {
-  private apiUrlProduct = 'http://localhost:80/';
+  private apiUrlProduct = `${API_BASE}/`;
 
   constructor(
     private http: HttpClient,

@@ -18,6 +18,6 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth()),
     provideFirestore(() => getFirestore()),
     provideZonelessChangeDetection(),
-    provideRouter(routes)
+    provideRouter(routes),
   ]
 };

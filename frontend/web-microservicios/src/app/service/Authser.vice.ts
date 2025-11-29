@@ -149,6 +149,9 @@ export class AuthService {
       map(result => result.claims)
     );
   }
+   getUserRole(): string | null {
+    return this.userCurrentData?.rol ?? null;
+  }
 
   isAdmin() {
     return this.getUserClaims().pipe(

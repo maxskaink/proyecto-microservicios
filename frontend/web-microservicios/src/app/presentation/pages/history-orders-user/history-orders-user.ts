@@ -60,4 +60,9 @@ export class HistoryOrdersUser implements OnInit{
   goToHome(){
     this.router.navigate(['/home']);
   }
+  viewOrderDetails(orderId: string) {
+      // Por ahora solo mostramos un alert, después se puede navegar a una página de detalles
+      console.log('Ver detalles de la orden:', orderId);
+      this.router.navigate(['list-order/view-order', orderId]);
+  }
 }

@@ -26,7 +26,7 @@
     </section>
     <div class="row g-3 section-current">
       <div *ngFor="let order of orders" class="col-12 col-md-12 col-lg-12">
-        <app-item-order [order]="order" class="order" ></app-item-order>
+        <app-item-order [order]="order" class="order" (details)="viewOrderDetails($event)"></app-item-order>
       </div>
     </div>
     <section class="container section-title my-4 p-4">
@@ -35,7 +35,7 @@
     </section>
     <div class="row g-3 section-history">
       <div *ngFor="let order of oldOrders" class="col-12 col-md-4 col-lg-6">
-        <app-item-order [order]="order" [showActions]="false"></app-item-order>
+        <app-item-order [order]="order" [showActions]="false" (details)="viewOrderDetails($event)"></app-item-order>
       </div>
     </div>    
   </div>

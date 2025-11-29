@@ -5,6 +5,6 @@ export interface UserData {
   firebaseUID: string;  
   email: string;
   name: string;
-  rol: 'admin' | 'cliente' | 'vendedor' | string; 
+  rol: string; 
   profile: UserProfile;
 }

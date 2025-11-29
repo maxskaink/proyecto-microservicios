@@ -1,8 +1,9 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectorRef, Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { Shipping } from '../../../Models/OrderPeticion';
 import { ShippingService } from '../../../service/shipping.service';
+import { AuthService } from '../../../service/Authser.vice';
 
 @Component({
   selector: 'app-shipping',
@@ -10,14 +11,25 @@ import { ShippingService } from '../../../service/shipping.service';
   templateUrl: './shippingItem.html',
   styleUrl: './shippingItem.css',
 })
-export class shippingItem {
-  @Input() showActions: boolean = true;
+export class shippingItem implements OnChanges {
+   showActions: boolean = false;
   @Input() shipping!: Shipping;
   constructor(
     private cdr: ChangeDetectorRef,
-    private shippingService: ShippingService
+    private shippingService: ShippingService,
+    private authService: AuthService
   ) {
-
+    
+  }
+  ngOnChanges(changes: SimpleChanges): void {
+    this.getRoleUser();
+  }
+  
+  getRoleUser(){
+    this.authService.getUserRole();
+    if(this.authService.getUserRole() === 'admin'){
+      this.showActions = true;
+    }
   }
   updateSatus(status: string){
     this.shippingService.updateStatusShipping(this.shipping.id!, status).subscribe({

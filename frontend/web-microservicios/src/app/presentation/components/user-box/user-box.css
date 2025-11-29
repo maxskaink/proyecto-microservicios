@@ -131,7 +131,7 @@
 }
 
 .badge-producer {
-  background: linear-gradient(135deg, rgb(106, 209, 123) 0%, rgb(134, 225, 152) 100%);
+  background: linear-gradient(135deg, rgb(77, 138, 87) 0%, rgb(100, 155, 111) 100%);
   color: white;
   border-color: rgba(106, 209, 123, 0.3);
   box-shadow: 0 2px 8px rgba(106, 209, 123, 0.2);

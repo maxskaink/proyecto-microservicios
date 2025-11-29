@@ -27,7 +27,7 @@ export class UserBox {
         return 'badge-admin';
       case 'cliente':
         return 'badge-client';
-      case 'vendedor':
+      case 'producer':
         return 'badge-producer';
       default:
         return 'badge-default';
@@ -43,7 +43,7 @@ export class UserBox {
         return 'bi bi-shield-check';
       case 'cliente':
         return 'bi bi-person';
-      case 'vendedor':
+      case 'producer':
         return 'bi bi-shop';
       default:
         return 'bi bi-person-circle';
@@ -59,8 +59,8 @@ export class UserBox {
         return 'Administrador';
       case 'cliente':
         return 'Cliente';
-      case 'vendedor':
-        return 'Vendedor';
+      case 'producer':
+        return 'Productor';
       default:
         return 'Usuario';
     }

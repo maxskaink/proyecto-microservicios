@@ -11,7 +11,7 @@
 }
 .list-users{
     background: linear-gradient(20deg, #e7f1f0, #d6dfe4,#a3c1e7);
-    padding: 2rem;
+    
 }
 .empty-user {
     background-color: #ffffff;
@@ -25,3 +25,4 @@
 .empty-user:hover {
     transform: translateY(-3px);
 }
+

@@ -5,7 +5,7 @@
         <h2 class="title">Administra tus usuarios</h2>
         <p>Gestiona todos los usuarios</p>
     </div>
-    <section  class="list-users" >
+    <section  class="list-users p-3" >
         <section class="row mb-4">
         <h3 class="subtitle">Adinistradores: </h3>
             <div *ngIf="admins.length === 0"
@@ -14,9 +14,7 @@
                 No tienes Administrador hasta el momento
                 </p>
             </div>
-
             <app-user-box
-            
                 *ngFor="let admin of admins"
                 [user]="admin"
                 (action)="onAction($event)"

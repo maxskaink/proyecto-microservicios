@@ -1,0 +1,16 @@
+<app-is-loading></app-is-loading>   
+<app-header></app-header>
+<section class="section-content container">
+  <section class="section-title d-flex flex-column align-items-center mb-4">
+    <h1 class="title">Informacion del usuario</h1>
+    <p>Esta es la informacion del usuario</p>
+  </section>
+  <section>
+    <div *ngIf="user">
+        <app-view-info-producer
+        [producer]="user"
+        [showActions] = "true"
+        ></app-view-info-producer>
+    </div>
+  </section>
+</section>

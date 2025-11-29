@@ -64,7 +64,7 @@ export class ViewPanelUsers implements OnInit{
 }
     onAction(id: string){
       console.log('Acción recibida para el usuario con ID:', id);
-      
+      this.router.navigate(['/user/view-user-info', id]); 
     }
 
 

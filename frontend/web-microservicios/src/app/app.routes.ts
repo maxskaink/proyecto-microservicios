@@ -14,6 +14,7 @@ import { EditItem } from './presentation/pages/edit-item/edit-item';
 import { ShippingOrderPage } from './presentation/pages/shipping-order-page/shipping-order-page';
 import { RoleGuard } from './guards/role.guards';
 import { ViewPanelUsers } from './presentation/pages/view-panel-users/view-panel-users';
+import { ViewUserInfoPage } from './presentation/pages/view-user-info-page/view-user-info-page';
 
 export const routes: Routes = [
     { 
@@ -88,6 +89,12 @@ export const routes: Routes = [
         component: ViewPanelUsers,
         canActivate: [authGuard, RoleGuard],
         data: { roles: ['admin'] } // Solo administradores pueden ver el panel de usuarios
+    },
+    {
+        path: 'user/view-user-info/:id',
+        component: ViewUserInfoPage,
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin'] } // Solo administradores pueden ver información de usuarios
     },
     {
         path: '',

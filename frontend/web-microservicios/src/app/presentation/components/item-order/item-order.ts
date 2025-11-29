@@ -5,6 +5,7 @@ import { catchError, forkJoin, of } from 'rxjs';
 import { ProductService } from '../../../service/ProductService';
 import { Product } from '../../../Models/Product';
 import { AnyARecord } from 'dns';
+import { ShippingService } from '../../../service/shipping.service';
 
 @Component({
   selector: 'app-item-order',
@@ -24,17 +25,33 @@ export class ItemOrder implements OnChanges{
 
   public products: Product[] = [];
   public isLoadingProducts = false;
-  
+  public stateShipping: string = '';
   
   constructor(
     private productService: ProductService,
+    private shippingService: ShippingService,
     private cdr: ChangeDetectorRef
   ) {}
   ngOnChanges(changes: SimpleChanges): void {
      if (this.order && this.order.items?.length) {
       this.loadProducts();
+      this.loadShippingInfo();
     }
   }
+
+  private loadShippingInfo(): void {
+
+    this.shippingService.getShippingByOrderId(this.order.id).subscribe({
+      next: (shipping) => {
+        console.log('✅ Información de envío cargada:', shipping);
+        this.stateShipping = shipping.status;
+      },
+      error: (error) => {
+        console.error('Error al cargar información de envío:', error);
+      }
+    });
+  }   
+
 
   /**
    * 

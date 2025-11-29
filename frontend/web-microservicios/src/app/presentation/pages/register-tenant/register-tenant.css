@@ -1,0 +1,8 @@
+.section-form{
+    margin-top: 6rem;
+    padding: 2rem;
+}
+.title{
+    font-weight: 700;
+    color: var(--color-succes);
+}

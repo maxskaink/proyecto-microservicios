@@ -55,9 +55,13 @@
               </span>
             </div>
           </div>
-          <div>
-            <label class="field-label">Estaod de envio</label>
-            <p class="text">{{stateShipping}}</p>
+          <div class="col-12 col-lg-6 col-md-12">
+            <div class="status-container">
+              <label class="field-label">Estado de envío</label>
+              <span class="status-badge shipping-{{ stateShipping?.toLowerCase() || 'pending' }}">
+                {{ formatState(stateShipping) }}
+              </span>
+            </div>
           </div>
           
           <!-- Precio Total -->

@@ -164,7 +164,7 @@
 
 /* =================== STATUS & PRICE SECTION =================== */
 .status-price-section {
-    
+    margin: 2rem 0;
 }
 
 .field-label {
@@ -220,6 +220,90 @@
     background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
     color: white;
     border-color: rgba(59, 130, 246, 0.3);
+}
+
+/* =================== SHIPPING STATUS BADGES =================== */
+/* Estados de envío con los mismos estilos que los status de orden */
+.shipping-pending {
+    color: #f59e0b;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.shipping-preparing {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.shipping-shipped, .shipping-enviado {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.shipping-in-transit, .shipping-en-transito {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+    border-color: rgba(6, 182, 212, 0.3);
+}
+
+.shipping-delivered, .shipping-entregado {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.shipping-cancelled, .shipping-cancelado {
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.shipping-returned, .shipping-devuelto {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white;
+    border-color: rgba(249, 115, 22, 0.3);
+}
+
+/* =================== SHIPPING STATUS BADGES =================== */
+/* Estados de envío con los mismos estilos que los status de orden */
+.shipping-pending {
+    color: #f59e0b;
+    border-color: rgba(251, 191, 36, 0.3);
+}
+
+.shipping-preparing {
+    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+    color: white;
+    border-color: rgba(139, 92, 246, 0.3);
+}
+
+.shipping-shipped, .shipping-enviado {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+    color: white;
+    border-color: rgba(59, 130, 246, 0.3);
+}
+
+.shipping-in-transit, .shipping-en-transito {
+    background: linear-gradient(135deg, #06b6d4 0%, #0891b2 100%);
+    color: white;
+    border-color: rgba(6, 182, 212, 0.3);
+}
+
+.shipping-delivered, .shipping-entregado {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border-color: rgba(16, 185, 129, 0.3);
+}
+
+.shipping-cancelled, .shipping-cancelado {
+    color: #dc2626;
+    border-color: rgba(239, 68, 68, 0.3);
+}
+
+.shipping-returned, .shipping-devuelto {
+    background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+    color: white;
+    border-color: rgba(249, 115, 22, 0.3);
 }
 
 /* Price container */

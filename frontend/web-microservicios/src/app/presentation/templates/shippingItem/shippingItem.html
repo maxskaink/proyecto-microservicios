@@ -20,7 +20,7 @@
             <div class="">
               <label class="field-label">Estado del envio</label>
               <span class="status-badge status-{{ shipping.status.toLowerCase() }}">
-                {{ shipping.status }}
+                {{ formatState(shipping.status) }}
               </span>
             </div>
           </div>

@@ -42,6 +42,22 @@ export class shippingItem implements OnChanges {
       }
     });
   }
+    formatState(state: string): string {
+    switch (state) {
+      case 'pending':
+        return 'Pendiente';
+      case 'in_transit':
+        return 'En tramite';
+      case 'shipped':
+        return 'Enviada';
+      case 'delivered':
+        return 'Entregada';
+      case 'cancelled':
+        return 'Cancelada';
+      default:
+        return state;
+    }
+  }
   /*
      * Formatea la hora
    */

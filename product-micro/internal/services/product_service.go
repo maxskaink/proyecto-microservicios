@@ -138,8 +138,10 @@ func (p *productService) UpdateProduct(id string, product dto.ProductDTORequest,
 		return nil, domain.NotFoundError{Message: fmt.Sprintf("Producto con id %s no fue encontrado", id)}
 	}
 
+	fmt.Printf("Current Product ProducerID: %s, User ID: %s, User Role: %s\n", currentProduct.ProducerID, user.ID, user.Rol)
+
 	// Validar que el usuario es el dueño del producto o es administrador
-	if currentProduct.ProducerID != idProducer && user.Rol != domain.UserRoleAdmin {
+	if currentProduct.ProducerID != user.ID && user.Rol != domain.UserRoleAdmin {
 		return nil, domain.UnauthorizedError{Message: "No tiene permisos para actualizar el producto"}
 	}
 

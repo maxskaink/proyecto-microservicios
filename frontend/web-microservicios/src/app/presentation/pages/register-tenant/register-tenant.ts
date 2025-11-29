@@ -7,6 +7,7 @@ import { TenantPeticion } from '../../../Models/TenantPeticion';
 import { Header } from '../../templates/header/header';
 import { FormTenant } from '../../templates/form-tenant/form-tenant';
 import Swal from 'sweetalert2';
+import { LoadingService } from '../../../service/loading-service';
 
 @Component({
   selector: 'app-register-tenant',
@@ -24,7 +25,8 @@ export class RegisterTenant implements OnInit {
   constructor(
     private fb: FormBuilder,
     private serviceTenant: TenantService,
-    private router: Router
+    private router: Router,
+    private loadingService: LoadingService
   ) {}
 
   ngOnInit(): void {
@@ -40,18 +42,30 @@ export class RegisterTenant implements OnInit {
 
   onRegisterTenant(tenatn: TenantPeticion): void {
    this.isSubmitting = true;
+   this.loadingService.show('Registrando tenant...');
     this.errorMessage = '';
     this.successMessage = '';
     this.serviceTenant.PostTenant(tenatn).subscribe({
       next: (response) => {
+        this.loadingService.hide(); 
         this.isSubmitting = false;
         this.successMessage = 'Tenant registrado exitosamente.';
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'Tenant registrado exitosamente.',
+          buttonsStyling: false,
+          customClass: {
+            confirmButton: 'btn btn-success'
+          }
+        });
         this.tenantForm.reset();
         setTimeout(() => {
           this.router.navigate(['/home']);
         }, 2000);
       },
       error: (error) => {
+        this.loadingService.hide(); 
         this.isSubmitting = false;
         this.errorMessage = 'Error al registrar el tenant. Inténtalo de nuevo.';
         console.error('Error al registrar el tenant:', error);

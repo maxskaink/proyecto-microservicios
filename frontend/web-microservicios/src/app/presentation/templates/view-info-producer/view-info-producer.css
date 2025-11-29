@@ -1,0 +1,450 @@
+/* =================== PRODUCER INFO CARD STYLES =================== */
+
+/* Main producer card */
+.producer-card {
+  margin: 0 auto;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.producer-card .card {
+  border-radius: 20px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.producer-card .card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15) !important;
+}
+
+/* =================== HEADER STYLES =================== */
+.bg-gradient-primary {
+  color: #138496;
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-gradient-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+.card-header {
+  padding: 2rem;
+  border-bottom: none !important;
+}
+
+.card-title {
+  color: #138496;
+  font-weight: 700;
+  font-size: 1.4rem;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  margin-bottom: 0.5rem;
+}
+
+.card-subtitle {
+  color: #138496;
+  opacity: 0.9;
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+/* =================== AVATAR STYLES =================== */
+.avatar-container {
+  position: relative;
+  display: inline-block;
+}
+
+.avatar-image {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.avatar-image:hover {
+  transform: scale(1.05);
+}
+
+.status-badge {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background: #28a745;
+  color: white;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid white;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.status-badge i {
+  font-size: 0.8rem;
+}
+
+/* =================== CONTENT STYLES =================== */
+.section-title {
+  color: rgb(6, 94, 82);
+  font-weight: 700;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid rgba(106, 209, 123, 0.3);
+  display: flex;
+  align-items: center;
+}
+
+.section-title i {
+  color: rgb(106, 209, 123);
+  font-size: 1.1rem;
+}
+
+.description-text {
+  color: #5a6c7d;
+  line-height: 1.6;
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+/* =================== CONTACT SECTION =================== */
+.contact-item {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(106, 209, 123, 0.05) 0%, rgba(233, 236, 239, 0.1) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(106, 209, 123, 0.2);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.contact-item:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(106, 209, 123, 0.2);
+  border-color: rgba(106, 209, 123, 0.4);
+}
+
+.contact-icon {
+  background: rgb(106, 209, 123);
+  color: white;
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 1rem;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(106, 209, 123, 0.3);
+}
+
+.contact-icon i {
+  font-size: 1rem;
+}
+
+.contact-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.contact-label {
+  color: rgb(6, 94, 82);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.75rem;
+  letter-spacing: 0.5px;
+  display: block;
+  margin-bottom: 0.2rem;
+}
+
+.contact-value {
+  color: #2c3e50;
+  font-weight: 600;
+  margin-bottom: 0;
+  font-size: 0.9rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+/* =================== STATS SECTION =================== */
+.stat-card {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  background: linear-gradient(135deg, rgba(233, 236, 239, 0.3) 0%, rgba(106, 209, 123, 0.05) 100%);
+  border-radius: 12px;
+  border: 1px solid rgba(233, 236, 239, 0.5);
+  transition: all 0.3s ease;
+  height: 100%;
+}
+
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-icon {
+  background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+  color: white;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+}
+
+.stat-icon i {
+  font-size: 0.9rem;
+}
+
+.stat-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.stat-label {
+  color: rgb(6, 94, 82);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.7rem;
+  letter-spacing: 0.3px;
+  display: block;
+  margin-bottom: 0.1rem;
+}
+
+.stat-value {
+  color: #2c3e50;
+  font-weight: 700;
+  margin-bottom: 0;
+  font-size: 0.85rem;
+}
+
+/* =================== ACTION BUTTONS =================== */
+.actions-section {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(106, 209, 123, 0.2);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, rgb(106, 209, 123) 0%, rgb(134, 225, 152) 100%);
+  border: none;
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(106, 209, 123, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgb(134, 225, 152) 0%, rgb(106, 209, 123) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(106, 209, 123, 0.4);
+}
+
+.btn-outline-primary {
+  color: rgb(106, 209, 123);
+  border-color: rgb(106, 209, 123);
+  font-weight: 600;
+  padding: 0.6rem 1.5rem;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.btn-outline-primary:hover {
+  background-color: rgb(106, 209, 123);
+  border-color: rgb(106, 209, 123);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(106, 209, 123, 0.3);
+}
+
+/* =================== LOADING SKELETON =================== */
+.producer-card-skeleton .card {
+  border-radius: 20px;
+  overflow: hidden;
+}
+
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-avatar {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+}
+
+.skeleton-title {
+  height: 24px;
+  width: 60%;
+}
+
+.skeleton-subtitle {
+  height: 16px;
+  width: 40%;
+}
+
+.skeleton-text {
+  height: 16px;
+  width: 100%;
+}
+
+.skeleton-text:nth-child(2) {
+  width: 80%;
+}
+
+.skeleton-text:nth-child(3) {
+  width: 60%;
+}
+
+@keyframes loading {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* =================== ANIMATIONS =================== */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* =================== RESPONSIVE BREAKPOINTS =================== */
+
+/* Tablets */
+@media (max-width: 768px) {
+  .producer-card {
+    margin: 0 1rem;
+  }
+  
+  .card-header {
+    padding: 1.5rem;
+  }
+  
+  .card-title {
+    font-size: 1.2rem;
+  }
+  
+  .avatar-image {
+    width: 70px;
+    height: 70px;
+  }
+  
+  .status-badge {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .contact-item,
+  .stat-card {
+    padding: 0.8rem;
+  }
+  
+  .contact-icon {
+    width: 36px;
+    height: 36px;
+    margin-right: 0.8rem;
+  }
+  
+  .stat-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.6rem;
+  }
+}
+
+/* Mobile */
+@media (max-width: 576px) {
+  .producer-card {
+    margin: 0 0.5rem;
+  }
+  
+  .card-header {
+    padding: 1rem;
+  }
+  
+  .card-body {
+    padding: 1.5rem !important;
+  }
+  
+  .card-title {
+    font-size: 1.1rem;
+  }
+  
+  .avatar-image {
+    width: 60px;
+    height: 60px;
+  }
+  
+  .status-badge {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .contact-item,
+  .stat-card {
+    padding: 0.7rem;
+    margin-bottom: 0.8rem;
+  }
+  
+  .contact-icon {
+    width: 32px;
+    height: 32px;
+    margin-right: 0.7rem;
+  }
+  
+  .stat-icon {
+    width: 28px;
+    height: 28px;
+    margin-right: 0.5rem;
+  }
+  
+  .section-title {
+    font-size: 0.9rem;
+  }
+  
+  .contact-label,
+  .stat-label {
+    font-size: 0.7rem;
+  }
+  
+  .contact-value {
+    font-size: 0.85rem;
+  }
+  
+  .stat-value {
+    font-size: 0.8rem;
+  }
+  
+  .btn {
+    font-size: 0.85rem;
+    padding: 0.5rem 1.2rem;
+  }
+}

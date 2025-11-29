@@ -3,11 +3,11 @@
 </app-is-loading>
 <app-header></app-header>
 
-  <section class="section-title container">
+  <section class="section-title container d-flex flex-column justify-content-center align-items-center mb-4">
     <h2 class="title">Mis Órdenes</h2>
     <p class="text">Revisa el estado de tus órdenes realizadas</p>
   </section>
-<div class="orders-container container-fluid">
+<div class="orders-container container">
   
   <!-- Loading state -->
   <div *ngIf="isLoading" class="loading">

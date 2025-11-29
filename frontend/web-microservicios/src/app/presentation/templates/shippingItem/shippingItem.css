@@ -22,7 +22,7 @@
 
 /* Header */
 .card-header {
-    background: linear-gradient(135deg, rgb(6, 94, 82) 0%, rgb(8, 120, 105) 100%);
+    background: linear-gradient(135deg, rgb(68, 78, 77) 0%, rgb(4, 84, 138) 100%);
     padding: 1.5rem 2rem;
     position: relative;
     overflow: hidden;
@@ -295,6 +295,7 @@
 .btn-outline-danger.order-action-btn:hover {
     background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
     border-color: #ef4444;
+    color: white;
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(239, 68, 68, 0.3);
 }
@@ -435,4 +436,8 @@
 }
 .text-fecha{
     font-size: 10px;
+}
+.text{
+    font-size: 15px;
+    color: #858887;
 }

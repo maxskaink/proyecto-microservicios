@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectorRef, Component, Input } from '@angular/core';
 import { ShoppingCartService } from '../../../service/ShoppinCartService';
 import { Shipping } from '../../../Models/OrderPeticion';
+import { ShippingService } from '../../../service/shipping.service';
 
 @Component({
   selector: 'app-shipping',
@@ -14,12 +15,20 @@ export class shippingItem {
   @Input() shipping!: Shipping;
   constructor(
     private cdr: ChangeDetectorRef,
-    
+    private shippingService: ShippingService
   ) {
 
   }
   updateSatus(status: string){
-
+    this.shippingService.updateStatusShipping(this.shipping.id!, status).subscribe({
+      next: (res) => {
+        this.shipping.status = status;
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('❌ Error actualizando el estado del envío:', error);
+      }
+    });
   }
   /*
      * Formatea la hora

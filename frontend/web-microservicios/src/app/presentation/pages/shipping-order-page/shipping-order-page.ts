@@ -22,10 +22,9 @@ import { forkJoin } from 'rxjs';
 export class ShippingOrderPage implements OnInit {
 
   idOrder!: string;
-
   public shippingInfo!: ShippingResponse;
   public orderInfo!: Order;
-
+  public showActions: boolean = true;
   isLoading = true;
 
   constructor(

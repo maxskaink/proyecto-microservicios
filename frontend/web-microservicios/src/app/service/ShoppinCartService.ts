@@ -168,7 +168,7 @@ getShoppingCart(): Observable<CartItem[]> {
   }
   /**
    * 
-   * @param status  etado al que desea actualizar la orden
+   * @param status  {satus: string }etado al que desea actualizar la orden
    * @param orderId id de la orden a actualizar
    * @returns orden actualizada
    */

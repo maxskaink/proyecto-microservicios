@@ -16,8 +16,10 @@ func NewTenantRepository(db *gorm.DB) *TenantRepository {
 
 func (r *TenantRepository) Create(req dto.CreateTenantRequest) (*dto.TenantResponse, error) {
 	tenant := models.Tenant{
-		TenantID:   req.TenantID,
-		TenantName: req.TenantName,
+		TenantID:    req.TenantID,
+		TenantName:  req.TenantName,
+		Description: req.Description,
+		Location:    req.Location,
 	}
 
 	if err := r.db.Create(&tenant).Error; err != nil {
@@ -25,10 +27,11 @@ func (r *TenantRepository) Create(req dto.CreateTenantRequest) (*dto.TenantRespo
 	}
 
 	return &dto.TenantResponse{
-		ID:         tenant.ID,
-		TenantID:   tenant.TenantID,
-		TenantName: tenant.TenantName,
-		CreatedAt:  tenant.CreatedAt.String(),
+		TenantID:    tenant.TenantID,
+		TenantName:  tenant.TenantName,
+		Description: tenant.Description,
+		Location:    tenant.Location,
+		CreatedAt:   tenant.CreatedAt.String(),
 	}, nil
 }
 
@@ -39,10 +42,11 @@ func (r *TenantRepository) FindByID(tenantID string) (*dto.TenantResponse, error
 	}
 
 	return &dto.TenantResponse{
-		ID:         tenant.ID,
-		TenantID:   tenant.TenantID,
-		TenantName: tenant.TenantName,
-		CreatedAt:  tenant.CreatedAt.String(),
+		TenantID:    tenant.TenantID,
+		TenantName:  tenant.TenantName,
+		Description: tenant.Description,
+		Location:    tenant.Location,
+		CreatedAt:   tenant.CreatedAt.String(),
 	}, nil
 }
 
@@ -55,10 +59,11 @@ func (r *TenantRepository) GetAll() ([]dto.TenantResponse, error) {
 	var responses []dto.TenantResponse
 	for _, t := range tenants {
 		responses = append(responses, dto.TenantResponse{
-			ID:         t.ID,
-			TenantID:   t.TenantID,
-			TenantName: t.TenantName,
-			CreatedAt:  t.CreatedAt.String(),
+			TenantID:    t.TenantID,
+			TenantName:  t.TenantName,
+			Description: t.Description,
+			Location:    t.Location,
+			CreatedAt:   t.CreatedAt.String(),
 		})
 	}
 

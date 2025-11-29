@@ -27,7 +27,7 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFu
 	users := rg.Group("/users")
 	{
 		users.GET("", auth, uc.ListUsers)
-		users.GET("/producer/:id", auth, uc.GetInfoUser)
+		users.GET("/producer/:id", auth, uc.GetInfoProducer)
 		users.GET("/me", auth, uc.GetInfoUser)
 		users.PUT("/:id", auth, uc.UpdateUser)
 		users.PATCH("/:id/rol", auth, uc.UpdateRolUser)

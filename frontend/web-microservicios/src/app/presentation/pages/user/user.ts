@@ -71,6 +71,15 @@ export class User implements OnInit, OnDestroy {
       category: 'profile',
       rol: ['producer', 'admin', 'client']
     },
+    {
+      id: 'users-panel',
+      title: 'Administrar usuarios',
+      description: 'Gestiona los usuarios de la plataforma',
+      icon: 'bi-person-gear',
+      route: '/user/list-users',
+      category: 'profile',
+      rol: [ 'admin']
+    },
     // Sección de Negocio
     {
       id: 'my-products',

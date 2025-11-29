@@ -13,6 +13,7 @@ import { ViewMyProducts } from './presentation/pages/view-my-products/view-my-pr
 import { EditItem } from './presentation/pages/edit-item/edit-item';
 import { ShippingOrderPage } from './presentation/pages/shipping-order-page/shipping-order-page';
 import { RoleGuard } from './guards/role.guards';
+import { ViewPanelUsers } from './presentation/pages/view-panel-users/view-panel-users';
 
 export const routes: Routes = [
     { 
@@ -81,6 +82,12 @@ export const routes: Routes = [
       path: 'list-order/view-order/:id',
       component: ShippingOrderPage,
       canActivate: [authGuard] // Cualquier usuario autenticado puede ver detalles de orden
+    },
+    {
+        path: 'user/list-users',
+        component: ViewPanelUsers,
+        canActivate: [authGuard, RoleGuard],
+        data: { roles: ['admin'] } // Solo administradores pueden ver el panel de usuarios
     },
     {
         path: '',

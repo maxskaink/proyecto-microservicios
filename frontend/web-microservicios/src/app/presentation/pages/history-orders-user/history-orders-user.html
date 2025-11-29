@@ -14,7 +14,7 @@
   
 
   <!-- Empty orders -->
-  <div *ngIf="!isLoading && orders.length === 0" class="empty-orders  d-flex flex-column justify-content-center align-items-center w-100">
+  <div *ngIf="!isLoading && orders === null " class="empty-orders  d-flex flex-column justify-content-center align-items-center w-100">
     <h2 class="">No tienes órdenes aún</h2>
     <p class="text-center">Cuando realices pedidos aparecerán aquí</p>
     <button  (click)="goToHome()" class="btn btn-primary mb-3">
@@ -24,7 +24,7 @@
   </div>
 
   <!-- Orders list -->
-  <div *ngIf="!isLoading  && orders.length > 0" class="orders-list ">
+  <div *ngIf="!isLoading  && orders !== null" class="orders-list ">
     <section class="container-fluid section-title mb-4">
         <h3 class=" mb-4 title">Pedidos pendientes</h3>
         <p class="text">Revisa tus pedidos que tienes pendientes con nostoros</p>

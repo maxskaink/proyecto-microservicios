@@ -16,7 +16,7 @@ import { Router } from '@angular/router';
 })
 export class HistoryOrdersUser implements OnInit{ 
 
-  public orders: Order[] = [];
+  public orders?: Order[] ;
   public oldOrders: Order[] = [];
   public isLoading: boolean = true;
   constructor(

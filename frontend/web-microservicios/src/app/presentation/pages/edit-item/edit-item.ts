@@ -84,6 +84,7 @@ export class EditItem  {
   handleProduct(event: { product: any; action: string; selectFIle: File }) {
     console.log('Producto editado recibido:', event);
     this.productData = event.product;
+    this.updateProduct();
   }
   /**
    * Actualiza el producto existente al back
@@ -111,7 +112,7 @@ export class EditItem  {
         console.error('Error al actualizar el producto:', error);
         Swal.fire({
               icon: 'error',
-              title: 'Error',
+              title: 'No se pudo editar el producto',
               text: 'Error al actualizar el producto. ${error.message}',
               buttonsStyling: false,
               customClass: {

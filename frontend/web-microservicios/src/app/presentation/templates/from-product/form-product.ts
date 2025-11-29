@@ -1,5 +1,5 @@
 import { CommonModule, isPlatformBrowser } from '@angular/common';
-import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, Output, PLATFORM_ID, ViewChild } from '@angular/core';
+import { ChangeDetectorRef, Component, ElementRef, EventEmitter, Inject, Input, OnInit, Output, PLATFORM_ID, ViewChild } from '@angular/core';
 import { FormBuilder, FormsModule, NgForm, NgModel, Validators } from '@angular/forms';
 import { ProductService } from '../../../service/ProductService';
 import { ProductPeticion } from '../../../Models/PrdocutPeticion';
@@ -11,7 +11,7 @@ import { ProductPeticion } from '../../../Models/PrdocutPeticion';
   templateUrl: './form-product.html',
   styleUrl: './form-product.css',
 })
-export class FormProduct {
+export class FormProduct implements OnInit{
 
   @Output() productCreated = new EventEmitter< { product: ProductPeticion, action: string, selectFIle: File }>();
   @Input() categories: string[] = [];
@@ -19,7 +19,7 @@ export class FormProduct {
   @ViewChild('productForm') productForm?: NgForm;
 
   
-  @Input() product: ProductPeticion = {
+  @Input() product: ProductPeticion  = {
     name: '',
     category: '',
     price: 100,
@@ -46,6 +46,12 @@ export class FormProduct {
   ) {
       
   }
+  ngOnInit() {
+    if (this.action === 'edit' ) {
+      this.imagePreview = this.product.photo_url; // Muestra la imagen existente
+    }
+  }
+
   /**
    * funcion de apoyo para seleccionar la categoria
    * @param cat categoría seleccionada
@@ -78,8 +84,8 @@ export class FormProduct {
       alert('Por favor, complete todos los campos del formulario.');
       return;
     }
-
-    if (!this.selectedFile) {
+    const hasExistingImage = !!this.product.photo_url; 
+    if (!this.selectedFile && !hasExistingImage) {
       alert('Por favor, seleccione una imagen para el producto.');
       return;
     }

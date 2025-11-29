@@ -8,11 +8,13 @@ import { catchError, of } from 'rxjs';
 import { ItemOrder } from '../../components/item-order/item-order';
 import { Order } from '../../../Models/OrderPeticion';
 import { updateStatus } from '../../../Models/updateStatus';
+import { LoadingService } from '../../../service/loading-service';
+import { IsLoading } from '../../components/is-loading/is-loading';
 
 
 @Component({
   selector: 'app-list-orders',
-  imports: [CommonModule, RouterModule, Header, ArrowLeft, ItemOrder],
+  imports: [CommonModule, RouterModule, Header, ArrowLeft, ItemOrder, IsLoading],
   templateUrl: './list-orders.html',
   styleUrl: './list-orders.css',
 })
@@ -22,7 +24,8 @@ export class ListOrders implements OnInit {
   error: string | null = null;
   updateStatus: updateStatus = {status: ''};
   constructor(private shoppingService: ShoppingCartService,
-    private cdr: ChangeDetectorRef
+    private cdr: ChangeDetectorRef,
+    private loadingService: LoadingService,
   ) {}
 
   ngOnInit() {
@@ -34,6 +37,7 @@ export class ListOrders implements OnInit {
    * Carga las órdenes del usuario
    */
   loadOrders() {
+    this.loadingService.show("cargando ordenes...");
     console.log("iniciando carga de ordenes");
     this.isLoading = true;
     this.error = null;
@@ -45,14 +49,16 @@ export class ListOrders implements OnInit {
         this.isLoading = false;
         // Forzar detección de cambios
         setTimeout(() => this.isLoading = false, 0);
+        this.loadingService.hide();
         this.cdr.detectChanges();
         return of([]);
       })
     ).subscribe(orders => {
+
       this.orders = orders;
       this.isLoading = false;
       console.log("Órdenes cargadas:", orders);
-      // Forzar detección de cambios
+      this.loadingService.hide();
       setTimeout(() => {
         this.isLoading = false;
         this.orders = [...(orders || [])];

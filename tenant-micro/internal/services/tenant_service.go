@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/dto"
 	"github.com/maxskaink/proyecto-microservicios/tenant-micro/internal/repositories"
@@ -24,6 +25,13 @@ func NewTenantService(repo *repositories.TenantRepository, channel *amqp.Channel
 }
 
 func (s *TenantService) CreateTenant(ctx context.Context, req dto.CreateTenantRequest) (*dto.TenantResponse, error) {
+
+	//Convertir a minusculas
+	req.TenantID = strings.ToLower(req.TenantID)
+	//Validar que sea solo una palabra el ID
+	if !haveOneWord(req.TenantID) {
+		return nil, fmt.Errorf("TenantID debe ser una sola palabra")
+	}
 
 	// Guardar en BD
 	tenant, err := s.repo.Create(req)
@@ -90,4 +98,8 @@ func (s *TenantService) publishEvent(eventType string, data map[string]interface
 	)
 
 	fmt.Println("Tenant published")
+}
+
+func haveOneWord(cadena string) bool {
+	return len(strings.TrimSpace(cadena)) > 0 && !strings.Contains(cadena, " ")
 }

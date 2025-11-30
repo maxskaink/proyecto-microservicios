@@ -9,10 +9,13 @@ import { catchError, map, of, switchMap } from 'rxjs';
 import { Header } from '../../templates/header/header';
 import { ProductViewBuy } from '../../templates/product-view-buy/product-view-buy';
 import { Order } from '../../templates/order/order';
+import Swal from 'sweetalert2';
+import { LoadingService } from '../../../service/loading-service';
+import { IsLoading } from '../../components/is-loading/is-loading';
 
 @Component({
   selector: 'app-shopping-cart',
-  imports: [CommonModule, RouterModule, FormsModule, Header, ProductViewBuy, Order],
+  imports: [CommonModule, RouterModule, FormsModule, Header, ProductViewBuy, Order, IsLoading],
   templateUrl: './shopping-cart.html',
   styleUrl: './shopping-cart.css',
 })
@@ -32,6 +35,7 @@ export class ShoppingCart implements OnChanges {
     private shoppingCartService: ShoppingCartService, 
     private cdr: ChangeDetectorRef,
     private router: Router,
+    private isLoadign: LoadingService
   ) {}
   ngOnChanges(changes: SimpleChanges): void {
     throw new Error('Method not implemented.');
@@ -42,18 +46,21 @@ export class ShoppingCart implements OnChanges {
   }
 
   loadCart() {
+  this.isLoadign.show("Cargando carrito");
   console.log("iniciando carrito")
   this.isLoading = true;
   this.error = null;
 
   this.shoppingCartService.getShoppingCart().pipe(
     catchError(error => {
+      this.isLoadign.hide();
       console.error('Error al cargar el carrito:', error);
       this.error = 'Error al cargar el carrito de compras';
       this.isLoading = false;
       return of([]);
     })
   ).subscribe(cartItems => {
+    this.isLoadign.hide();
     console.log("Guardando informacion", cartItems);
     // 🔥 Asignamos dentro del siguiente microtask
     Promise.resolve().then(() => {
@@ -64,28 +71,42 @@ export class ShoppingCart implements OnChanges {
 
   });
 }
-  /** Eliminar un item */
-  removeItem(item: CartItem) {
-    if (!confirm('¿Eliminar este producto del carrito?')) return;
 
-    this.shoppingCartService.removeFromCart(item.id)
-      .pipe(catchError(err => {
-        console.error(err);
-        return of(null);
-      }))
-      .subscribe(() => this.loadCart());
-  }
+/** Eliminar un item */
+removeItem(item: CartItem) {
+  
+  Swal.fire({
+    title: '¿Eliminar este producto del carrito?',
+    icon: 'warning',
+    showCancelButton: true,
+    confirmButtonText: 'Sí, eliminar',
+    cancelButtonText: 'Cancelar',
+    buttonsStyling: false,
+    customClass: {
+      confirmButton: 'btn btn-danger mx-2',
+      cancelButton: 'btn btn-secondary mx-2'
+    }
+  }).then(result => {
+    if (result.isConfirmed) {
+      this.isLoadign.show("Eliminando producto del carrito");
+      this.shoppingCartService.removeFromCart(item.id)
+        .pipe(
+          catchError(err => {
+            this.isLoadign.hide();
+            console.error(err);
+            Swal.fire('Error', 'No se pudo eliminar el producto', 'error');
+            return of(null);
+          })
+        )
+        .subscribe(() => {
+          this.isLoadign.hide();
+          this.loadCart();
+          Swal.fire('¡Eliminado!', 'El producto ha sido eliminado del carrito', 'success');
+        });
+    }
+  });
+}
 
-  /** Vaciar carrito */
-  clearCart() {
-    if (!confirm('¿Vaciar todo el carrito?')) return;
-    this.shoppingCartService.clearCart()
-      .pipe(catchError(err => {
-        console.error(err);
-        return of(null);
-      }))
-      .subscribe(() => this.loadCart());
-  }
 
   /** Carrito vacío */
   get isCartEmpty(): boolean {

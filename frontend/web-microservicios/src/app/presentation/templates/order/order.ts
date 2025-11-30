@@ -29,14 +29,12 @@ export class Order implements OnChanges {
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['createdOrderResponse'] && this.createdOrderResponse) {
-      console.log('📦 Order component recibió OrderResponse:', this.createdOrderResponse);
       this.loadProducts();
     }
   }
 
   private loadProducts(): void {
     if (!this.createdOrderResponse?.order?.items?.length) {
-      console.warn('⚠️ No hay items en la orden');
       return;
     }
 
@@ -47,7 +45,6 @@ export class Order implements OnChanges {
       console.log(`📞 Solicitando producto con ID: ${item.product_id}`);
       return this.productService.getProductById(item.product_id).pipe(
         catchError(error => {
-          console.error(`❌ Error al cargar producto ${item.product_id}:`, error);
           return of(null); // Continúa con los demás productos aunque uno falle
         })
       );

@@ -33,6 +33,9 @@ export class ItemOrder implements OnChanges{
     private cdr: ChangeDetectorRef
   ) {}
   ngOnChanges(changes: SimpleChanges): void {
+      if (changes['showActions']) {
+    this.showActions = changes['showActions'].currentValue;
+  }
   if (this.order && this.order.items?.length) {
 
     this.isLoadingProducts = true; // un solo loader general
@@ -160,4 +163,8 @@ private loadShippingInfo(): Observable<any> {
   onClickDetails() {
     this.details.emit(this.order.id);
   }
+  get canShowActions(): boolean {
+  return this.showActions && this.order?.status !== 'cancelled';
+}
+
 }

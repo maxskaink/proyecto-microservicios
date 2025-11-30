@@ -1,28 +1,68 @@
 <app-is-loading></app-is-loading>
 <app-header></app-header>
 
-<div class="container">
+<div class="category-page-wrapper">
     <!-- Hero Section -->
     <section class="category-hero">
         <div class="hero-content">
-            <h1 class="hero-title">Seccion de {{categoryName}}</h1>
+            <h1 class="hero-title">{{ categoryName }}</h1>
             <p class="hero-subtitle">Explora nuestra selección de productos de alta calidad</p>
         </div>
     </section>
 
     <!-- Main Content -->
     <div class="container-fluid category-container">
-        <!-- Filtros y Ordenamiento (Superior) -->
-        <section class="filter-bar-section">
-            <div class="filter-bar">
-                <div class="filter-info">
-                    <span class="product-count">
-                        <i class="bi bi-grid-3x3-gap"></i>
-                        {{ products.length || 0 }} productos
+    <!-- Filtros y Ordenamiento (Superior) -->
+    <section class="filter-bar-section">
+        <div class="filter-bar">
+            <!-- Filtro de Búsqueda -->
+            <div class="filter-search">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search"></i>
                     </span>
+                    <input 
+                        type="text" 
+                        class="form-control border-start-0" 
+                        placeholder="Buscar por nombre..."
+                        (input)="onSearchChange($event.target.value)"
+                        [(ngModel)]="searchName">
                 </div>
             </div>
-        </section>
+
+            <!-- Filtro de Precio -->
+            <div class="filter-price">
+                <div class="price-input-group">
+                    <label class="form-label mb-2">
+                        <i class="bi bi-tag"></i>
+                        Precio: <strong>${{ maxPrice | number:'1.0-0' }}</strong>
+                    </label>
+                    <input 
+                        type="range" 
+                        class="form-range" 
+                        min="0" 
+                        [max]="maxProductPrice"
+                        (input)="onPriceChange($event.target.valueAsNumber)"
+                        [(ngModel)]="maxPrice">
+                </div>
+            </div>
+
+            <!-- Información de Productos y Botón Limpiar -->
+            <div class="filter-actions">
+                <span class="product-count">
+                    <i class="bi bi-grid-3x3-gap"></i>
+                    {{ products.length || 0 }} productos
+                </span>
+                <button 
+                    class="btn btn-sm btn-outline-secondary" 
+                    (click)="clearFilters()"
+                    *ngIf="">
+                    <i class="bi bi-arrow-counterclockwise"></i>
+                    Limpiar
+                </button>
+            </div>
+        </div>
+    </section>
 
         <!-- Grid de Productos -->
         <section class="products-section">

@@ -114,46 +114,55 @@ clearFilters() {
     console.log('Producto seleccionado en view-my-products:', product);
     this.router.navigate(['/edit-product', product.id]);
   }
-  onAction(action: {state:string, id:string}) {
-    console.log('Acción recibida en view-my-products:', action.state, action.id);
-    if (action.state === 'delete') {
-      Swal.fire({
-        title: '¿Estás seguro?',
-        text: "¡No podrás revertir esto!",
-        icon: 'warning',
-        showCancelButton: true,
-        buttonsStyling: false,
-        customClass: {
-          confirmButton: ' btn btn-danger mx-2',
-          cancelButton: ' btn btn-secondary mx-2'
-        },
-        confirmButtonText: 'Sí, eliminarlo!'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          this.deleteProduct(action.id);
-          Swal.fire(
-            '¡Eliminado!',
-            'Tu producto ha sido eliminado.',
-            'success'
-          );
-        }
-      });
-    }else if (action.state === 'edit') {
-      this.router.navigate(['/edit-product', action.id]);
-    }
-  }
+ onAction(action: {state:string, id:string}) {
+  console.log('Acción recibida en view-my-products:', action.state, action.id);
 
-  deleteProduct(productId: string) {
-    this.serviceProduct.deleteProduct(productId).subscribe({
-      next: () => {
-        console.log('Producto eliminado con éxito:', productId);
-        this.loadMyProducts();
+  if (action.state === 'delete') {
+    Swal.fire({
+      title: '¿Estás seguro?',
+      text: "¡No podrás revertir esto!",
+      icon: 'warning',
+      showCancelButton: true,
+      buttonsStyling: false,
+      customClass: {
+        confirmButton: 'btn btn-danger mx-2',
+        cancelButton: 'btn btn-secondary mx-2'
       },
-      error: (error) => {
-        console.error('Error al eliminar el producto:', error);
+      confirmButtonText: 'Sí, eliminarlo!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Llamamos al servicio de eliminación
+        this.deleteProduct(action.id).subscribe({
+          next: () => {
+            Swal.fire(
+              '¡Eliminado!',
+              'Tu producto ha sido eliminado.',
+              'success'
+            ).then(() => {
+              // Redirige después de confirmar el Swal de éxito
+              this.router.navigate(['/admin-panel']);
+            });
+          },
+          error: (err) => {
+            Swal.fire(
+              'Error',
+              'No se pudo eliminar el producto. Intenta de nuevo.',
+              'error'
+            );
+          }
+        });
       }
     });
+  } else if (action.state === 'edit') {
+    this.router.navigate(['/edit-product', action.id]);
   }
+}
+
+// Ahora devuelve el observable sin subscribirse
+deleteProduct(productId: string) {
+  return this.serviceProduct.deleteProduct(productId);
+}
+
   goToPublush() {
     this.router.navigate(['/publishProduct']);
   }

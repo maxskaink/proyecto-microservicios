@@ -66,6 +66,7 @@ getShoppingCart(): Observable<CartItem[]> {
    * Elimina un producto del carrito
    */
   removeFromCart(itemId: string): Observable<any> {
+    
     return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/cart/items/${itemId}`;
@@ -191,10 +192,11 @@ getUserOrders(status: string): Observable<Order[]> {
    * @returns orden actualizada
    */
   updateStateOrder(status:string, orderId: string): Observable<any> {
+    console.log("Cuerpo a enviar para actualizar estado de orden:", status);
     return this.getTenant().pipe(
       switchMap(( tenantId ) => {
         const url = `${this.apiUrlShoppingCart}${tenantId}/api/orders/${orderId}/status`;
-        console.log("Cuerpo a enviar para actualizar estado de orden:", status);
+        
         return this.http.put<any>(url, {status});
       })
     );

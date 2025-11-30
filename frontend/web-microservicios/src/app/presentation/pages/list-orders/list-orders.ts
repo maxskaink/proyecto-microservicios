@@ -10,6 +10,7 @@ import { Order } from '../../../Models/OrderPeticion';
 import { updateStatus } from '../../../Models/updateStatus';
 import { LoadingService } from '../../../service/loading-service';
 import { IsLoading } from '../../components/is-loading/is-loading';
+import Swal from 'sweetalert2';
 
 
 @Component({
@@ -22,13 +23,20 @@ export class ListOrders implements OnInit {
   orders: Order[] = [];
   isLoading = true;
   error: string | null = null;
+  public isAdminView: boolean = false;
   updateStatus: updateStatus = {status: ''};
   constructor(
     private router: Router,
     private shoppingService: ShoppingCartService,
     private cdr: ChangeDetectorRef,
     private loadingService: LoadingService,
-  ) {}
+  ) {
+    const userDataStr = localStorage.getItem('user_data');
+    if (userDataStr) {
+      const userData = JSON.parse(userDataStr);
+      this.isAdminView = userData.role?.trim().toLowerCase() === 'admin';
+    }
+  }
 
   ngOnInit() {
     console.log("iniciando componente");
@@ -128,14 +136,32 @@ export class ListOrders implements OnInit {
     this.router.navigate(['list-order/view-order', orderId]);
   }
 
+
+  iAmAdmin(): boolean {
+      const userDataStr = localStorage.getItem('user_data');
+      if (!userDataStr) return false; // no hay usuario
+
+      const userData = JSON.parse(userDataStr); // convierte JSON string a objeto
+      return userData.role === 'admin'; // verifica si es admin
+    }
   handlerOrderAction(event: { status: string; id: string }) {
     this.updateStatus.status = event.status;
     this.shoppingService.updateStateOrder(event.status, event.id).subscribe({
       next: () => {
         this.loadOrders();
+        Swal.fire({
+          icon: 'success',
+          title: 'Éxito',
+          text: 'El estado de la orden se ha actualizado correctamente.',
+        }); 
       },
       error: (error) => {
-        console.error('❌ Error al completar la orden:', error);
+        Swal.fire({
+          icon: 'error',
+          title: 'Error',
+          text: 'No se pudo actualizar el estado de la orden.',
+        });
+        console.error('Error al actualizar el estado de la orden:', error);
       }
     });
   }

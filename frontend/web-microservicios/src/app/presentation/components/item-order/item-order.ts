@@ -20,6 +20,7 @@ export class ItemOrder implements OnChanges{
    */
   @Input() order!: Order;
   @Input() showActions: boolean = true;
+  @Input() isAdminView: boolean = true;
   @Output() action = new EventEmitter<{ status: string; id: string }>();
   @Output() details = new EventEmitter<string>();
 
@@ -165,6 +166,8 @@ private loadShippingInfo(): Observable<any> {
   }
   get canShowActions(): boolean {
   return this.showActions && this.order?.status !== 'cancelled';
-}
-
+  }
+  get canAdminView(): boolean {
+  return this.isAdminView && this.order?.status !== 'cancelled';
+  }
 }

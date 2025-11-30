@@ -22,6 +22,7 @@
    background: linear-gradient(145deg, #125c32, #2aeb94);
 }
 .category-section {
+  margin-top: 2rem;
   padding-top: 2rem;
   transition: transform 0.2s ease;
   height: 23rem;
@@ -90,4 +91,20 @@ html {
 .card-section:hover {
   transform: scale(1.05);
 }
-
+.container-title-products{
+  margin-top: 1rem; 
+}
+.allProducts{
+  
+}
+.text-help-primary{
+  font-size: 20px;
+  font-weight: 700;
+}
+.text-help-secundary{
+  font-size: 15px;
+}
+.mini-divider {
+  height: 1px;
+  background-color: #125c322f;
+}

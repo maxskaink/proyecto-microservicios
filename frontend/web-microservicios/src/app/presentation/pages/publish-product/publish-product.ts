@@ -62,7 +62,7 @@ export class PublishProduct implements OnInit {
     }
 
     let createdProductId: string;
-    this.loadingService.show('Cargando categorías...');
+    this.loadingService.show('Publicando producto...');
     // PASO 1: Crear el producto sin la foto
     this.productService.postProduct(productData).pipe(
       switchMap((createdProduct) => {

@@ -1,23 +1,106 @@
 <app-header></app-header>
-<div class="orders-container">
-  <div class="header">
-    <button class="back-button" routerLink="/user">
-      <app-arrow-left></app-arrow-left>
-    </button>
-  </div>
-  <section class="section-title container-fluid d-flex flex-column justify-content-center align-items-center mb-4">
-    <h1 class="title">Mis Productos</h1>
-    <p class="subtitle">Administra tus productos publicados</p>
+<app-is-loading></app-is-loading>
+<div class="products-page-wrapper">
+  <!-- Hero Section -->
+  <section class="products-hero">
+    <div class="hero-content">
+
+      <h1 class="hero-title">Mis Productos</h1>
+      <p class="hero-subtitle">Administra y organiza tus productos publicados</p>
+    </div>
   </section>
-  <div *ngIf="!allProducts || allProducts.length === 0" class="container-fluid d-flex flex-column justify-content-center align-items-center" style="height: 80vh;">
-    <h1>No tiense productos publicados aun</h1>
-    <button class="btn btn-secondary" (click)="goToPublush()">Publicar mi primer producto</button>
+
+  <!-- Main Content -->
+  <div class="container-fluid products-container">
+    <!-- Empty State -->
+    <section class="empty-state" *ngIf="!allProducts || allProducts.length === 0">
+      <div class="empty-content">
+        <i class="bi bi-inbox" style="font-size: 10px;"></i>
+        <h3>No tienes productos publicados aún</h3>
+        <p>Comienza a vender publicando tu primer producto hoy</p>
+        <button class="btn btn-primary btn-lg mt-3" routerLink="/publishProduct">
+           Publicar mi primer producto
+        </button>
+      </div>
+    </section>
+
+    <!-- Filter & Products Section -->
+    <div *ngIf="allProducts && allProducts.length > 0">
+      <!-- Filtros y Búsqueda -->
+      <section class="filter-bar-section">
+        <div class="filter-bar">
+          <!-- Filtro de Búsqueda por Nombre -->
+          <div class="filter-search">
+            <div class="input-group">
+              <span class="input-group-text bg-white border-end-0">
+                <i class="bi bi-search"></i>
+              </span>
+              <input 
+                type="text" 
+                class="form-control border-start-0" 
+                placeholder="Buscar por nombre..."
+                (input)="onSearchChange($event.target.value)"
+                [(ngModel)]="searchName">
+            </div>
+          </div>
+
+          <!-- Filtro de Categoría -->
+          <div class="filter-category">
+            <div class="category-select-group">
+              <label class="form-label mb-2">
+                <i class="bi bi-tag"></i>
+                Categoría
+              </label>
+              <select 
+                class="form-select"
+                [(ngModel)]="selectedCategory"
+                (change)="onCategoryChange(selectedCategory)">
+                <option value="todos">Todas las categorías</option>
+                <option *ngFor="let cat of categories" [value]="cat">{{ cat }}</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Información de Productos y Botón Limpiar -->
+          <div class="filter-actions">
+            <span class="product-count">
+              <i class="bi bi-grid-3x3-gap"></i>
+              {{ filteredProducts.length || 0 }} productos
+            </span>
+            <button 
+              class="btn btn-sm btn-outline-secondary" 
+              (click)="clearFilters()"
+              *ngIf="searchName !== '' || selectedCategory !== 'todos'">
+              <i class="bi bi-arrow-counterclockwise"></i>
+              Limpiar
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Grid de Productos -->
+      <section class="products-section">
+        <div class="products-grid">
+          <app-list-product-tenant-preview
+            [products]="filteredProducts"
+            [showActions]="true"
+            (productClick)="onProductClick($event)"
+            (action)="onAction($event)"
+          ></app-list-product-tenant-preview>
+        </div>
+      </section>
+
+      <!-- Mensaje cuando no hay productos filtrados -->
+      <section class="empty-state" *ngIf="filteredProducts.length === 0 && allProducts.length > 0">
+        <div class="empty-content">
+          <i class="bi bi-search"></i>
+          <h3>No se encontraron productos</h3>
+          <p>Intenta ajustar tus filtros de búsqueda</p>
+          <button class="btn btn-outline-primary mt-3" (click)="clearFilters()">
+            <i class="bi bi-arrow-counterclockwise"></i> Limpiar filtros
+          </button>
+        </div>
+      </section>
+    </div>
   </div>
-  <div class="container-fluid" *ngIf="allProducts && allProducts.length > 0">
-        <app-list-product-tenant-preview
-          [products]="allProducts"
-          [showActions]="true"
-          (productClick)="onProductClick($event)"
-          (action)="onAction($event)"
-        ></app-list-product-tenant-preview>
-  </div>
+</div>

@@ -27,6 +27,7 @@ func (uc *UserController) RegisterRoutes(rg *gin.RouterGroup, auth gin.HandlerFu
 	users := rg.Group("/users")
 	{
 		users.GET("", auth, uc.ListUsers)
+		users.GET("/:id", auth, uc.GetUserByID)
 		users.GET("/producer/:id", auth, uc.GetInfoProducer)
 		users.GET("/me", auth, uc.GetInfoUser)
 		users.PUT("/:id", auth, uc.UpdateUser)
@@ -54,6 +55,28 @@ func (uc *UserController) ListUsers(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, users)
+}
+
+func (uc *UserController) GetUserByID(c *gin.Context) {
+	// Extraer tenant del contexto (agregado por middleware)
+	tenantID := middleware.GetTenantFromContext(c)
+	if tenantID == "" {
+		handleUserError(c, domain.BadRequestError{Message: "Tenant no especificado"})
+		return
+	}
+
+	user_id := c.Param("id")
+
+	if user_id == "" {
+		handleUserError(c, domain.InternalServerError{Message: "id vacio, no deberia de haber entrado sin uid"})
+		return
+	}
+	user, err := uc.UserService.GetUserByID(user_id, tenantID)
+	if err != nil {
+		handleUserError(c, err)
+		return
+	}
+	c.JSON(http.StatusOK, user)
 }
 
 // GetUserByID maneja GET /users/me

@@ -1,83 +1,209 @@
-<form [formGroup]="tenantForm" (ngSubmit)="onSubmit()" class="p-3">
+<!-- Tenant Registration Form -->
+<div class="form-container">
+  <div class=" shadow-lg">
+    
 
-  <!-- Tenant ID -->
-  <div class="mb-3">
-    <label for="tenant_id" class="form-label">Tenant ID</label>
-    <input
-      type="text"
-      id="tenant_id"
-      class="form-control"
-      formControlName="tenant_id"
-      placeholder="Enter tenant ID"
-    />
+    <!-- Form Body -->
+    <div class="card-body p-4">
+      <form [formGroup]="tenantForm" (ngSubmit)="onSubmit()" novalidate>
+        
+        <!-- Tenant ID Field -->
+        <div class="mb-4">
+          <label for="tenant_id" class="form-label fw-semibold">
+            <i class="bi bi-tag me-2 text-primary"></i>
+            Tenant ID
+          </label>
+          <input
+            id="tenant_id"
+            type="text"
+            class="form-control form-control-lg"
+            [class.is-invalid]="tenantForm.get('tenant_id')?.invalid && tenantForm.get('tenant_id')?.touched"
+            [class.is-valid]="tenantForm.get('tenant_id')?.valid && tenantForm.get('tenant_id')?.touched"
+            formControlName="tenant_id"
+            placeholder="Ej: mi-tienda-online"
+            maxlength="20"
+            (input)="onTenantIdChange($event)"
+          />
+          <div class="form-text">
+            <small class="text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              Solo minúsculas, números y guiones. Los espacios se convertirán automáticamente a guiones.
+            </small>
+          </div>
+          <div class="invalid-feedback" *ngIf="tenantForm.get('tenant_id')?.invalid && tenantForm.get('tenant_id')?.touched">
+            <div *ngIf="tenantForm.get('tenant_id')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El Tenant ID es obligatorio
+            </div>
+            <div *ngIf="tenantForm.get('tenant_id')?.errors?.['pattern']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              Solo se permiten minúsculas, números y guiones
+            </div>
+            <div *ngIf="tenantForm.get('tenant_id')?.errors?.['hasSpaces']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              No se permiten espacios en el ID
+            </div>
+            <div *ngIf="tenantForm.get('tenant_id')?.errors?.['notLowercase']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El ID debe estar en minúsculas
+            </div>
+            <div *ngIf="tenantForm.get('tenant_id')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El ID debe tener al menos 3 caracteres
+            </div>
+            <div *ngIf="tenantForm.get('tenant_id')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El ID no debe exceder 20 caracteres
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="tenantForm.get('tenant_id')?.valid && tenantForm.get('tenant_id')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            ID disponible
+          </div>
+        </div>
 
-    <div *ngIf="tenantForm.get('tenant_id')?.invalid && tenantForm.get('tenant_id')?.touched"
-         class="invalid-feedback d-block">
-      El Tenant ID es requerido.
+        <!-- Tenant Name Field -->
+        <div class="mb-4">
+          <label for="tenant_name" class="form-label fw-semibold">
+            <i class="bi bi-storefront me-2 text-success"></i>
+            Nombre del Tenant
+          </label>
+          <input
+            id="tenant_name"
+            type="text"
+            class="form-control form-control-lg"
+            [class.is-invalid]="tenantForm.get('tenant_name')?.invalid && tenantForm.get('tenant_name')?.touched"
+            [class.is-valid]="tenantForm.get('tenant_name')?.valid && tenantForm.get('tenant_name')?.touched"
+            formControlName="tenant_name"
+            placeholder="Ej: Mi Tienda Online"
+            maxlength="50"
+          />
+          <div class="invalid-feedback" *ngIf="tenantForm.get('tenant_name')?.invalid && tenantForm.get('tenant_name')?.touched">
+            <div *ngIf="tenantForm.get('tenant_name')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El nombre del tenant es obligatorio
+            </div>
+            <div *ngIf="tenantForm.get('tenant_name')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El nombre debe tener al menos 3 caracteres
+            </div>
+            <div *ngIf="tenantForm.get('tenant_name')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El nombre no debe exceder 50 caracteres
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="tenantForm.get('tenant_name')?.valid && tenantForm.get('tenant_name')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            Nombre válido
+          </div>
+        </div>
+
+        <!-- Description Field -->
+        <div class="mb-4">
+          <label for="description" class="form-label fw-semibold">
+            <i class="bi bi-card-text me-2 text-info"></i>
+            Descripción
+          </label>
+          <small class="text-muted d-block mb-2">Cuéntanos un poco sobre tu agrupación.</small>
+          <textarea
+            id="description"
+            rows="4"
+            class="form-control"
+            [class.is-invalid]="tenantForm.get('description')?.invalid && tenantForm.get('description')?.touched"
+            [class.is-valid]="tenantForm.get('description')?.valid && tenantForm.get('description')?.touched"
+            formControlName="description"
+            placeholder="Describe tu tenant, qué productos vendes, tu misión..."
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="tenantForm.get('description')?.invalid && tenantForm.get('description')?.touched">
+            <div *ngIf="tenantForm.get('description')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La descripción es obligatoria
+            </div>
+            <div *ngIf="tenantForm.get('description')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La descripción debe tener al menos 10 caracteres
+            </div>
+            <div *ngIf="tenantForm.get('description')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La descripción no debe exceder 500 caracteres
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="tenantForm.get('description')?.valid && tenantForm.get('description')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            Excelente descripción
+          </div>
+          <div class="form-text">
+            <small class="text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              {{ (tenantForm.get('description')?.value?.length || 0) }}/500 caracteres
+            </small>
+          </div>
+        </div>
+
+        <!-- Location Field -->
+        <div class="mb-4">
+          <label for="location" class="form-label fw-semibold">
+            <i class="bi bi-geo-alt me-2 text-warning"></i>
+            Ubicación
+          </label>
+          <small class="text-muted d-block mb-2">Comparte la ubicación del tenant.</small>
+          <textarea
+            id="location"
+            rows="3"
+            class="form-control"
+            maxlength="100"
+            [class.is-invalid]="tenantForm.get('location')?.invalid && tenantForm.get('location')?.touched"
+            [class.is-valid]="tenantForm.get('location')?.valid && tenantForm.get('location')?.touched"
+            formControlName="location"
+            placeholder="Ej: Bogotá, Colombia - Centro Comercial XYZ"
+          ></textarea>
+          <div class="invalid-feedback" *ngIf="tenantForm.get('location')?.invalid && tenantForm.get('location')?.touched">
+            <div *ngIf="tenantForm.get('location')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La ubicación es obligatoria
+            </div>
+            <div *ngIf="tenantForm.get('location')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La ubicación debe tener al menos 5 caracteres
+            </div>
+            <div *ngIf="tenantForm.get('location')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La ubicación no debe exceder 200 caracteres
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="tenantForm.get('location')?.valid && tenantForm.get('location')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            Ubicación válida
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-lg"
+            (click)="tenantForm.reset()"
+          >
+            <i class="bi bi-arrow-counterclockwise me-2"></i>
+            Limpiar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg"
+            [disabled]="tenantForm.invalid"
+            [class.loading]="tenantForm.pending"
+          >
+            <span *ngIf="!tenantForm.pending">
+              <i class="bi bi-check-lg me-2"></i>
+              Registrar mi tenant
+            </span>
+            <span *ngIf="tenantForm.pending" class="d-flex align-items-center">
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Registrando...
+            </span>
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-
-  <!-- Tenant Name -->
-  <div class="mb-3">
-    <label for="tenant_name" class="form-label">Nombre del Tenant</label>
-    <input
-      type="text"
-      id="tenant_name"
-      class="form-control"
-      formControlName="tenant_name"
-      placeholder="Ingresa el nombre del tenant"
-    />
-
-    <div *ngIf="tenantForm.get('tenant_name')?.invalid && tenantForm.get('tenant_name')?.touched"
-         class="invalid-feedback d-block">
-      El nombre es requerido.
-    </div>
-  </div>
-
-  <!-- Descripción -->
-  <div class="mb-3">
-    <label for="description" class="form-label">Descripción</label>
-    <p class="text-muted small">Cuéntanos un poco sobre tu agrupación.</p>
-
-    <textarea
-      id="description"
-      class="form-control"
-      formControlName="description"
-      rows="3"
-      placeholder="Describe tu tenant"
-    ></textarea>
-
-    <div *ngIf="tenantForm.get('description')?.invalid && tenantForm.get('description')?.touched"
-         class="invalid-feedback d-block">
-      La descripción es requerida.
-    </div>
-  </div>
-
-  <!-- Locación -->
-  <div class="mb-3">
-    <label for="location" class="form-label">Locación</label>
-    <p class="text-muted small">Comparte la ubicación del tenant.</p>
-
-    <textarea
-      id="location"
-      class="form-control"
-      formControlName="location"
-      rows="3"
-      placeholder="Ingresa la locación del tenant"
-    ></textarea>
-
-    <div *ngIf="tenantForm.get('location')?.invalid && tenantForm.get('location')?.touched"
-         class="invalid-feedback d-block">
-      La locación es requerida.
-    </div>
-  </div>
-
-  <!-- Botón -->
-  <button
-    type="submit"
-    class="btn btn-primary w-100"
-    [disabled]="tenantForm.invalid"
-  >
-    Registrar mi tenant
-  </button>
-</form>
+</div>

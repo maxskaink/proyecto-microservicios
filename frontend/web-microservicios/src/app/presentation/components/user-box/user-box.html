@@ -8,11 +8,11 @@
       <!-- Avatar Section -->
       <div class="avatar-section me-3 flex-shrink-0">
         <div class="avatar-container position-relative">
-          <img 
-            [src]="user.profile.avatar_url || 'https://via.placeholder.com/50x50/28a745/ffffff?text=' + (user.name.charAt(0) || 'U')" 
+          <img
+            *ngIf="user?.profile?.avatar_url"
+            [src]="user.profile.avatar_url"
             [alt]="user.name || 'Usuario'"
             class="avatar-image"
-            (error)="$event.target.src='https://via.placeholder.com/50x50/28a745/ffffff?text=' + (user.name.charAt(0) || 'U')"
           />
           <div class="status-indicator"></div>
         </div>

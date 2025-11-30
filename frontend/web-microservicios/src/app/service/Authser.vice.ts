@@ -83,7 +83,6 @@ export class AuthService {
     await runInInjectionContext(this.injector, async () => {
       const provider = new GoogleAuthProvider();
       
-      // Configurar el provider para forzar la selección de cuenta
       provider.setCustomParameters({
         prompt: 'select_account'
       });
@@ -102,19 +101,13 @@ export class AuthService {
       throw new Error('No se pudo completar el login con Google');
     });
   }
-
   private async loadUserData(idTenant: string): Promise<void> {
     try {
-      const token = await this.getToken();
-      if (!token) return;
+      const backendUserData = await this.fetchUserFromBackend(idTenant);
 
-      const backendUserData = await firstValueFrom(
-        this.http.get<UserData>(`${this.url}${idTenant}/api/users/me`, {
-          headers: { Authorization: `Bearer ${token}` }
-        })
-      );
       this.userCurrentData = backendUserData;
       this.userDataSubject.next(backendUserData);
+
       localStorage.setItem('user_data', JSON.stringify(backendUserData));
       console.log('✅ userData cargado:', backendUserData);
 
@@ -124,6 +117,19 @@ export class AuthService {
   }
 
 
+  public async fetchUserFromBackend(idTenant: string): Promise<UserData> {
+    const token = await this.getToken(); // 🔥 Consulta el token adentro
+
+    if (!token) {
+      throw new Error('No se encontró el token');
+    }
+
+    return firstValueFrom(
+      this.http.get<UserData>(`${this.url}${idTenant}/api/users/me`, {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+    );
+  }
   async getToken(): Promise<string | null> {
     // Espera a que Firebase emita el usuario autenticado
     const user = await firstValueFrom(authState(this.afAuth));

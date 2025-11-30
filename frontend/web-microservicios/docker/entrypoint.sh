@@ -12,5 +12,11 @@ cat > /app/dist/web-microservicios/browser/assets/config/config.json <<EOF
 }
 EOF
 
+# SPA fallback: servir index.html también como 404.html para rutas como /home
+if [ -f /app/dist/web-microservicios/browser/index.html ]; then
+  cp /app/dist/web-microservicios/browser/index.html /app/dist/web-microservicios/browser/404.html
+fi
+
+
 # Exec the CMD (serve the static files)
 exec "$@"

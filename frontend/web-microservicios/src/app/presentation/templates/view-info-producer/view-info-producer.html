@@ -124,18 +124,21 @@
         </div>
       </div>
       <!-- Action Buttons -->
-      <div class="actions-section" *ngIf="showActions && (isAdmin)"> ">
+      <div class="actions-section" *ngIf="showActions && (isAdmin)"> 
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button 
-            type="button" 
-            class="btn btn-outline-primary"
-            (click)="action.emit('client')"
-          >
-            Hacer cliente
-          </button>
-          <button 
+            *ngIf="producer.rol !== 'admin'"
             type="button" 
             class="btn btn-primary"
+            (click)="action.emit('admin')"
+          >
+            Hacer administrador
+          </button>
+          <button 
+            *ngIf="producer.rol !== 'producer'"
+            type="button" 
+            
+            class="btn btn-outline-primary"
             (click)="action.emit('producer')"
           >
             <i class="bi bi-box me-2"></i>

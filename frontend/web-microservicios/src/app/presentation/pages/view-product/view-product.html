@@ -9,7 +9,7 @@
     <div class="notification-text">
       <h5>¡Se añadio al carrito!</h5>
       <p>{{ addToCartMessage }}</p>
-      <small>Se ha agregado {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} de "{{ product?.name }}" a tu carrito</small>
+      <small>Se ha agregado {{ quantity }} {{ quantity === 1 ? 'unidad' : 'unidades' }} de "{{ product.name }}" a tu carrito</small>
     </div>
     <button type="button" class="btn-close" (click)="closeSuccessMessage()">
       <i class="bi bi-x"></i>

@@ -31,7 +31,7 @@ export class UsersService {
     return this.getTenant().pipe(
       take(1),
       switchMap((tenantId: string) => {
-        const url = `${this.apiUrlShippingCart}${tenantId}/api/users/producer/${userId}`;
+        const url = `${this.apiUrlShippingCart}${tenantId}/api/users/${userId}`;
         return this.http.get<UserResponseBack>(url);
       })
     );

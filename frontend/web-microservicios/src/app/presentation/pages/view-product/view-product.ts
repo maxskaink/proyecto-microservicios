@@ -21,7 +21,7 @@ import { UserResponseBack } from '../../../Models/UserReponseBack';
   styleUrl: './view-product.css',
 })
 export class ViewProduct implements OnInit {
-  product?: Product;
+  product!: Product;
   producer!: UserResponseBack;
   isLoading: boolean = false;
   productId: string = '';
@@ -50,7 +50,7 @@ export class ViewProduct implements OnInit {
 
     // Ejecuta loadProduct y luego loadInfoProducer secuencialmente
     this.loadProduct().subscribe({
-      next: () => this.loadInfoProducer(this.productId), // solo se llama cuando loadProduct termina
+      next: () => this.loadInfoProducer(this.product?.producer_id), // solo se llama cuando loadProduct termina
       error: (err) => console.error('Error cargando producto:', err)
     });
   });

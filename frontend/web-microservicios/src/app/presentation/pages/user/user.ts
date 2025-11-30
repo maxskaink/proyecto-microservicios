@@ -215,6 +215,24 @@ private loadUserData(): void {
     return this.currentUser?.rol === 'admin';
   }
 
+  /**
+   * Obtiene la clase de fondo según el rol del usuario
+   * - Cliente: Verde grisáceo
+   * - Productor: Azul con verde
+   * - Administrador: Verde actual
+   */
+  getBackgroundClass(): string {
+    switch (this.currentUser?.rol?.toLowerCase()) {
+      case 'client':
+        return 'bg-client-role';
+      case 'producer':
+        return 'bg-producer-role';
+      case 'admin':
+        return 'bg-admin-role';
+      default:
+        return 'bg-admin-role';
+    }
+  }
 
   getUserAddress(): string {
     // Aquí deberías usar el campo correcto para la dirección del usuario

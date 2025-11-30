@@ -1,62 +1,414 @@
 
-.image-upload-box {
-    width: 100%;
-    height: 20rem;
-    border: 2px dashed #b8c6d9;
-    border-radius: 12px;
-    background: #f8fbff;
-    cursor: pointer;
-    transition: all 0.2s ease;
+/* =================== PRODUCT FORM STYLES =================== */
+
+/* Form container */
+.form-product {
+  max-width: 700px;
+  margin: 0 auto;
+  animation: fadeInUp 0.5s ease-out;
 }
-.image-upload-box:hover{
-    background: linear-gradient(20deg, #63e24a, #119457);
+
+/* Card styling */
+.card {
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+}
+
+/* Header gradient */
+.card-header.bg-gradient {
+  background: linear-gradient(135deg, rgb(6, 94, 82) 0%, rgb(8, 120, 105) 100%);
+  position: relative;
+  border: none;
+}
+
+.card-header.bg-gradient::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, rgba(255, 255, 255, 0.1) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Header icon */
+.header-icon {
+  width: 60px;
+  height: 60px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(10px);
+}
+
+/* Card body */
+.card-body {
+  background: #ffffff;
+}
+
+/* Form controls */
+.form-control {
+  border-radius: 12px;
+  border: 2px solid #e9ecef;
+  transition: all 0.3s ease;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.form-control:focus {
+  border-color: rgb(106, 209, 123);
+  box-shadow: 0 0 0 0.25rem rgba(106, 209, 123, 0.15);
+}
+
+.form-control::placeholder {
+  color: #adb5bd;
+}
+
+/* Textarea */
+textarea.form-control {
+  resize: vertical;
+  min-height: 120px;
+}
+
+/* Form labels */
+.form-label {
+  color: rgb(6, 94, 82);
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Image upload wrapper */
+.image-upload-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+/* Image upload box */
+.image-upload-box {
+  width: 100%;
+  height: 200px;
+  border: 2px dashed rgb(106, 209, 123);
+  border-radius: 12px;
+  background: rgba(106, 209, 123, 0.05);
+  cursor: pointer;
+  transition: all 0.3s ease;
 }
 
 .image-upload-box:hover {
-    background: #eef5ff;
-    border-color: #4a90e2;
+  background: rgba(106, 209, 123, 0.1);
+  border-color: rgb(8, 120, 105);
+  transform: translateY(-2px);
 }
 
 .camera-icon {
-    font-size: 40px;
-    color: #6c7a89;
-    margin-bottom: 5px;
+  font-size: 2.5rem;
+  color: rgb(106, 209, 123);
+  margin-bottom: 0.5rem;
 }
 
-.price-container {
-    position: relative;
+.image-upload-box span {
+  color: rgb(6, 94, 82);
+  font-weight: 500;
 }
 
+/* Image preview box */
+.image-preview-box {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
 
-.input-wrapper {
-    position: relative;
+.preview-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+
+/* Overlay para cambiar imagen */
+.change-image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  border-radius: 12px;
+}
+
+.change-image-overlay:hover {
+  opacity: 1;
+}
+
+.change-image-overlay i {
+  font-size: 2rem;
+  color: white;
+  margin-bottom: 0.5rem;
+}
+
+.change-image-overlay span {
+  color: white;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+/* Price input wrapper */
+.price-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
 }
 
 .currency-symbol {
-    position: absolute;
-    left: 4px;
-    top: 50%;
-    transform: translateY(-50%);
-    font-size: 3rem;
-    font-weight: 600;
-    color: var(--color-success);
-    border-bottom: none;
-    pointer-events: none; /* no afecta el clic */
+  position: absolute;
+  left: 15px;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: rgb(106, 209, 123);
+  pointer-events: none;
+  top: 50%;
+  transform: translateY(-50%);
 }
 
 .price-input {
-    padding-left: 40px !important; /* evita que el número se encima del $ */
+  padding-left: 45px !important;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: rgb(106, 209, 123);
 }
 
-
-
-#productPrice{
-    font-size: 3rem;
-    font-weight: 600;
-    color: var(--color-success);
-    border-bottom: none;
+/* Buttons */
+.btn {
+  border-radius: 12px;
+  font-weight: 600;
+  padding: 0.75rem 2rem;
+  transition: all 0.3s ease;
+  border: none;
 }
 
-.btn{
-    min-width: 8rem;
+.btn-primary {
+  background: linear-gradient(135deg, rgb(106, 209, 123) 0%, rgb(134, 225, 152) 100%);
+  color: white;
+  box-shadow: 0 4px 15px rgba(106, 209, 123, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, rgb(134, 225, 152) 0%, rgb(106, 209, 123) 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(106, 209, 123, 0.4);
+  color: white;
+}
+
+.btn-primary:disabled {
+  background: #6c757d;
+  border-color: #6c757d;
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+.btn-outline-primary {
+  color: rgb(106, 209, 123);
+  border: 2px solid rgb(106, 209, 123);
+  background: transparent;
+}
+
+.btn-outline-primary:hover {
+  background: rgb(106, 209, 123);
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-outline-primary.active,
+.btn-outline-primary.btn-primary {
+  background: rgb(106, 209, 123);
+  color: white;
+  border-color: rgb(106, 209, 123);
+}
+
+.btn-outline-secondary {
+  color: #6c757d;
+  border: 2px solid #6c757d;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #6c757d;
+  border-color: #6c757d;
+  color: white;
+  transform: translateY(-1px);
+}
+
+.btn-sm {
+  padding: 0.5rem 1.2rem;
+  font-size: 0.9rem;
+}
+
+/* Feedback messages */
+.invalid-feedback,
+.valid-feedback {
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  display: block;
+  color: #dc3545;
+}
+
+.valid-feedback {
+  color: #28a745;
+}
+
+/* Card footer */
+.card-footer {
+  background: #f8f9fa;
+  border-top: 1px solid #e9ecef;
+}
+
+/* Loading spinner */
+.spinner-border-sm {
+  width: 1rem;
+  height: 1rem;
+  border-width: 0.15em;
+}
+
+/* Animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .form-product {
+    margin: 0;
+  }
+
+  .card {
+    border-radius: 15px;
+  }
+
+  .card-header {
+    padding: 1.5rem !important;
+  }
+
+  .card-body {
+    padding: 1.5rem !important;
+  }
+
+  .card-footer {
+    padding: 1.5rem !important;
+    flex-direction: column;
+  }
+
+  .card-footer .btn {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+
+  .card-footer .btn:last-child {
+    margin-bottom: 0;
+  }
+
+  .header-icon {
+    width: 50px;
+    height: 50px;
+  }
+
+  .header-icon i {
+    font-size: 1.5rem !important;
+  }
+
+  .image-upload-box {
+    height: 150px;
+  }
+
+  .camera-icon {
+    font-size: 2rem;
+  }
+
+  .mb-4 {
+    margin-bottom: 1.5rem;
+  }
+
+  .row.g-3 {
+    gap: 1rem !important;
+  }
+}
+
+@media (max-width: 576px) {
+  .card-header,
+  .card-body,
+  .card-footer {
+    padding: 1rem !important;
+  }
+
+  .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.9rem;
+  }
+
+  .btn-sm {
+    padding: 0.4rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .form-label {
+    font-size: 0.9rem;
+  }
+
+  .form-control {
+    padding: 0.6rem 0.8rem;
+    font-size: 0.9rem;
+  }
+
+  textarea.form-control {
+    min-height: 100px;
+  }
+
+  .image-upload-box {
+    height: 120px;
+  }
+
+  .camera-icon {
+    font-size: 1.5rem;
+  }
+
+  .currency-symbol {
+    font-size: 1.2rem;
+  }
+
+  .price-input {
+    font-size: 1rem;
+  }
 }

@@ -8,6 +8,7 @@ import { UsersService } from '../../../service/users.service';
 import { UserResponseBack } from '../../../Models/UserReponseBack';
 import { userPeticion } from '../../../Models/UserPeticion';
 import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-edit-user',
@@ -21,7 +22,8 @@ export class EditUser {
   constructor(
     private cdr: ChangeDetectorRef,
     private loadingService: LoadingService,
-    private userService: UsersService
+    private userService: UsersService,
+    private router: Router
   ) {}
 
   ngOnInit(): void {
@@ -45,35 +47,44 @@ export class EditUser {
     }
   }
   onSubmit(userData: userPeticion): void {
-    this.userService.updateUser(this.user!.id, userData).subscribe({
-      next: (updatedUser: UserResponseBack) => {
-        console.log('Usuario actualizado:', updatedUser);
-        localStorage.setItem('user_data', JSON.stringify(updatedUser));
-        this.user = updatedUser;
-        this.cdr.detectChanges();
-        Swal.fire({
-          icon: 'success',
-          title: 'Perfil actualizado',
-          text: 'Tu información ha sido actualizada correctamente.',
-          buttonsStyling: false,
-          customClass: {
-            confirmButton: 'btn btn-primary',
-          },  
-        });
-      },
-      error: (error) => {
-        console.error('Error al actualizar el usuario:', error);
-        Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'Hubo un problema al actualizar tu información. Por favor, intenta de nuevo más tarde.',
-          buttonsStyling: false,
-          customClass: {
-            confirmButton: 'btn btn-primary',
-          },
-        })
-      }
-    });   
-  }
+  this.loadingService.show("Actualizando usuario...");
+  this.userService.updateUser(this.user!.id, userData).subscribe({
+    next: (updatedUser: UserResponseBack) => {
+      console.log('Usuario actualizado:', updatedUser);
+      localStorage.setItem('user_data', JSON.stringify(updatedUser));
+      this.user = updatedUser;
+      this.cdr.detectChanges();
+      this.loadingService.hide();
+
+      Swal.fire({
+        icon: 'success',
+        title: 'Perfil actualizado',
+        text: 'Tu información ha sido actualizada correctamente.',
+        buttonsStyling: false,
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },  
+      }).then((result) => {
+        if (result.isConfirmed) {
+          // Redirige al usuario después de aceptar
+          this.router.navigate(['/user']);
+        }
+      });
+    },
+    error: (error) => {
+      this.loadingService.hide();
+      console.error('Error al actualizar el usuario:', error);
+      Swal.fire({
+        icon: 'error',
+        title: 'Error',
+        text: 'Hubo un problema al actualizar tu información. Por favor, intenta de nuevo más tarde.',
+        buttonsStyling: false,
+        customClass: {
+          confirmButton: 'btn btn-primary',
+        },
+      });
+    }
+  });   
+}
 
 }

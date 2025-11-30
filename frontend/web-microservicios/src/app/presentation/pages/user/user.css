@@ -48,7 +48,7 @@
 
 /* Cliente: Verde grisáceo */
 .user-info.bg-client-role {
-  background: linear-gradient(190deg, #728d83, #b7e9a0, #1f788f);
+  background: linear-gradient(190deg, #728d83, #70965f, #1f788f);
   color: white;
 }
 

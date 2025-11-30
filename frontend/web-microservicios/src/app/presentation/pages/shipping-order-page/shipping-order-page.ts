@@ -23,6 +23,7 @@ export class ShippingOrderPage implements OnInit {
 
   idOrder!: string;
   public shippingInfo!: ShippingResponse;
+  
   public orderInfo!: Order;
   public showActions: boolean = true;
   isLoading = true;
@@ -32,6 +33,7 @@ export class ShippingOrderPage implements OnInit {
     private shpippingOrderService: ShippingService,
     private cdr: ChangeDetectorRef,
     private orderService: ShoppingCartService
+
   ) {}
 
   ngOnInit(): void {
@@ -62,7 +64,7 @@ export class ShippingOrderPage implements OnInit {
   onActionEvent(event: { status: string; id: string }): void {
     console.log('Evento de acción recibido en ShippingOrderPage:', event);
 
-    this.shpippingOrderService.updateStatusShipping(event.id, event.status).subscribe({
+    this.orderService.updateStateOrder(event.status, event.id).subscribe({
       next: (success) => {
         if (success) {
           console.log(`Estado del envío actualizado a "${event.status}" para el ID: ${event.id}`);

@@ -37,7 +37,7 @@ export class ViewPanelUsers implements OnInit{
     this.isLoading.show('Cargando usuarios...');
     this.userService.getAllUsers().subscribe({
     next: (data: UserResponseBack[]) => {
-      this.users = data.filter(user => user.rol !== 'client');
+      this.users = data;
       this.clients = this.users.filter(user => user.rol === 'client');
       this.producers = this.users.filter(user => user.rol === 'producer');
       this.admins = this.users.filter(user => user.rol === 'admin');

@@ -1,4 +1,489 @@
-.container-title{
-    height: 10rem;
-    padding-top: 3rem;
+
+/* ============================================
+   PÁGINA DE BÚSQUEDA
+   ============================================ */
+
+.search-page-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.search-hero {
+  height: 30rem;
+  background: linear-gradient(135deg, rgb(22, 107, 96) 0%, rgb(8, 120, 105) 50%, rgb(43, 175, 153) 100%);
+  padding: 10rem 5rem 5rem 5rem;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(43, 175, 153, 0.15);
+  
+}
+
+.search-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.hero-title {
+  font-size: 2.2rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.5rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -1px;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+.hero-subtitle strong {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+
+.search-container {
+  padding: 2rem 1rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   BARRA DE FILTROS
+   ============================================ */
+
+.filter-bar-section {
+  margin-bottom: 2rem;
+  animation: slideInUp 0.6s ease-out 0.1s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-bar {
+  background: white;
+  padding: 1.5rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(43, 175, 153, 0.1);
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr;
+  gap: 1rem;
+  align-items: flex-end;
+}
+
+.filter-search {
+  flex: 1;
+}
+
+.filter-search .input-group {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.filter-search .form-control {
+  border-color: #e0e0e0;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+}
+
+.filter-search .form-control:focus {
+  border-color: rgb(43, 175, 153);
+  box-shadow: 0 0 0 0.2rem rgba(43, 175, 153, 0.15);
+}
+
+.filter-search .input-group-text {
+  color: rgb(43, 175, 153);
+  border-color: #e0e0e0;
+  padding: 0.65rem 0.9rem;
+}
+
+.filter-category {
+  flex: 1;
+}
+
+.filter-category .category-select-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-category .form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.3rem !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-category .form-label i {
+  color: rgb(43, 175, 153);
+  font-size: 1rem;
+}
+
+.filter-category .form-select {
+  border-color: #e0e0e0;
+  padding: 0.65rem 0.9rem;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+}
+
+.filter-category .form-select:focus {
+  border-color: rgb(43, 175, 153);
+  box-shadow: 0 0 0 0.2rem rgba(43, 175, 153, 0.15);
+}
+
+.filter-price {
+  flex: 1;
+}
+
+.filter-price .price-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.filter-price .form-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.3rem !important;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.filter-price .form-label i {
+  color: rgb(43, 175, 153);
+  font-size: 1rem;
+}
+
+.filter-price .form-range {
+  height: 6px;
+  border-radius: 3px;
+  background-color: #e0e0e0;
+}
+
+.filter-price .form-range::-webkit-slider-thumb {
+  width: 16px;
+  height: 16px;
+  background: rgb(43, 175, 153);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.filter-price .form-range::-moz-range-thumb {
+  width: 16px;
+  height: 16px;
+  background: rgb(43, 175, 153);
+  border: 2px solid white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+}
+
+.filter-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  justify-content: flex-end;
+}
+
+.product-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #495057;
+  padding: 0.5rem 1rem;
+  background: rgba(43, 175, 153, 0.08);
+  border-radius: 20px;
+  border: 1px solid rgba(43, 175, 153, 0.15);
+  white-space: nowrap;
+}
+
+.product-count i {
+  font-size: 1.1rem;
+  color: rgb(43, 175, 153);
+}
+
+.filter-actions .btn-outline-secondary {
+  padding: 0.5rem 0.9rem;
+  font-size: 0.85rem;
+  transition: all 0.3s ease;
+}
+
+.filter-actions .btn-outline-secondary:hover {
+  background-color: rgb(43, 175, 153);
+  border-color: rgb(43, 175, 153);
+  color: white;
+}
+
+/* ============================================
+   SECCIÓN DE PRODUCTOS
+   ============================================ */
+
+.products-section {
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.products-grid {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(43, 175, 153, 0.1);
+  min-height: 400px;
+}
+
+/* ============================================
+   ESTADO VACÍO
+   ============================================ */
+
+.empty-state {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.empty-content {
+  text-align: center;
+}
+
+.empty-content i {
+  font-size: 4.5rem;
+  color: #ccc;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.empty-content h3 {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.empty-content p {
+  font-size: 0.95rem;
+  color: #6c757d;
+  margin: 0 0 1rem 0;
+}
+
+.empty-content .btn {
+  transition: all 0.3s ease;
+}
+
+.empty-content .btn-outline-primary:hover {
+  background: rgb(43, 175, 153);
+  border-color: rgb(43, 175, 153);
+  color: white;
+  transform: translateY(-2px);
+}
+
+/* ============================================
+   RESPONSIVE - USANDO BOOTSTRAP GRID
+   ============================================ */
+
+@media (max-width: 1200px) {
+  .filter-bar {
+    grid-template-columns: 1.5fr 1fr 1fr 1fr;
+  }
+
+  .hero-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 992px) {
+  .filter-bar {
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .filter-actions {
+    grid-column: 1 / -1;
+    justify-content: flex-start;
+  }
+
+  .search-hero{
+    height: 35rem;
+  }
+
+  .hero-title {
+    font-size: 1.8rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .filter-bar {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  .search-hero{
+    height: 40rem;
+  }
+
+  .filter-actions {
+    grid-column: 1 / -1;
+  }
+
+  .search-container {
+    padding: 1.5rem 0.75rem;
+  }
+
+
+  .hero-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .filter-bar-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .products-grid {
+    padding: 1.5rem;
+    min-height: 300px;
+  }
+
+  .empty-content i {
+    font-size: 3.5rem;
+  }
+
+  .empty-content h3 {
+    font-size: 1.2rem;
+  }
+
+  .empty-content p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .filter-bar {
+    gap: 0.8rem;
+    padding: 1rem;
+  }
+
+  .filter-search .form-control,
+  .filter-category .form-select {
+    font-size: 0.85rem;
+    padding: 0.6rem 0.75rem;
+  }
+
+  .filter-search .input-group-text {
+    padding: 0.6rem 0.75rem;
+    font-size: 1rem;
+  }
+
+  .product-count {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .filter-actions .btn {
+    font-size: 0.8rem;
+    padding: 0.4rem 0.75rem;
+  }
+
+  .search-hero {
+    padding: 8em 1.5rem 1.5rem 1.5rem ;
+    height: 40rem;
+  }
+
+  .hero-title {
+    font-size: 1.4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.85rem;
+  }
+
+  .search-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .products-grid {
+    padding: 1rem;
+  }
+
+  .empty-content i {
+    font-size: 3rem;
+  }
+
+  .empty-content h3 {
+    font-size: 1.1rem;
+  }
+
+  .empty-content p {
+    font-size: 0.85rem;
+  }
 }

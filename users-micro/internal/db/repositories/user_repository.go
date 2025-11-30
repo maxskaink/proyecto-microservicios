@@ -50,7 +50,7 @@ func (r *userRepository) Create(u *dto.UserRequest, tenantID string) (*dto.UserR
 
 			profile := &db_models.ProfileDB{
 				UserID:    user.ID,
-				AvatarURL: "A default avatar",
+				AvatarURL: "https://img.icons8.com/ios-filled/50/gender-neutral-user.png",
 			}
 
 			if err := txn.Create(profile).Error; err != nil {

@@ -58,8 +58,8 @@ export class UsersService {
     return this.getTenant().pipe(
       take(1),
       switchMap((tenantId: string) => {
-        const url = `${this.apiUrlShippingCart}${tenantId}/api/users/${userId}/role`;
-        return this.http.put<UserResponseBack>(url, { rol: newRole });
+        const url = `${this.apiUrlShippingCart}${tenantId}/api/users/${userId}/rol`;
+        return this.http.patch<UserResponseBack>(url, { rol: newRole });
       })
     );
   }

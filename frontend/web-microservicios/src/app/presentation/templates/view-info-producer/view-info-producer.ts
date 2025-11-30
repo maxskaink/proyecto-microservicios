@@ -1,6 +1,9 @@
-import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { ChangeDetectorRef, Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { UserResponseBack } from '../../../Models/UserReponseBack';
+import { AuthService } from '../../../service/Authser.vice';
+import { Observable } from 'rxjs';
+import { BlobOptions } from 'buffer';
 
 @Component({
   selector: 'app-view-info-producer',
@@ -8,17 +11,31 @@ import { UserResponseBack } from '../../../Models/UserReponseBack';
   templateUrl: './view-info-producer.html',
   styleUrl: './view-info-producer.css',
 })
-export class ViewInfoProducer {
+export class ViewInfoProducer implements OnInit {
   
   @Input() producer?: UserResponseBack;
   @Input() showActions: boolean = false;
   @Input() isEditable: boolean = false;
   @Output() action = new EventEmitter<string>();
+  isAdmin: boolean = false;
 
   clickAction() {
     this.action.emit('some-action');
   }
+  constructor(
+    private cdr: ChangeDetectorRef,
+  ) {}
+  ngOnInit(): void {
+    this.consultRol();
+  }
 
+  consultRol() {
+     const user = JSON.parse(localStorage.getItem('user_data') || 'null');
+     if (user && user.rol === 'admin') {
+       this.isAdmin = true;
+       this.cdr.detectChanges();
+     }
+  }
   /**
    * Formatea una fecha para mostrar de manera amigable
    */

@@ -124,7 +124,7 @@
         </div>
       </div>
       <!-- Action Buttons -->
-      <div class="actions-section" *ngIf="showActions && producer.rol === 'admin'">
+      <div class="actions-section" *ngIf="showActions && (isAdmin)"> ">
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
           <button 
             type="button" 

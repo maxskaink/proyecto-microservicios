@@ -43,5 +43,18 @@ export class ViewUserInfoPage {
         this.isLoading.hide();
       },
     });
-  }    
+  }  
+  
+  handleAction(state:string){
+    this.userService.updateRoleUser(this.user.id, state).subscribe({
+      next: (response) => {
+        console.log('User role updated successfully:', response);
+        this.loadUser(this.user.id);
+        this.cdr.detectChanges(); 
+      },
+      error: (error) => {
+        console.error('Error updating user role:', error);
+      },
+    });
+  }
 }

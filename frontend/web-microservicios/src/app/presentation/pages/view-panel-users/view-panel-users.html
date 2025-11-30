@@ -20,7 +20,7 @@
                 (action)="onAction($event)"
             ></app-user-box>
         </section>
-        <section class="mb-4">
+        <section class="row mb-4">
             <h3 class="subtitle">Productores: </h3>
             <div *ngIf="producers.length === 0"
                 class="d-flex justify-content-center align-items-center w-100">
@@ -28,14 +28,13 @@
                 No tienes Productores hasta el momento
                 </p>
             </div>
-
             <app-user-box
                 *ngFor="let producer of producers"
                 [user]="producer"
                 (action)="onAction($event)"
             ></app-user-box>
         </section>
-        <section class="row mb-4 ">
+        <section class="row  ">
 
         <h3 class="subtitle ">
             Clientes:
@@ -52,7 +51,6 @@
             *ngFor="let user of clients"
             [user]="user"
             (action)="onAction($event)"
-            class="d-flex justify-content-center"
         ></app-user-box>
 
         </section>

@@ -22,7 +22,7 @@ export class Home implements OnInit {
       img: 'https://blog.disfrutaverdura.com/wp-content/uploads/2018/12/tuberculos.jpg',
     },
     {
-      name: 'medicinal',
+      name: 'medicional',
       img: 'https://www.cocinavital.mx/wp-content/uploads/2024/01/plantas-buenas-para-la-salud.jpg',
     },
     {
@@ -133,5 +133,13 @@ export class Home implements OnInit {
     if (element) {
       element.scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
+  }
+
+  onCategoryClick(categoryName: string): void {
+    console.log('🔥 Click en categoría desde Home:', categoryName);
+    this.router.navigate(['home', categoryName]).then(
+      (success) => console.log(' Navegación exitosa a categoría:', success),
+      (error) => console.error(' Error en navegación a categoría:', error),
+    );
   }
 }

@@ -18,7 +18,8 @@
       <div class="col-6 col-lg-2 p-3" *ngFor="let category of categories">
         <div class="card-section d-flex justify-content-center align-items-center p-3"
             [ngStyle]="{ 'background-image': 'url(' + category.img + ')' }"
-            style="background-size: cover; background-position: center; cursor: pointer;">
+            style="background-size: cover; background-position: center; cursor: pointer;"
+            (click)="onCategoryClick(category.name)">
             
           <p class=" shadow-text">{{ category.name }}</p>
         </div>
@@ -27,7 +28,7 @@
 
   </div>
   
-  <div class="container-fluid " >
+  <div class="container " >
         <app-list-product-tenant-preview
           [products]="allProducts"
           (productClick)="onProductClick($event)"

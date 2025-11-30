@@ -1,0 +1,43 @@
+<app-is-loading></app-is-loading>
+<app-header></app-header>
+
+<div class="container">
+    <!-- Hero Section -->
+    <section class="category-hero">
+        <div class="hero-content">
+            <h1 class="hero-title">Seccion de {{categoryName}}</h1>
+            <p class="hero-subtitle">Explora nuestra selección de productos de alta calidad</p>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <div class="container-fluid category-container">
+        <!-- Filtros y Ordenamiento (Superior) -->
+        <section class="filter-bar-section">
+            <div class="filter-bar">
+                <div class="filter-info">
+                    <span class="product-count">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        {{ products.length || 0 }} productos
+                    </span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Grid de Productos -->
+        <section class="products-section">
+            <div class="products-grid">
+                <app-list-product-tenant-preview [products]="products"></app-list-product-tenant-preview>
+            </div>
+        </section>
+
+        <!-- Mensaje cuando no hay productos -->
+        <section class="empty-state" *ngIf="!products || products.length === 0">
+            <div class="empty-content">
+                <i class="bi bi-inbox"></i>
+                <h3>No hay productos disponibles</h3>
+                <p>Vuelve más tarde para ver nuevos productos en esta categoría</p>
+            </div>
+        </section>
+    </div>
+</div>

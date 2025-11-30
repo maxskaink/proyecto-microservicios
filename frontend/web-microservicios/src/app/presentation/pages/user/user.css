@@ -12,12 +12,15 @@
   border: none;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
 }
+.container-user{
+  scale: 0.9;
+  gap: 4rem;
+}
 
 .user-info .title {
   color: white;
   font-weight: 600;
 }
-
 
 .user-info .subtitle {
   color: rgba(255, 255, 255, 0.8);
@@ -218,4 +221,304 @@
 .option-card:active {
   transform: translateY(0);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* ============================================
+   PERFIL DE USUARIO - ESTILOS MODERNOS
+   ============================================ */
+
+/* Contenedor principal del perfil */
+.user-profile-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ============================================
+   SECCIÓN SUPERIOR: HEADER CON AVATAR E INFO
+   ============================================ */
+
+.user-profile-header {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  padding: 2rem;
+  background: linear-gradient(135deg, rgba(43, 175, 153, 0.95) 0%, rgba(8, 120, 105, 0.95) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.user-profile-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.user-profile-header::after {
+  content: '';
+  position: absolute;
+  bottom: -50%;
+  left: -50%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* Avatar */
+.user-avatar-wrapper {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.user-avatar-circle {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.05) 100%);
+  backdrop-filter: blur(20px);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  box-shadow: 
+    0 8px 32px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.user-avatar-circle i {
+  font-size: 3.5rem;
+  color: white;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+}
+
+.user-avatar-wrapper:hover .user-avatar-circle {
+  
+  border-color: rgba(255, 255, 255, 0.5);
+  box-shadow: 
+    0 12px 40px rgba(0, 0, 0, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+/* Badge de estado */
+.avatar-status-badge {
+  position: absolute;
+  bottom: -5px;
+  right: -5px;
+  width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4);
+  color: white;
+  font-size: 0.9rem;
+  animation: pulse-status 2s infinite;
+}
+
+@keyframes pulse-status {
+  0%, 100% { 
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4), 0 0 0 0 rgba(40, 167, 69, 0.7);
+  }
+  50% { 
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.4), 0 0 0 6px rgba(40, 167, 69, 0);
+  }
+}
+
+/* Sección de Información */
+.user-info-section {
+  flex: 1;
+  z-index: 1;
+  min-width: 0;
+}
+
+.user-display-name {
+  font-size: 1.8rem;
+  font-weight: 800;
+  color: white;
+  margin: 0 0 0.3rem 0;
+  line-height: 1.2;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  word-break: break-word;
+}
+
+.user-email-text {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.85);
+  margin: 0 0 1rem 0;
+  font-weight: 500;
+  word-break: break-all;
+}
+
+/* Badge del rol inline */
+.role-badge-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.5rem 1.2rem;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  transition: all 0.3s ease;
+}
+
+.role-badge-inline.badge-admin {
+  background: rgba(220, 53, 69, 0.25);
+  color: #ffebee;
+  box-shadow: 0 4px 12px rgba(220, 53, 69, 0.2);
+}
+
+.role-badge-inline.badge-admin:hover {
+  background: rgba(220, 53, 69, 0.35);
+  transform: translateY(-2px);
+}
+
+.role-badge-inline.badge-user {
+  background: rgba(255, 255, 255, 0.15);
+  color: white;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
+}
+
+.role-badge-inline.badge-user:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+}
+
+.role-badge-inline i {
+  font-size: 1rem;
+}
+
+/* Botón Logout (Icónico) */
+.user-logout-btn {
+  flex-shrink: 0;
+  z-index: 1;
+}
+
+.btn-logout-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1.3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-logout-icon:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.6);
+  transform: scale(1.1) rotate(5deg);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.btn-logout-icon:active {
+  transform: scale(0.95);
+}
+
+/* Divisor visual */
+.profile-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+}
+
+/* ============================================
+   SECCIÓN INFERIOR: FOOTER CON ROL Y ACCIÓN
+   ============================================ */
+
+.user-profile-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.5rem 2rem;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 249, 250, 0.98) 100%);
+  border-top: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Información del rol */
+.role-info {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.role-label {
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.role-value {
+  font-size: 1rem;
+  font-weight: 700;
+  padding: 0.4rem 1rem;
+  border-radius: 15px;
+  transition: all 0.3s ease;
+}
+
+.role-value.admin-role {
+  background: linear-gradient(135deg, rgba(220, 53, 69, 0.15) 0%, rgba(220, 53, 69, 0.1) 100%);
+  color: #dc3545;
+  border: 1px solid rgba(220, 53, 69, 0.2);
+}
+
+.role-value.user-role {
+  background: linear-gradient(135deg, rgba(23, 162, 184, 0.15) 0%, rgba(23, 162, 184, 0.1) 100%);
+  color: #17a2b8;
+  border: 1px solid rgba(23, 162, 184, 0.2);
+}
+
+/* Botón Logout Completo */
+.btn-logout-full {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.7rem 1.8rem;
+  background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-weight: 700;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 4px 12px rgba(108, 117, 125, 0.25);
+  white-space: nowrap;
+}
+
+.btn-logout-full:hover {
+  background: linear-gradient(135deg, #5a6268 0%, #495057 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(108, 117, 125, 0.35);
+}
+
+.btn-logout-full:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(108, 117, 125, 0.25);
+}
+
+.btn-logout-full i {
+  font-size: 1rem;
 }

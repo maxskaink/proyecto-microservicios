@@ -16,6 +16,7 @@ import { RoleGuard } from './guards/role.guards';
 import { ViewPanelUsers } from './presentation/pages/view-panel-users/view-panel-users';
 import { ViewUserInfoPage } from './presentation/pages/view-user-info-page/view-user-info-page';
 import { EditUser } from './presentation/pages/edit-user/edit-user';
+import { ViewCategoryProduct } from './presentation/pages/view-category-product/view-category-product';
 
 export const routes: Routes = [
     { 
@@ -33,6 +34,11 @@ export const routes: Routes = [
         component: Home,
         canActivate: [authGuard], // Todos los usuarios autenticados
         
+    },
+    {
+        path: 'home/:categoryName',
+        component: ViewCategoryProduct,
+        canActivate: [authGuard], // Todos los usuarios autenticados
     },
     {
         path: 'publishProduct',

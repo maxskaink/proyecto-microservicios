@@ -26,7 +26,7 @@ export class User implements OnInit, OnDestroy {
   
   // Información del usuario actual
   currentUser: UserData | null = null;
-  isLoggedIn: boolean = false;
+
   isLoading: boolean = true;
   
   // Suscripciones para limpiar al destruir el componente
@@ -136,32 +136,12 @@ private loadUserData(): void {
   this.isLoading = true;
 
   // Suscripción principal a los datos del usuario
-  const userDataSub = this.authService.userData.subscribe({
-    next: (userData) => {
-      console.log('Datos del usuario recibidos en componente:', userData);
-      this.currentUser = userData;
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    },
-    error: (error) => {
-      console.error('Error al cargar datos del usuario:', error);
-      this.isLoading = false;
-      this.cdr.detectChanges();
-    }
-  });
+  const stored = localStorage.getItem('user_data');
+  this.currentUser = stored ? JSON.parse(stored) : null;
+  this.isLoading = false;
+  this.cdr.detectChanges();
 
   // Suscripción al estado de login
-  const loginSub = this.authService.isLoggedIn$.subscribe(isLoggedIn => {
-    this.isLoggedIn = isLoggedIn;
-    if (!isLoggedIn) {
-      this.currentUser = null;
-      this.isLoading = false;
-    }
-    this.cdr.detectChanges();
-  });
-
-  this.subscriptions.add(userDataSub);
-  this.subscriptions.add(loginSub);
 }
   // Cerrar sesión
   async onLogout(): Promise<void> {
@@ -178,7 +158,7 @@ private loadUserData(): void {
     this.router.navigate(['/login']);
   }
   get role(): string {
-    return this.authService.getUserRole() ?? '';
+    return this.currentUser?.rol || 'usuario';
   }
   // Obtener opciones por categoría
   getOptionsByCategory(category: string): MenuOption[] {

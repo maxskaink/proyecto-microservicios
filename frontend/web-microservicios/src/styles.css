@@ -20,9 +20,10 @@ body {
   border-radius: 20px;
 }
 .btn-danger{
-  background-color: #e7cfcf;
-  color: #ef4444;
+  background-color: #e7e1e1;
+  color: #721b1b;
   font-weight: 800;
+  border-radius: 20px;
 }
 .btn-primary{
   background-color: #83c083;

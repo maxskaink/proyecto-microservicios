@@ -1,0 +1,356 @@
+/* ============================================
+   PÁGINA DE CATEGORÍA DE PRODUCTOS
+   ============================================ */
+
+/* Wrapper principal */
+.category-page-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+/* ============================================
+   HERO SECTION
+   ============================================ */
+
+.category-hero {
+  height: 20rem;
+  background: linear-gradient(135deg, rgb(6, 94, 82) 0%, rgb(8, 120, 105) 50%, rgb(43, 175, 153) 100%);
+  padding: 10rem 2rem 5rem 2rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(43, 175, 153, 0.15);
+}
+
+.category-hero::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  right: -50%;
+  width: 500px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.category-hero::after {
+  content: '';
+  position: absolute;
+  bottom: -50%;
+  left: -50%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 1;
+  animation: fadeInDown 0.8s ease-out;
+}
+
+.hero-title {
+  font-size: 2.8rem;
+  font-weight: 800;
+  color: white;
+  margin-bottom: 0.8rem;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  letter-spacing: -1px;
+}
+
+.hero-subtitle {
+  font-size: 1.2rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 500;
+  text-shadow: 0 1px 4px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ============================================
+   CONTENEDOR PRINCIPAL
+   ============================================ */
+
+.category-container {
+  padding: 3rem 2rem;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+/* ============================================
+   BARRA DE FILTROS
+   ============================================ */
+
+.filter-bar-section {
+  margin-bottom: 2.5rem;
+  animation: slideInUp 0.6s ease-out 0.1s both;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.filter-bar {
+  background: white;
+  padding: 1.5rem 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(43, 175, 153, 0.1);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1.5rem;
+  flex-wrap: wrap;
+}
+
+.filter-info {
+  display: flex;
+  align-items: center;
+  gap: 2rem;
+  flex-wrap: wrap;
+}
+
+.product-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #495057;
+  padding: 0.6rem 1.2rem;
+  background: rgba(43, 175, 153, 0.08);
+  border-radius: 20px;
+  border: 1px solid rgba(43, 175, 153, 0.15);
+}
+
+.product-count i {
+  font-size: 1.2rem;
+  color: rgb(43, 175, 153);
+}
+
+/* ============================================
+   SECCIÓN DE PRODUCTOS
+   ============================================ */
+
+.products-section {
+  animation: fadeIn 0.8s ease-out 0.2s both;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.products-grid {
+  background: white;
+  padding: 2rem;
+  border-radius: 15px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(43, 175, 153, 0.1);
+  min-height: 400px;
+}
+
+/* ============================================
+   ESTADO VACÍO
+   ============================================ */
+
+.empty-state {
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.6s ease-out;
+}
+
+.empty-content {
+  text-align: center;
+}
+
+.empty-content i {
+  font-size: 5rem;
+  color: #ccc;
+  margin-bottom: 1.5rem;
+  display: block;
+}
+
+.empty-content h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.empty-content p {
+  font-size: 1rem;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+/* Tablets (1024px y menos) */
+@media (max-width: 1024px) {
+  
+
+  .hero-title {
+    font-size: 2.3rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1.1rem;
+  }
+
+  .category-container {
+    padding: 2rem 1.5rem;
+  }
+
+  .filter-bar {
+    padding: 1.2rem 1.5rem;
+  }
+
+  .products-grid {
+    padding: 1.5rem;
+  }
+}
+
+/* Tablets medianas (768px y menos) */
+@media (max-width: 768px) {
+  
+
+  .hero-title {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+  }
+
+  .category-container {
+    padding: 1.5rem 1rem;
+  }
+
+  .filter-bar {
+    padding: 1rem 1.2rem;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .filter-info {
+    width: 100%;
+  }
+
+  .products-grid {
+    padding: 1.2rem;
+    min-height: 300px;
+  }
+
+  .product-count {
+    font-size: 0.95rem;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* Móviles (576px y menos) */
+@media (max-width: 576px) {
+  
+  .hero-title {
+    font-size: 1.6rem;
+    margin-bottom: 0.4rem;
+    letter-spacing: 0;
+  }
+
+  .hero-subtitle {
+    font-size: 0.95rem;
+  }
+
+  .category-container {
+    padding: 1.2rem 0.8rem;
+  }
+
+  .filter-bar-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .filter-bar {
+    padding: 1rem;
+  }
+
+  .filter-info {
+    gap: 0.8rem;
+  }
+
+  .product-count {
+    font-size: 0.9rem;
+    padding: 0.4rem 0.9rem;
+  }
+
+  .products-grid {
+    padding: 1rem;
+    min-height: 250px;
+  }
+
+  .empty-content i {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .empty-content h3 {
+    font-size: 1.3rem;
+  }
+
+  .empty-content p {
+    font-size: 0.95rem;
+  }
+}
+
+/* Móviles pequeños (480px y menos) */
+@media (max-width: 480px) {
+  .hero-title {
+    font-size: 1.4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+
+  .category-container {
+    padding: 1rem 0.5rem;
+  }
+
+  .filter-bar {
+    padding: 0.8rem;
+  }
+
+  .product-count {
+    font-size: 0.85rem;
+  }
+
+  .products-grid {
+    padding: 0.8rem;
+  }
+}

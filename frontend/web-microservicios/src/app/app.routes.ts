@@ -17,6 +17,7 @@ import { ViewPanelUsers } from './presentation/pages/view-panel-users/view-panel
 import { ViewUserInfoPage } from './presentation/pages/view-user-info-page/view-user-info-page';
 import { EditUser } from './presentation/pages/edit-user/edit-user';
 import { ViewCategoryProduct } from './presentation/pages/view-category-product/view-category-product';
+import { SearchProducts } from './presentation/pages/search-products/search-products';
 
 export const routes: Routes = [
     { 
@@ -38,6 +39,11 @@ export const routes: Routes = [
     {
         path: 'home/:categoryName',
         component: ViewCategoryProduct,
+        canActivate: [authGuard], // Todos los usuarios autenticados
+    },
+    {
+        path: 'home/search/:searchTerm',
+        component: SearchProducts,
         canActivate: [authGuard], // Todos los usuarios autenticados
     },
     {

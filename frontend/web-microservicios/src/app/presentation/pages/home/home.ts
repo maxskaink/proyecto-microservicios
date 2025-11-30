@@ -8,10 +8,11 @@ import { ProductService } from '../../../service/ProductService';
 import { TenantService } from '../../../service/TenantService';
 import { LoadingService } from '../../../service/loading-service';
 import { IsLoading } from '../../components/is-loading/is-loading';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
-  imports: [CommonModule, Header, ListProductTenantPreview, IsLoading],
+  imports: [CommonModule, Header, ListProductTenantPreview, IsLoading, FormsModule],
   templateUrl: './home.html',
   styleUrl: './home.css',
 })
@@ -40,7 +41,8 @@ export class Home implements OnInit {
   ];
 
   productsByCategory: { [key: string]: any[] } = {};
-  searchTerm: string = '';
+  searchTerm: string = 'hla';
+  searchQuery: string = '';
   allProducts: Product[] = [];
   public products: Product[] = [];
   constructor(
@@ -139,5 +141,14 @@ export class Home implements OnInit {
       (success) => console.log(' Navegación exitosa a categoría:', success),
       (error) => console.error(' Error en navegación a categoría:', error),
     );
+  }
+
+  goToSearch() {
+    if (this.searchQuery.trim()) {
+      this.router.navigate(['home/search', this.searchQuery.trim()]).then(
+        (success) => console.log('✓ Navegación exitosa a búsqueda:', success),
+        (error) => console.error('✗ Error en navegación a búsqueda:', error),
+      );
+    }
   }
 }

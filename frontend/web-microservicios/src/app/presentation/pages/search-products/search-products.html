@@ -1,0 +1,17 @@
+<app-is-loading></app-is-loading>
+<app-header></app-header>
+<section class="container container-content">
+  <section class="container-title container d-flex align-items-center justify-content-center">
+    <h1>Buscar Productos</h1> 
+
+  </section>
+    <div class="search-bar">
+    <input type="text" placeholder="Buscar productos..."  />
+  </div>
+  <div class="container">
+    <app-list-product-tenant-preview
+      [products]="products"
+    ></app-list-product-tenant-preview>
+  </div>
+
+</section>

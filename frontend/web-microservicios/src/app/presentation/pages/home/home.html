@@ -4,7 +4,34 @@
   <div class="d-flex justify-content-center align-items-center  flex-column ">
     <h2 id="title-welcome">¿Que necesitas hoy en tu hogar?</h2>
   </div>
+  
+  <!-- Barra de Búsqueda Moderna -->
+  <div class="search-bar-container">
+    <div class="container-fluid">
+      <div class="search-bar-wrapper">
+        <div class="input-group search-input-group">
+          <span class="input-group-text search-icon">
+            <i class="bi bi-search"></i>
+          </span>
+          <input 
+            type="text" 
+            class="form-control search-input" 
+            placeholder="Buscar productos..."
+            (keyup.enter)="goToSearch()"
+            [(ngModel)]="searchQuery">
+          <button 
+            class="btn btn-search" 
+            type="button"
+            (click)="goToSearch()">
+            <span class="search-button-text">Buscar</span>
+            <i class="bi bi-arrow-right"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
+
 <div class="divider-separator container-fluid "></div>
 <section class="home-page-content ">
   <div class="container p-4 ">

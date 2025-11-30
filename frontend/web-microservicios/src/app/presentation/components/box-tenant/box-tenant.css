@@ -1,0 +1,199 @@
+/* =================== TENANT BOX COMPONENT STYLES =================== */
+
+/* Main tenant card container */
+.tenant-card {
+  cursor: pointer;
+  transition: all 0.3s ease;
+  border-radius: 15px;
+  overflow: hidden;
+  border: 2px solid rgb(106, 209, 123);
+  margin-bottom: 1rem;
+}
+
+.tenant-card:hover {
+  transform: translateY(-2px);
+}
+
+.tenant-card .card {
+  border-radius: 15px;
+  transition: all 0.3s ease;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 250, 252, 0.95) 100%);
+  border: 1px solid rgba(106, 209, 123, 0.1);
+  overflow: hidden;
+}
+
+.tenant-card:hover .card {
+  box-shadow: 0 8px 25px rgba(106, 209, 123, 0.15) !important;
+  border-color: rgba(106, 209, 123, 0.3);
+}
+
+/* =================== CARD CONTENT =================== */
+.card-content {
+  gap: 0;
+  height: 100%;
+}
+
+/* =================== IMAGE SECTION (LEFT) =================== */
+.image-section {
+  position: relative;
+  width: 140px;
+  height: auto;
+  min-height: 120px;
+  overflow: hidden;
+  background: linear-gradient(135deg, rgb(43, 175, 153) 0%, rgb(8, 120, 105) 100%);
+}
+
+.tenant-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  transition: transform 0.4s ease;
+}
+
+.tenant-card:hover .tenant-image {
+  transform: scale(1.08);
+}
+
+.image-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.2) 0%,
+    transparent 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.tenant-card:hover .image-overlay {
+  opacity: 1;
+}
+
+/* =================== INFO SECTION (RIGHT) =================== */
+.info-section {
+  min-width: 0;
+  background: white;
+}
+
+.tenant-details {
+  width: 100%;
+}
+
+.tenant-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgb(6, 94, 82);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tenant-location {
+  font-size: 0.85rem;
+  color: #6c757d !important;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  line-height: 1.4;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tenant-location i {
+  color: rgb(43, 175, 153);
+  font-size: 0.9rem;
+  flex-shrink: 0;
+}
+
+/* =================== ACTION SECTION =================== */
+.action-section {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.action-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(106, 209, 123, 0.1);
+  color: rgb(43, 175, 153);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(106, 209, 123, 0.2);
+}
+
+.tenant-card:hover .action-icon {
+  background: linear-gradient(135deg, rgb(43, 175, 153) 0%, rgb(8, 120, 105) 100%);
+  color: white;
+  transform: translateX(2px);
+  border-color: transparent;
+}
+
+/* =================== RESPONSIVE DESIGN (BOOTSTRAP) =================== */
+
+/* Small screens - stack vertically with bootstrap d-flex */
+@media (max-width: 576px) {
+  .image-section {
+    width: 120px;
+    min-height: 100px;
+  }
+
+  .info-section {
+    padding: 1rem !important;
+  }
+
+  .tenant-name {
+    font-size: 0.95rem;
+  }
+
+  .tenant-location {
+    font-size: 0.8rem;
+  }
+
+  .action-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1rem;
+  }
+}
+
+/* Extra small screens */
+@media (max-width: 480px) {
+  .image-section {
+    width: 100px;
+    min-height: 90px;
+  }
+
+  .info-section {
+    padding: 0.75rem !important;
+  }
+
+  .tenant-name {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+
+  .tenant-location {
+    font-size: 0.75rem;
+  }
+
+  .action-icon {
+    width: 26px;
+    height: 26px;
+    font-size: 0.9rem;
+  }
+}

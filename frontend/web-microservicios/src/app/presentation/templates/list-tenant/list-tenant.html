@@ -1,0 +1,64 @@
+<div class="list-tenant-wrapper">
+  <!-- Barra de Búsqueda -->
+  <div class="search-section mb-4">
+    <div class="search-bar-container">
+      <div class="input-group search-input-group">
+        <span class="input-group-text bg-white border-end-0">
+          <i class="bi bi-search"></i>
+        </span>
+        <input 
+          type="text" 
+          class="form-control border-start-0" 
+          placeholder="Buscar tienda..."
+          (input)="onSearchChange($event.target.value)"
+          [(ngModel)]="searchQuery">
+        <button 
+          class="btn btn-outline-secondary"
+          type="button"
+          *ngIf="searchQuery"
+          (click)="clearSearch()">
+          <i class="bi bi-x"></i>
+        </button>
+      </div>
+    </div>
+    <div class="search-info mt-2" *ngIf="filteredTenants.length > 0">
+      <small class="text-muted">
+        <i class="bi bi-info-circle me-1"></i>
+        {{ filteredTenants.length }} tienda(s) encontrada(s)
+      </small>
+    </div>
+  </div>
+
+  <!-- Lista de Tenants -->
+  <div class="tenants-list">
+    <div class="row g-3">
+      <div 
+        *ngFor="let tenant of filteredTenants" 
+        class="col-12 col-md-6 col-lg-4">
+        <div (click)="handleAction(tenant.tenant_id)" class="h-100">
+          <app-box-tenant 
+            [tenat]="tenant"
+            (action)="handleAction($event)">
+          </app-box-tenant>
+        </div>
+      </div>
+    </div>
+
+    <!-- Mensaje cuando no hay tenants -->
+    <div class="empty-state" *ngIf="filteredTenants.length === 0">
+      <div class="empty-content text-center py-5">
+        <i class="bi bi-inbox"></i>
+        <h5 class="mt-3">No se encontraron tiendas</h5>
+        <p class="text-muted" *ngIf="searchQuery">Intenta con otro término de búsqueda</p>
+        <p class="text-muted" *ngIf="!searchQuery">No hay tiendas disponibles</p>
+        <button 
+          *ngIf="searchQuery"
+          class="btn btn-outline-primary btn-sm mt-2"
+          (click)="clearSearch()">
+          <i class="bi bi-arrow-counterclockwise me-1"></i>
+          Limpiar búsqueda
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

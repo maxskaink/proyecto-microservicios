@@ -1,0 +1,240 @@
+/* =================== LIST TENANT COMPONENT STYLES =================== */
+
+.list-tenant-wrapper {
+  background: transparent;
+  padding: 1.5rem 0;
+}
+
+/* =================== SEARCH SECTION =================== */
+
+.search-section {
+  margin-bottom: 2rem;
+}
+
+.search-bar-container {
+  max-width: 100%;
+}
+
+.search-input-group {
+  border-radius: 40px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  background: white;
+  border: 2px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.search-input-group:focus-within {
+  border-color: rgb(43, 175, 153);
+  box-shadow: 0 6px 20px rgba(43, 175, 153, 0.2);
+}
+
+.search-input-group .input-group-text {
+  border: none;
+  color: rgb(43, 175, 153);
+  padding: 0.75rem 1rem;
+  background: white;
+}
+
+.search-input-group .form-control {
+  border: none;
+  padding: 0.75rem 1rem;
+  font-size: 0.95rem;
+}
+
+.search-input-group .form-control::placeholder {
+  color: #adb5bd;
+}
+
+.search-input-group .form-control:focus {
+  outline: none;
+  box-shadow: none;
+  color: #495057;
+}
+
+.search-input-group .btn-outline-secondary {
+  border: none;
+  color: #6c757d;
+  background: transparent;
+  padding: 0.75rem 0.8rem;
+  transition: all 0.3s ease;
+}
+
+.search-input-group .btn-outline-secondary:hover {
+  background: rgba(108, 117, 125, 0.1);
+  color: rgb(43, 175, 153);
+}
+
+.search-info {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding-left: 1rem;
+}
+
+.search-info small {
+  font-size: 0.85rem;
+}
+
+.search-info i {
+  color: rgb(43, 175, 153);
+}
+
+/* =================== TENANTS LIST =================== */
+
+.tenants-list {
+  min-height: 200px;
+  overflow-y: auto;
+  max-height: 30rem;
+}
+
+.tenants-list .row {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.tenants-list .col-12,
+.tenants-list .col-md-6,
+.tenants-list .col-lg-4 {
+  padding-left: 0.75rem;
+  padding-right: 0.75rem;
+}
+
+/* =================== EMPTY STATE =================== */
+
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 250px;
+  background: transparent;
+}
+
+.empty-content {
+  text-align: center;
+  color: #6c757d;
+}
+
+.empty-content i {
+  font-size: 3rem;
+  color: #ccc;
+  display: block;
+  margin-bottom: 1rem;
+}
+
+.empty-content h5 {
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+}
+
+.empty-content p {
+  font-size: 0.95rem;
+  margin-bottom: 0;
+}
+
+.empty-content .btn-outline-primary {
+  transition: all 0.3s ease;
+}
+
+.empty-content .btn-outline-primary:hover {
+  background: rgb(43, 175, 153);
+  border-color: rgb(43, 175, 153);
+  color: white;
+}
+
+/* =================== RESPONSIVE DESIGN =================== */
+
+@media (max-width: 992px) {
+  .tenants-list .col-lg-4 {
+    max-width: 50%;
+    flex: 0 0 50%;
+  }
+}
+
+@media (max-width: 768px) {
+  .list-tenant-wrapper {
+    padding: 1rem 0;
+  }
+
+  .search-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .search-input-group .input-group-text {
+    padding: 0.65rem 0.85rem;
+  }
+
+  .search-input-group .form-control {
+    padding: 0.65rem 0.85rem;
+    font-size: 0.9rem;
+  }
+
+  .tenants-list .col-md-6 {
+    max-width: 100%;
+    flex: 0 0 100%;
+  }
+
+  .empty-content i {
+    font-size: 2.5rem;
+  }
+
+  .empty-content h5 {
+    font-size: 1.1rem;
+  }
+
+  .empty-content p {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .list-tenant-wrapper {
+    padding: 0.75rem 0;
+  }
+
+  .search-section {
+    margin-bottom: 1.25rem;
+  }
+
+  .search-input-group {
+    border-radius: 30px;
+  }
+
+  .search-input-group .input-group-text {
+    padding: 0.6rem 0.75rem;
+  }
+
+  .search-input-group .form-control {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+  }
+
+  .tenants-list .col-12,
+  .tenants-list .col-md-6,
+  .tenants-list .col-lg-4 {
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+  }
+
+  .empty-content i {
+    font-size: 2rem;
+  }
+
+  .empty-content h5 {
+    font-size: 1rem;
+  }
+
+  .empty-content p {
+    font-size: 0.85rem;
+  }
+
+  .search-info {
+    padding-left: 0.75rem;
+  }
+
+  .search-info small {
+    font-size: 0.75rem;
+  }
+}

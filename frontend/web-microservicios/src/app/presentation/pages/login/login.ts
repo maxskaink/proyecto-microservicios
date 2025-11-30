@@ -7,16 +7,20 @@ import { TenantService } from '../../../service/TenantService';
 import { Tenant } from '../../../Models/Tenant';
 import { LoadingService } from '../../../service/loading-service';
 import { IsLoading } from '../../components/is-loading/is-loading';
+import { ListTenant } from '../../templates/list-tenant/list-tenant';
+import { BoxTenant } from '../../components/box-tenant/box-tenant';
 
 @Component({
   selector: 'app-login',
-  imports: [CommonModule, FormsModule, IsLoading],
+  imports: [CommonModule, FormsModule, IsLoading, ListTenant],
   templateUrl: './login.html',
   styleUrl: './login.css',
 })
 export class Login implements OnInit, OnDestroy {
   
   public tenantId: string = '';
+  public selectedTenantId: string | null = null;
+  public selectedTenant: Tenant | null = null;
   public correo: string = '';
   public password: string = '';
   
@@ -31,6 +35,7 @@ export class Login implements OnInit, OnDestroy {
   
   public tenants = signal<Tenant[]>([]);
   public loadingTenants = signal<boolean>(false);
+  public showLoginForm: boolean = false;
 
   constructor(
     private authService: AuthService, 
@@ -47,6 +52,65 @@ export class Login implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     // Asegurar que se oculte el loading al destruir el componente
     this.loadingService.hide();
+  }
+
+  /**
+   * Carga la lista de tenants desde el servicio TenantService.
+   */
+  private loadTenants(): void {
+    this.loadingTenants.set(true);
+    this.loadingService.show('Cargando tiendas disponibles...');
+    
+    this.tenantService.getTenants().subscribe({
+      next: (tenants: Tenant[]) => {
+        this.tenants.set(tenants);
+        console.log('Tenants loaded:', tenants);
+        this.loadingTenants.set(false);
+        this.loadingService.hide();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error loading tenants:', error);
+        this.loadingService.hide();
+        this.showError = true;
+        this.errorType = 'tenant-load';
+        this.loadingTenants.set(false);
+        this.cdr.detectChanges();
+      }
+    });
+  }
+
+  /**
+   * Maneja la selección de un tenant desde el list-tenant
+   */
+  onTenantSelected(tenantId: string): void {
+    this.selectedTenantId = String(tenantId);
+    this.tenantId = String(tenantId);
+    
+    // Buscar el tenant completo en la lista
+    const tenant = this.tenants().find(t => t.tenant_id === tenantId);
+    if (tenant) {
+      this.selectedTenant = tenant;
+    }
+    
+    this.showLoginForm = true;
+    this.tenantError = false;
+    this.cdr.detectChanges();
+  }
+
+  /**
+   * Vuelve atrás para seleccionar otro tenant
+   */
+  backToTenantSelection(): void {
+    this.showLoginForm = false;
+    this.selectedTenantId = null;
+    this.selectedTenant = null;
+    this.tenantId = '';
+    this.correo = '';
+    this.password = '';
+    this.clearFieldErrors();
+    this.hideMessages();
+    this.cdr.detectChanges();
   }
 
   /**
@@ -92,29 +156,7 @@ export class Login implements OnInit, OnDestroy {
       this.isLoading = false;
     }
   }
-  /**
-   * Carga la lista de tenants desde el servicio TenantService.
-   */
-  private loadTenants(): void {
-    this.loadingTenants.set(true);
-    this.loadingService.show('Cargando tiendas disponibles...');
-    
-    this.tenantService.getTenants().subscribe({
-      next: (tenants: Tenant[]) => {
-        this.tenants.set(tenants);
-        console.log('Tenants loaded:', tenants);
-        this.loadingTenants.set(false);
-        this.loadingService.hide();
-      },
-      error: (error) => {
-        console.error('Error loading tenants:', error);
-        this.loadingService.hide();
-        this.showError = true;
-        this.errorType = 'tenant-load';
-        this.loadingTenants.set(false);
-      }
-    });
-  }
+
   /**
    * Maneja los errores de inicio de sesión y actualiza el estado de la interfaz de usuario en consecuencia.
    * @param error objeto de error recibido durante el proceso de inicio de sesión
@@ -147,12 +189,14 @@ export class Login implements OnInit, OnDestroy {
     this.tenantError = false;
     console.log('Tenant selected:', this.tenantId);
   }
+
   /**
    * Maneja el cambio en los campos de entrada del formulario.
    */
   public onInputChange(): void {
     this.clearFieldErrors();
   }
+
   /**
    * Oculta los mensajes de error y éxito.
    */
@@ -161,6 +205,7 @@ export class Login implements OnInit, OnDestroy {
     this.showSuccess = false;
     this.errorType = '';
   }
+
   /**
    * Limpia los errores específicos de los campos del formulario.
    */

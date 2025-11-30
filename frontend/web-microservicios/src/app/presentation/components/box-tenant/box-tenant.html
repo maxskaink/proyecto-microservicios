@@ -1,0 +1,39 @@
+<!-- Tenant Box Card -->
+<div class="tenant-card" (click)="clickAction()">
+  <div class="card h-100 border-0 shadow-sm">
+    
+    <!-- Card Content with Image and Info -->
+    <div class="card-content d-flex align-items-stretch">
+      
+      <!-- Image Section (Left) -->
+      <div class="image-section flex-shrink-0">
+        <img
+          [src]="randomImage"
+          [alt]="tenat.tenant_name || 'Tenant'"
+          class="tenant-image"
+        />
+        <div class="image-overlay"></div>
+      </div>
+
+      <!-- Info Section (Right) -->
+      <div class="info-section flex-grow-1 d-flex flex-column justify-content-between p-3">
+        
+        <!-- Tenant Details -->
+        <div class="tenant-details">
+          <h6 class="tenant-name mb-2">{{ tenat.tenant_name || 'Sin nombre' }}</h6>
+          <p class="tenant-location text-muted mb-0">
+            <i class="bi bi-geo-alt-fill me-2"></i>
+            {{ tenat.location || 'Sin ubicación' }}
+          </p>
+        </div>
+
+        <!-- Action Icon -->
+        <div class="action-section">
+          <div class="action-icon">
+            <i class="bi bi-arrow-right"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -69,8 +69,8 @@ export class FormTenant {
    */
   onTenantIdChange(event: any) {
     let value = event.target.value;
-    // Convertir a minúsculas y reemplazar espacios con guiones
-    value = value.toLowerCase().replace(/\s+/g, '-');
+
+    value = value.toLowerCase().replace(/\s+/g, '');
     // Remover caracteres no permitidos excepto letras, números y guiones
     value = value.replace(/[^a-z0-9-]/g, '');
     

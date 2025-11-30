@@ -15,6 +15,7 @@ import { ShippingOrderPage } from './presentation/pages/shipping-order-page/ship
 import { RoleGuard } from './guards/role.guards';
 import { ViewPanelUsers } from './presentation/pages/view-panel-users/view-panel-users';
 import { ViewUserInfoPage } from './presentation/pages/view-user-info-page/view-user-info-page';
+import { EditUser } from './presentation/pages/edit-user/edit-user';
 
 export const routes: Routes = [
     { 
@@ -48,8 +49,7 @@ export const routes: Routes = [
     {
         path: 'register-tenant',
         component: RegisterTenant,
-        canActivate: [authGuard, RoleGuard],
-        data: { roles: ['admin', 'producer'] } // Solo productores y administradores // Solo productores y administradores
+        canActivate: [authGuard]
     },
     {
         path: 'shopping-cart',
@@ -95,6 +95,11 @@ export const routes: Routes = [
         component: ViewUserInfoPage,
         canActivate: [authGuard, RoleGuard],
         data: { roles: ['admin'] } // Solo administradores pueden ver información de usuarios
+    },
+    {
+        path: 'user/edit-my-user',
+        component: EditUser,
+        canActivate: [authGuard],// Solo administradores pueden ver información de usuarios
     },
     {
         path: '',

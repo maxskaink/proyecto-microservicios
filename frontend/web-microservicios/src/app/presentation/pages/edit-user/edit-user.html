@@ -1,1 +1,13 @@
-<p>edit-user works!</p>
+<app-is-loading></app-is-loading>
+<app-header></app-header>
+<section class="container container-content">
+    <section class="section-title d-flex flex-column align-items-center mb-3">
+        <h1 class="title">Editar Usuario</h1>
+        <p>Aqui puedes editar tu informacion para tu perfil</p>
+    </section>
+    <section *ngIf="user">
+        <app-form-user [userData]="user" (submitEvent)="onSubmit($event)"></app-form-user>
+    </section>
+  
+
+</section>

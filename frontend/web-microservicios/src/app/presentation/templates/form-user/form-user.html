@@ -1,27 +1,10 @@
 <!-- User Profile Form -->
 <div class="form-container">
   <div class="card border-0 shadow-lg">
-    
-    <!-- Form Header -->
-    <div class="card-header bg-gradient text-white border-0 py-4">
-      <div class="row align-items-center">
-        <div class="col-auto">
-          <div class="header-icon">
-            <i class="bi bi-person-gear fs-4"></i>
-          </div>
-        </div>
-        <div class="col">
-          <h4 class="card-title mb-1 fw-bold">Editar Perfil</h4>
-          <p class="card-subtitle mb-0 opacity-75">Actualiza tu información personal</p>
-        </div>
-      </div>
-    </div>
-
     <!-- Form Body -->
     <div class="card-body p-4">
       <form [formGroup]="form" (ngSubmit)="onsubmit()" novalidate>
         
-        <!-- Name Field -->
         <div class="mb-4">
           <label for="name" class="form-label fw-semibold">
             <i class="bi bi-person me-2 text-primary"></i>
@@ -66,12 +49,12 @@
           <input
             id="phone"
             type="tel"
+            maxlength="10"
             class="form-control form-control-lg"
             [class.is-invalid]="form.get('phone')?.invalid && form.get('phone')?.touched"
             [class.is-valid]="form.get('phone')?.valid && form.get('phone')?.touched"
             formControlName="phone"
             placeholder="Ej: +57 300 123 4567"
-            [value]="userData.profile.phone || ''"
           />
           <div class="invalid-feedback" *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched">
             <div *ngIf="form.get('phone')?.errors?.['required']">
@@ -106,8 +89,8 @@
             [class.is-invalid]="form.get('address')?.invalid && form.get('address')?.touched"
             [class.is-valid]="form.get('address')?.valid && form.get('address')?.touched"
             formControlName="address"
+             maxlength="50"
             placeholder="Ej: Calle 123 #45-67, Bogotá"
-            [value]="userData.profile.address || ''"
           />
           <div class="invalid-feedback" *ngIf="form.get('address')?.invalid && form.get('address')?.touched">
             <div *ngIf="form.get('address')?.errors?.['required']">

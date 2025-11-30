@@ -67,7 +67,7 @@ export class User implements OnInit, OnDestroy {
       title: 'Editar Perfil',
       description: 'Actualiza tu información personal',
       icon: 'bi-person-gear',
-      route: '/edit-profile',
+      route: '/user/edit-my-user',
       category: 'profile',
       rol: ['producer', 'admin', 'client']
     },
@@ -115,7 +115,7 @@ export class User implements OnInit, OnDestroy {
       icon: 'bi-clipboard-check',
       route: '/register-tenant',
       category: 'business',
-      rol: [ 'admin', 'producer']
+      rol: [ 'admin', 'producer', 'client']
     }
   ];
 

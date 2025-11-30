@@ -1,0 +1,202 @@
+<!-- User Profile Form -->
+<div class="form-container">
+  <div class="card border-0 shadow-lg">
+    
+    <!-- Form Header -->
+    <div class="card-header bg-gradient text-white border-0 py-4">
+      <div class="row align-items-center">
+        <div class="col-auto">
+          <div class="header-icon">
+            <i class="bi bi-person-gear fs-4"></i>
+          </div>
+        </div>
+        <div class="col">
+          <h4 class="card-title mb-1 fw-bold">Editar Perfil</h4>
+          <p class="card-subtitle mb-0 opacity-75">Actualiza tu información personal</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Form Body -->
+    <div class="card-body p-4">
+      <form [formGroup]="form" (ngSubmit)="onsubmit()" novalidate>
+        
+        <!-- Name Field -->
+        <div class="mb-4">
+          <label for="name" class="form-label fw-semibold">
+            <i class="bi bi-person me-2 text-primary"></i>
+            Nombre completo
+          </label>
+          <input
+            id="name"
+            type="text"
+            class="form-control form-control-lg"
+            [class.is-invalid]="form.get('name')?.invalid && form.get('name')?.touched"
+            [class.is-valid]="form.get('name')?.valid && form.get('name')?.touched"
+            formControlName="name"
+            placeholder="Ingresa tu nombre completo"
+            [value]="userData.name || ''"
+          />
+          <div class="invalid-feedback" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+            <div *ngIf="form.get('name')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El nombre es obligatorio
+            </div>
+            <div *ngIf="form.get('name')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El nombre debe tener al menos 3 caracteres
+            </div>
+            <div *ngIf="form.get('name')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El nombre no debe exceder 50 caracteres
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="form.get('name')?.valid && form.get('name')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            ¡Se ve bien!
+          </div>
+        </div>
+
+        <!-- Phone Field -->
+        <div class="mb-4">
+          <label for="phone" class="form-label fw-semibold">
+            <i class="bi bi-telephone me-2 text-success"></i>
+            Número de teléfono
+          </label>
+          <input
+            id="phone"
+            type="tel"
+            class="form-control form-control-lg"
+            [class.is-invalid]="form.get('phone')?.invalid && form.get('phone')?.touched"
+            [class.is-valid]="form.get('phone')?.valid && form.get('phone')?.touched"
+            formControlName="phone"
+            placeholder="Ej: +57 300 123 4567"
+            [value]="userData.profile.phone || ''"
+          />
+          <div class="invalid-feedback" *ngIf="form.get('phone')?.invalid && form.get('phone')?.touched">
+            <div *ngIf="form.get('phone')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El teléfono es obligatorio
+            </div>
+            <div *ngIf="form.get('phone')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El teléfono debe tener al menos 10 dígitos
+            </div>
+            <div *ngIf="form.get('phone')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              El teléfono es demasiado largo
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="form.get('phone')?.valid && form.get('phone')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            Teléfono válido
+          </div>
+        </div>
+
+        <!-- Address Field -->
+        <div class="mb-4">
+          <label for="address" class="form-label fw-semibold">
+            <i class="bi bi-geo-alt me-2 text-warning"></i>
+            Dirección
+          </label>
+          <input
+            id="address"
+            type="text"
+            class="form-control form-control-lg"
+            [class.is-invalid]="form.get('address')?.invalid && form.get('address')?.touched"
+            [class.is-valid]="form.get('address')?.valid && form.get('address')?.touched"
+            formControlName="address"
+            placeholder="Ej: Calle 123 #45-67, Bogotá"
+            [value]="userData.profile.address || ''"
+          />
+          <div class="invalid-feedback" *ngIf="form.get('address')?.invalid && form.get('address')?.touched">
+            <div *ngIf="form.get('address')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La dirección es obligatoria
+            </div>
+            <div *ngIf="form.get('address')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La dirección debe tener al menos 3 caracteres
+            </div>
+            <div *ngIf="form.get('address')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La dirección es demasiado larga
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="form.get('address')?.valid && form.get('address')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            Dirección válida
+          </div>
+        </div>
+
+        <!-- Description Field -->
+        <div class="mb-4">
+          <label for="description" class="form-label fw-semibold">
+            <i class="bi bi-card-text me-2 text-info"></i>
+            Descripción personal
+          </label>
+          <textarea
+            id="description"
+            rows="4"
+            class="form-control"
+            [class.is-invalid]="form.get('description')?.invalid && form.get('description')?.touched"
+            [class.is-valid]="form.get('description')?.valid && form.get('description')?.touched"
+            formControlName="description"
+            placeholder="Cuéntanos un poco sobre ti, tus intereses, experiencia profesional..."
+          >{{ userData.profile.description || '' }}</textarea>
+          <div class="invalid-feedback" *ngIf="form.get('description')?.invalid && form.get('description')?.touched">
+            <div *ngIf="form.get('description')?.errors?.['required']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La descripción es obligatoria
+            </div>
+            <div *ngIf="form.get('description')?.errors?.['minlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La descripción debe tener al menos 10 caracteres
+            </div>
+            <div *ngIf="form.get('description')?.errors?.['maxlength']">
+              <i class="bi bi-exclamation-circle me-1"></i>
+              La descripción no debe exceder 500 caracteres
+            </div>
+          </div>
+          <div class="valid-feedback" *ngIf="form.get('description')?.valid && form.get('description')?.touched">
+            <i class="bi bi-check-circle me-1"></i>
+            Excelente descripción
+          </div>
+          <div class="form-text">
+            <small class="text-muted">
+              <i class="bi bi-info-circle me-1"></i>
+              {{ (form.get('description')?.value?.length || 0) }}/500 caracteres
+            </small>
+          </div>
+        </div>
+
+        <!-- Form Actions -->
+        <div class="d-grid gap-3 d-md-flex justify-content-md-end">
+          <button
+            type="button"
+            class="btn btn-outline-secondary btn-lg"
+            (click)="form.reset()"
+          >
+            <i class="bi bi-arrow-counterclockwise me-2"></i>
+            Limpiar
+          </button>
+          <button
+            type="submit"
+            class="btn btn-primary btn-lg"
+            [disabled]="form.invalid"
+            [class.loading]="form.pending"
+          >
+            <span *ngIf="!form.pending">
+              <i class="bi bi-check-lg me-2"></i>
+              Guardar cambios
+            </span>
+            <span *ngIf="form.pending" class="d-flex align-items-center">
+              <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              Guardando...
+            </span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

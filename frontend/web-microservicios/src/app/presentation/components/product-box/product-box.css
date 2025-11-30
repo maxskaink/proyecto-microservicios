@@ -12,16 +12,16 @@
 /* Contenedor que controla la altura de la imagen */
 .image-container {
   width: 100%;
-  aspect-ratio: 3 / 4;  /* Todas iguales */
-  overflow: hidden;     /* Recorta lo que sobra */
+  height: 400px;
+  overflow: hidden;   /* Recorta lo que sobra */
 }
 
 /* Imagen ajustada */
 .card-img-top {
   width: 100%;
   height: 100%;
-  object-fit: cover;     /* Recorta y agranda sin deformar */
-  display: block;
+  object-fit: cover;
+  object-position: center;
 }
 
 .card-body {

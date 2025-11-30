@@ -26,10 +26,7 @@
                             alt="Preview del producto" 
                             class="preview-image"
                         />
-                        <label for="productImage" class="change-image-overlay">
-                            <i class="bi bi-pencil-fill"></i>
-                            <span>Cambiar imagen</span>
-                        </label>
+                        
                     </div>
                 </div>
 
@@ -40,7 +37,7 @@
                     class="d-none"
                     accept="image/*"
                     (change)="onImageChange($event)"
-                    [disabled]="isSubmitting"
+                    [disabled]="isSubmitting  || action !== 'create'"
                     required
                     #fileInput
                 />

@@ -67,7 +67,7 @@
         <!-- Grid de Productos -->
         <section class="products-section">
             <div class="products-grid">
-                <app-list-product-tenant-preview [products]="products"></app-list-product-tenant-preview>
+                <app-list-product-tenant-preview [products]="products" (productClick)="onProductClick($event)"></app-list-product-tenant-preview>
             </div>
         </section>
 

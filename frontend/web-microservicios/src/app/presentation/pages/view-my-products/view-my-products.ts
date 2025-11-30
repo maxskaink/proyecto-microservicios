@@ -104,6 +104,8 @@ loadMyProducts() {
       }
     });
   }
-
+  goToPublush() {
+    this.router.navigate(['/publishProduct']);
+  }
 
 }

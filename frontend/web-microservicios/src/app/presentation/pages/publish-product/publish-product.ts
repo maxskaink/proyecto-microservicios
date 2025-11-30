@@ -9,12 +9,13 @@ import { of } from 'rxjs';
 import { FormProduct } from '../../templates/from-product/form-product';
 import Swal from 'sweetalert2';
 import { LoadingService } from '../../../service/loading-service';
+import { IsLoading } from '../../components/is-loading/is-loading';
 
 
 
 @Component({
   selector: 'app-publish-product',
-  imports: [CommonModule, FormsModule, Header, FormProduct],
+  imports: [CommonModule, FormsModule, Header, FormProduct, IsLoading],
   templateUrl: './publish-product.html',
   styleUrl: './publish-product.css',
   standalone: true,
@@ -53,7 +54,7 @@ export class PublishProduct implements OnInit {
   }
   
   publishProduct( productData: ProductPeticion ): void {
-
+    this.loadingService.show('Publicando producto...');
     if (!this.selectedFile) {
       alert('No hay imagen seleccionada.');
       this.isSubmitting = false;
@@ -111,9 +112,9 @@ export class PublishProduct implements OnInit {
       })
     ).subscribe({
       next: (result) => {
-        this.loadingService.hide();
         if (result !== null) {
           console.log('✅ Producto publicado con foto exitosamente');
+          this.loadingService.hide();
           Swal.fire({
             icon: 'success',
             title: 'Éxito',
@@ -125,12 +126,13 @@ export class PublishProduct implements OnInit {
           });
           this.imagePreview = null;
           this.selectedFile = null;
+          this.loadingService.hide();
           this.cdr.detectChanges();
         }
         this.isSubmitting = false;
       },
       error: (err) => {
-        
+        this.loadingService.hide(); 
         console.error('❌ Error final:', err);
         Swal.fire({
           icon: 'error',

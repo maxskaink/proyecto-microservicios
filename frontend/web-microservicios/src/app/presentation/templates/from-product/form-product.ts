@@ -14,6 +14,7 @@ import { ProductPeticion } from '../../../Models/PrdocutPeticion';
 export class FormProduct implements OnInit{
 
   @Output() productCreated = new EventEmitter< { product: ProductPeticion, action: string, selectFIle: File }>();
+  
   @Input() categories: string[] = [];
   @Input()  action: string = 'create';
   @ViewChild('productForm') productForm?: NgForm;

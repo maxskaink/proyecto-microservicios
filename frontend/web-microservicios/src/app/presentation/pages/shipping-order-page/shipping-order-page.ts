@@ -38,7 +38,7 @@ export class ShippingOrderPage implements OnInit {
     this.idOrder = this.route.snapshot.paramMap.get('id')!;
     this.loadData();
   }
-
+  
   loadData(): void {
     this.isLoading = true;
     forkJoin({

@@ -7,7 +7,8 @@ import { ProductService } from '../../../service/ProductService';
 import { Product } from '../../../Models/Product';
 import { LoadingService } from '../../../service/loading-service';
 import { Header } from '../../templates/header/header';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
+import { TenantService } from '../../../service/TenantService';
 
 @Component({
   selector: 'app-view-category-product',
@@ -25,10 +26,12 @@ export class ViewCategoryProduct {
 
   constructor( private productService: ProductService,
     private isLoading: LoadingService,
-    private router: ActivatedRoute,
-    private cdr: ChangeDetectorRef
+    private route: ActivatedRoute,
+    private cdr: ChangeDetectorRef,
+    private tenantService: TenantService,
+    private router: Router
    ) {
-    this.router.params.subscribe(params => {
+    this.route.params.subscribe(params => {
       this.categoryName = params['categoryName'];
       this.cdr.detectChanges();
     });
@@ -75,6 +78,22 @@ export class ViewCategoryProduct {
     this.filteredProducts = [...this.allProducts];
     this.cdr.detectChanges();
   }
+    onProductClick(product: Product): void {
+    this.tenantService.getCurrentUserTenant().subscribe((tenant) => {
+      if (!tenant) {
+        console.error('No se encontró el tenant actual desde home.');
+        return;
+      }
+
+      const route = ['product', tenant.tenant_id, product.id];
+
+      this.router.navigate(route).then(
+        (success) => console.log(' Navegación exitosa:', success),
+        (error) => console.error(' Error en navegación:', error),
+      );
+    });
+  }
+
   get maxProductPrice(): number {
   if (!this.allProducts || this.allProducts.length === 0) {
     return 1000;

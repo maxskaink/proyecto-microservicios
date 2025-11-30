@@ -60,8 +60,6 @@ export class Home implements OnInit {
    * Maneja el click en un producto para navegar a su vista de detalles
    */
   onProductClick(product: Product): void {
-    console.log('🔥 Click en producto desde Home:', product.id, product.name);
-
     this.tenantService.getCurrentUserTenant().subscribe((tenant) => {
       if (!tenant) {
         console.error('No se encontró el tenant actual desde home.');

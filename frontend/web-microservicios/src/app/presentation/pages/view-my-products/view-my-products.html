@@ -11,7 +11,7 @@
   </section>
   <div *ngIf="!allProducts || allProducts.length === 0" class="container-fluid d-flex flex-column justify-content-center align-items-center" style="height: 80vh;">
     <h1>No tiense productos publicados aun</h1>
-    <button class="btn btn-secondary">Publicar mi primer producto</button>
+    <button class="btn btn-secondary" (click)="goToPublush()">Publicar mi primer producto</button>
   </div>
   <div class="container-fluid" *ngIf="allProducts && allProducts.length > 0">
         <app-list-product-tenant-preview
